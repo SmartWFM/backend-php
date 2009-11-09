@@ -1,0 +1,6 @@
+<?php
+	SmartWFM_Registry::set('basepath', '/var/www');
+	SmartWFM_Registry::set('commands', array('base_actions'));
+	SmartWFM_Registry::set('commands_path', 'commands');
+
+?>
