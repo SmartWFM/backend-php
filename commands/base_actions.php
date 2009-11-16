@@ -81,7 +81,7 @@ class BaseActions_Move extends SmartWFM_Command {
 		
 		$source = $params['source'];
 		$destination = $params['destination'];
-		$overwrite = $params->overwrite;
+		$overwrite = $params['overwrite'];
 
 		//ToDo: check for path an name in source and destination
 
@@ -91,7 +91,7 @@ class BaseActions_Move extends SmartWFM_Command {
 		$response = new SmartWFM_Response();
 		
 		if(file_exists($dst) && $overwrite == false) {
-			$response->data = array(
+			$response->error_data = array(
 				'source' => $source,
 				'destination' => $destination,
 			);
@@ -101,8 +101,13 @@ class BaseActions_Move extends SmartWFM_Command {
 			if(@rename($src, $dst)) {
 				$response->data = true;
 			} else {
-				$response->error_code = -1;
+				$response->error_data = array(
+					'source' => $source,
+					'destination' => $destination,
+				);
+				$response->error_code = -2;
 			}
+			return $response;
 		}
 		$response->error_code = -1;
 		
@@ -125,14 +130,23 @@ class BaseActions_Copy extends SmartWFM_Command {
 		$response = new SmartWFM_Response();
 		
 		if(file_exists($dst) && $overwrite == false) {
-			$response->data = array(
+			$response->error_data = array(
 				'source' => $source,
 				'destination' => $destination,
 			);
 			$response->error_code = -1;
 		} else {
-			copy($src, $dst);
-			$response->data = true;
+			if(@copy($src, $dst)) {
+				$response->data = true;
+			} else {
+				$response->error_code = -2;
+				$response->error_message = 'Test';
+				$response->error_data = array(
+					'source' => $source,
+					'destination' => $destination,
+				);
+
+			}
 		}
 		// for debuging	
 		sleep(1);
@@ -146,7 +160,7 @@ class BaseActions_DirDelete extends SmartWFM_Command {
 	function process($params) {
 		$BASE_PATH = SmartWFM_Registry::get('basepath','/');
 		//$dir = $params['dir'];
-		$path = $params['path'];
+		$path = $params;
 		
 		$dir = $BASE_PATH.$path;
 
@@ -176,15 +190,23 @@ class BaseActions_DirCreate extends SmartWFM_Command {
 		$response = new SmartWFM_Response();
 		
 		if(file_exists($dir) && is_dir($dir)) {
-			$response->data = array(
+			$response->error_data = array(
 				'path' => $path,
 				'name' => $name,
 			);
 			$response->error_code = -1;
 			$response->error_message = 'Dir exists';
 		} else {
-			mkdir($dir);
-			$response->data = true;
+			if(@mkdir($dir)) {
+				$response->data = true;
+			} else {
+				$response->error_data = array(
+					'path' => $path,
+					'name' => $name,
+				);
+				$response->error_code = -2;
+				$response->error_message = 'Wrong permissions';
+			}
 		}
 		return $response;
 	}	
@@ -256,7 +278,7 @@ SmartWFM_CommandManager::register('file.list', new BaseActions_List());
 class BaseActions_DirList extends SmartWFM_Command {
 	function process($params) {
 		$BASE_PATH = SmartWFM_Registry::get('basepath','/');
-		$path = $params['path'];
+		$path = $params;
 
 		$data = array();
 		$d = dir($BASE_PATH.$path);

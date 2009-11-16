@@ -34,6 +34,7 @@ class SmartWFM_Response {
 	public $data = NULL;
 	public $error_code = NULL;
 	public $error_message = NULL;
+	public $error_data = NULL;
 	
 	/**
 	 * Generate the output.
@@ -42,13 +43,16 @@ class SmartWFM_Response {
 	function generate($type = 'json') {
 		if($type == 'json') {
 			$d = array(
-				'jsonrcp' => '2.0',
+				'jsonrpc' => '2.0',
 			);
 			if($this->error_code != NULL) {
 				$d['error'] = array(
 						'code' => $this->error_code,
 						'message' => $this->error_message
-					);	
+					);
+				if($this->error_data != NULL) {
+					$d['error']['data'] = $this->error_data;
+				}	
 			} else {
 				$d['result'] = $this->data;
 			}
