@@ -79,16 +79,39 @@ class BaseActions_Move extends SmartWFM_Command {
 	function process($params) {
 		$BASE_PATH = SmartWFM_Registry::get('basepath','/');
 		
-		if(!array_key_exists('source', $params)) {
-			throw new SmartWFM_Excaption('"source"-param is required');
-		}
-		if(!array_key_exists('destination', $params)) {
-			throw new SmartWFM_Excaption('"destination"-param is required');
-		}
-		if(!array_key_exists('overwrite', $params)) {
-			throw new SmartWFM_Excaption('"overwrite"-param is required');
-		}
-		
+		$param_test = new SmartWFM_Param(
+			$type = 'object',
+			$items = array(
+				'source' => new SmartWFM_Param(
+					$type = 'object',
+					$items = array(
+						'name' => new SmartWFM_Param(
+							$type = 'string'
+						),
+						'path' => new SmartWFM_Param(
+							$type = 'string'
+						)
+					)
+				),
+				'destination' => new SmartWFM_Param(
+					$type = 'object',
+					$items = array(
+						'name' => new SmartWFM_Param(
+							$type = 'string'
+						),
+						'path' => new SmartWFM_Param(
+							$type = 'string'
+						)
+					)
+				),
+				'overwrite' => new SmartWFM_Param(
+					$type = 'boolean'
+				)
+			)
+		);
+
+		$params = $param_test->validate($params);
+
 		$source = $params['source'];
 		$destination = $params['destination'];
 		$overwrite = $params['overwrite'];
@@ -232,6 +255,11 @@ class BaseActions_List extends SmartWFM_Command {
 	function process($params) {
 		$BASE_PATH = SmartWFM_Registry::get('basepath','/');
 		
+		$param_test = new SmartWFM_Param(
+			$type = 'string'
+		);
+
+		$params = $param_test->validate($params);
 		
 		$path = $params;
 

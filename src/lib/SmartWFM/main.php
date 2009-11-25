@@ -169,12 +169,12 @@ class SmartWFM {
 	 */
 	function process() {
 		if(array_key_exists('data', $_REQUEST)) {
-			$data = json_decode(stripslashes($_REQUEST['data']), true);
+			$data = json_decode(stripslashes($_REQUEST['data']));
 			if(array_key_exists('method', $data)) {
-				$command = SmartWFM_CommandManager::get($data['method']);
+				$command = SmartWFM_CommandManager::get($data->method);
 				$d = NULL;
 				if($command != NULL) {
-					$d = $data['params'];
+					$d = $data->params;
 				}
 				try {
 					$response = $command->process($d);
