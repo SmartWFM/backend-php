@@ -22,6 +22,7 @@ if(SMARTWFM_DEBUG == true) {
 }
 
 require_once("lib/SmartWFM/main.php");
+require_once("lib/SmartWFM/validate.php");
 
 $smartwfm = new SmartWFM();
 $smartwfm->init();

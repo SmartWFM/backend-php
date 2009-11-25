@@ -38,7 +38,7 @@ if(!function_exists('json_encode')) {
  * Use it for all connector functions
  */
 
-class SmartWFM_Excaption extends Exception { }
+class SmartWFM_Exception extends Exception { }
 
 class SmartWFM_Response {
 	public $data = NULL;
