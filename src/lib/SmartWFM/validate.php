@@ -19,22 +19,28 @@ class SmartWFM_Param {
 				} else {
 					throw new SmartWFM_Excaption_Params();
 				}
+				return $params;
+
 				break;	
 			case 'integer':
 				if(!is_integer($params)) {
 					throw new SmartWFM_Excaption_Params();
 				}
+				return $params;
+
 				break;
 			case 'object':
 				if(is_object($params)) {
+					$tmp_array = array();
 					$keys = get_object_vars($params);
 					foreach($this->items as $key => $value) {
 						if(!array_key_exists($key, $keys)) {
 							throw new SmartWFM_Excaption_Params();
 						} else {
-							$value->validate($params->$key);
+							$tmp_array[$key] = $value->validate($params->$key);
 						}
 					}
+					return $tmp_array;
 				} else {
 					throw new SmartWFM_Excaption_Params();
 				}
@@ -43,6 +49,8 @@ class SmartWFM_Param {
 				if(!is_string($params)) {
 					throw new SmartWFM_Excaption_Params();
 				}
+				return $params;
+
 				break;
 			default:
 				throw new SmartWFM_Excaption_Params();
@@ -51,7 +59,7 @@ class SmartWFM_Param {
 	}
 }
 /*
-$j = json_decode('{"abc": [1,2,3,a]}');
+$j = json_decode('{"abc": [1,2,3]}');
 print_r($j);
 print_r(get_object_vars($j));
 $a = new SmartWFM_Param(
@@ -67,7 +75,7 @@ $a = new SmartWFM_Param(
 );
 try {
 	//$a->validate(array('test' => 'foo'));
-	$a->validate($j);
+	print_r($a->validate($j));
 } catch (SmartWFM_Excaption_Params $e) {
 	print "error\n";
 }
