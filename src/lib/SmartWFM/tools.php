@@ -10,23 +10,36 @@
 # WITHOUT ANY WARRANTY. See GPLv3 for more details.                           #
 ###############################################################################
 
-define('SMARTWFM_DEBUG', false);
+class Path {
+	static function join() {
+		$args = func_get_args();
+		$paths = array();
+		foreach( $args as $arg ) {
+			$paths = array_merge( $paths, (array)$arg );
+		}
+		foreach( $paths as &$path ) {
+			$path = trim( $path, '/' );
+		}
+		if( substr( $args[0], 0, 1 ) == '/' ) {
+			$paths[0] = '/' . $paths[0];
+			return join('/', $paths);
+		} else {
+			$path = join('/', $paths);
+			$path = join(
+				'/',
+				array(
+					trim('/', SmartWFM_Registry::get('basepath','/')),
+					$path
+				)
+			);
+			return '/'.$path;
 
-require_once("lib/FirePHPCore/fb.php");
 
-if(SMARTWFM_DEBUG == true) {
-	ini_set(’display_errors’,1);
-	error_reporting(E_ALL|E_STRICT);
-
-	FB::setEnabled(true);
+		}
+	}
+	static function check($base, $path) {
+		return preg_match('/^'.preg_quote($base, '/').'/', $path);
+	}
 }
-
-require_once("lib/SmartWFM/main.php");
-require_once("lib/SmartWFM/tools.php");
-require_once("lib/SmartWFM/validate.php");
-
-$smartwfm = new SmartWFM();
-$smartwfm->init();
-$smartwfm->process();
 
 ?>
