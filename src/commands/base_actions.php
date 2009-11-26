@@ -264,21 +264,25 @@ class BaseActions_List extends SmartWFM_Command {
 		$path = $params;
 
 		$data = array();
-
-		$d = dir($BASE_PATH.$path);
+		$path = Path::join($BASE_PATH,$path);
+		if(Path::check($BASE_PATH, $path) != true) {
+			throw new SmartWFM_Exception('Wrong path');
+		}
+		$d = dir($path);
 		while (false !== ($name = $d->read())) {
 			//print $BASE_PATH.$path.$name;
 			//print $BASE_PATH.$path.'/'.$name."\n";
 			if($name != '.' && $name != '..') {
-				if(is_file($BASE_PATH.$path.'/'.$name)){
+				$filename = Path::join($path,$name);
+				if(is_file($filename)){
 					FB::log($name);
 					try {
 						array_push($data, array(
 									'type' => 'file',
 									'name' => $name,
 									'path' => $path,
-									'size' => filesize($BASE_PATH.$path.'/'.$name),
-									'mime-type' => @mime_content_type($BASE_PATH.$path.'/'.$name),
+									'size' => filesize($filename),
+									'mime-type' => @mime_content_type($filename),
 									'isDir' => false,
 									)
 						);
@@ -291,8 +295,8 @@ class BaseActions_List extends SmartWFM_Command {
 									'type' => 'file',
 									'name' => $name,
 									'path' => $path,
-									'size' => filesize($BASE_PATH.$path.'/'.$name),
-									'mime-type' => @mime_content_type($BASE_PATH.$path.'/'.$name),
+									'size' => filesize($filename),
+									'mime-type' => @mime_content_type($filename),
 									'isDir' => true,
 									)
 						);
