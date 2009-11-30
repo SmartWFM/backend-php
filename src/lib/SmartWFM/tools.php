@@ -37,7 +37,9 @@ class Path {
 
 		}
 	}
-	static function check($base, $path) {
+	static function validate($base, $path) {
+		$path = str_replace('../','', $path);
+		$path = realpath($path);
 		return preg_match('/^'.preg_quote($base, '/').'/', $path);
 	}
 }
