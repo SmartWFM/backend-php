@@ -261,47 +261,59 @@ class BaseActions_List extends SmartWFM_Command {
 
 		$params = $param_test->validate($params);
 		
-		$path = $params;
+		$req_path = $params;
 
-		$data = array();
-		$path = Path::join($BASE_PATH,$path);
-		if(Path::check($BASE_PATH, $path) != true) {
+		$path = Path::join($BASE_PATH,$req_path);
+		if(Path::validate($BASE_PATH, $path) != true) {
 			throw new SmartWFM_Exception('Wrong path');
 		}
+		if(!is_dir($path)) {
+			throw new SmartWFM_Exception(
+				$data = new Response(
+					$error_code = -1,
+					$error_message = 'Dir doesn\'t exist'
+				)
+			);
+
+		}
 		$d = dir($path);
+
+		$data = array();
 		while (false !== ($name = $d->read())) {
-			//print $BASE_PATH.$path.$name;
-			//print $BASE_PATH.$path.'/'.$name."\n";
 			if($name != '.' && $name != '..') {
 				$filename = Path::join($path,$name);
 				if(is_file($filename)){
-					FB::log($name);
-					try {
-						array_push($data, array(
-									'type' => 'file',
-									'name' => $name,
-									'path' => $path,
-									'size' => filesize($filename),
-									'mime-type' => @mime_content_type($filename),
-									'isDir' => false,
-									)
-						);
-					} catch(Exception $e) {
+					$size = @filesize($filename);
+					$mime_type = @mime_content_type($filename);
+					if($size === False) {
+						$size = 0;
 					}
+					if($mime_type === False) {
+						$mime_type = 'unknown';
+					}
+					array_push(
+						$data,
+						array(
+							'type' => 'file',
+							'name' => $name,
+							'path' => $req_path,
+							'size' => $size,
+							'mime-type' => $mime_type,
+							'isDir' => false,
+						)
+					);
 				} else {
-					FB::log($name);
-					try {
-						array_push($data, array(
-									'type' => 'file',
-									'name' => $name,
-									'path' => $path,
-									'size' => filesize($filename),
-									'mime-type' => @mime_content_type($filename),
-									'isDir' => true,
-									)
-						);
-					} catch(Exception $e) {
-					}
+					array_push(
+						$data,
+						array(
+							'type' => 'file',
+							'name' => $name,
+							'path' => $req_path,
+							'size' => 0,
+							'mime-type' => '',
+							'isDir' => true,
+						)
+					);
 				}
 			}
 		}
