@@ -14,12 +14,14 @@ class Path {
 	static function join() {
 		$args = func_get_args();
 		$paths = array();
+		
 		foreach( $args as $arg ) {
-			$paths = array_merge( $paths, (array)$arg );
+			$path = trim( $arg, '/' );
+			if($path != '') {
+				array_push($paths, $path);
+			}
 		}
-		foreach( $paths as &$path ) {
-			$path = trim( $path, '/' );
-		}
+
 		if( substr( $args[0], 0, 1 ) == '/' ) {
 			$paths[0] = '/' . $paths[0];
 			return join('/', $paths);
