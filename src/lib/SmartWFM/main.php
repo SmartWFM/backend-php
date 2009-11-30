@@ -38,13 +38,37 @@ if(!function_exists('json_encode')) {
  * Use it for all connector functions
  */
 
-class SmartWFM_Exception extends Exception { }
+class SmartWFM_Exception extends Exception {
+	protected $response = Null;
+	public function __construct($message = NULL, $code = 0, $response = Null) {
+		if($message == NULL) {
+			if($response == Null) {
+				$message = 'No error message and no data given';
+			} else {
+				$message = 'Responsen given';
+			}
+		}
+		$this->response = $response;
+		parent::__construct($message, $code);
+	}
+
+	public function getResponse() {
+		return $this->response;
+	}
+}
 
 class SmartWFM_Response {
 	public $data = NULL;
 	public $error_code = NULL;
 	public $error_message = NULL;
 	public $error_data = NULL;
+	
+	public function __construct($data = NULL, $error_code = NULL, $error_message = NULL, $error_data = NULL) {
+		$this->data = $data;
+		$this->error_code = $error_code;
+		$this->error_message = $error_message;
+		$this->error_data = $error_data;
+	}
 	
 	/**
 	 * Generate the output.
@@ -178,14 +202,17 @@ class SmartWFM {
 				}
 				try {
 					$response = $command->process($d);
-				} catch (SmartWFM_Excaption $e) {
-					$response = new SmartWFM_Response();
-					$response->error_code = -32602;
-					$msg = $e->getMessage();
-					if($msg == NULL) {
-						$msg = 'Invalid method parameters.';
+				} catch (SmartWFM_Exception $e) {
+					$response = $e->getResponse();
+					if($response == Null) {
+						$response = new SmartWFM_Response();
+						$response->error_code = -32602;
+						$msg = $e->getMessage();
+						if($msg == NULL) {
+							$msg = 'Invalid method parameters.';
+						}
+						$response->error_message = $msg;
 					}
-					$response->error_message = $msg;
 				}
 				header("Content-Type: application/json");
 				print $response->generate();
