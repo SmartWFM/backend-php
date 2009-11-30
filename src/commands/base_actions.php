@@ -13,27 +13,43 @@
 class BaseActions_Delete extends SmartWFM_Command {
 	function process($params) {
 		$BASE_PATH = SmartWFM_Registry::get('basepath','/');
-				
-		if(!array_key_exists('path', $params)) {
-			throw new SmartWFM_Excaption('"path"-param is required');
+		
+		$param_test = new SmartWFM_Param(
+			$type = 'object',
+			$items = array(
+				'path' => new SmartWFM_Param('string'),
+				'name' => new SmartWFM_Param('string')
+			)
+		);
+
+		$params = $param_test->validate($params);
+		
+		$filename = Path::join(
+			$BASE_PATH,
+			$params['path'],
+			$params['name']
+		);
+
+		if(Path::validate($BASE_PATH, $filename) != true) {
+			throw new SmartWFM_Exception('Wrong filename');
 		}
-		
-		if(!array_key_exists('name', $params)) {
-			throw new SmartWFM_Excaption('"name"-param is required');
+
+		if(!file_exists($filename)) {
+			throw new SmartWFM_Exception(
+				"File doesn't exist",
+				-1
+			);
 		}
-		
-		$filename = $params['path'] . '/' . $params['name'];
-		
-		$file = $BASE_PATH.$filename;
-		
+
 		$response = new SmartWFM_Response();
 		
-		if(@unlink($file) == true) {
+		if(@unlink($filename) === true) {
 			$response->data = true;
 		} else {
-			$response->error_code = -1;
-			$response->error_message = "Can't delete the file";
-		
+			throw new SmartWFM_Exception(
+				"Can't delete the file",
+				-2
+			);
 		}
 		
 		return $response;
