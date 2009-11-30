@@ -268,11 +268,13 @@ class BaseActions_List extends SmartWFM_Command {
 			throw new SmartWFM_Exception('Wrong path');
 		}
 		if(!is_dir($path)) {
+			$response = new SmartWFM_Response();
+			$response->error_code = -1;
+			$response->error_message = 'Dir doesn\'t exist';
 			throw new SmartWFM_Exception(
-				$data = new Response(
-					$error_code = -1,
-					$error_message = 'Dir doesn\'t exist'
-				)
+				NULL,
+				-1,
+				$response
 			);
 
 		}

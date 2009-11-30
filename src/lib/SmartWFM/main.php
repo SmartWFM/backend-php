@@ -45,7 +45,7 @@ class SmartWFM_Exception extends Exception {
 			if($response == Null) {
 				$message = 'No error message and no data given';
 			} else {
-				$message = 'Responsen given';
+				$message = 'Response given';
 			}
 		}
 		$this->response = $response;

@@ -38,8 +38,12 @@ class Path {
 		}
 	}
 	static function validate($base, $path) {
-		$path = str_replace('../','', $path);
-		$path = realpath($path);
+		$path_rep = str_replace('../','', $path);
+		$path = realpath($path_rep);
+		// realpath() returns nothing if the path doesn't exist, so we set the old path
+		if($path === False) {
+			$path = $path_rep;
+		}
 		return preg_match('/^'.preg_quote($base, '/').'/', $path);
 	}
 }
