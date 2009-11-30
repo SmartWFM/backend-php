@@ -40,7 +40,7 @@ if(!function_exists('json_encode')) {
 
 class SmartWFM_Exception extends Exception {
 	protected $response = Null;
-	public function __construct($message = NULL, $code = 0, $response = Null) {
+	public function __construct($message = NULL, $code = -32602, $response = Null) {
 		if($message == NULL) {
 			if($response == Null) {
 				$message = 'No error message and no data given';
@@ -206,7 +206,7 @@ class SmartWFM {
 					$response = $e->getResponse();
 					if($response == Null) {
 						$response = new SmartWFM_Response();
-						$response->error_code = -32602;
+						$response->error_code = $e->getCode();
 						$msg = $e->getMessage();
 						if($msg == NULL) {
 							$msg = 'Invalid method parameters.';
