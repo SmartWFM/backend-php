@@ -105,46 +105,38 @@ class BaseActions_DirList extends SmartWFM_Command {
 	function process($params) {
 		$BASE_PATH = SmartWFM_Registry::get('basepath','/');
 		
-		$param_test = new SmartWFM_Param(
-			$type = 'object',
-			$items = array(
-				'path' => new SmartWFM_Param('string'),
-				'name' => new SmartWFM_Param('string')
-			)
-		);
+		$param_test = new SmartWFM_Param('string');
 
 		$params = $param_test->validate($params);
 		
-		$dir = Path::join(
+		$path = Path::join(
 			$BASE_PATH,
-			$params['path'],
-			$params['name']
+			$params
 		);
 
-		if(Path::validate($BASE_PATH, $dir) != true) {
+		if(Path::validate($BASE_PATH, $path) != true) {
 			throw new SmartWFM_Exception('Wrong directory name');
 		}
 
-		if(!file_exists($dir)) {
+		if(!file_exists($path)) {
 			throw new SmartWFM_Exception('Folder doesn\'t exist.', -1);
 		}
 
 		$data = array();
-		$d = dir($dir);
+		$d = dir($path);
 		while (false !== ($name = $d->read())) {
 			if($name != '.' && $name != '..') {
-				if(is_dir($BASE_PATH.$path.'/'.$name)){
+				if(is_dir(Path::join($path, $name))){
 					$hasSubDirs = '0';
-					$d2 = dir($BASE_PATH.$path.'/'.$name);
+					$d2 = dir(Path::join($path, $name));
 					while (false !== ($name2 = $d2->read())) {
 						if($name2 != '.' && $name2 != '..')
-							if(is_dir($BASE_PATH.$path.'/'.$name.'/'.$name2))
+							if(is_dir(Path::join($path, $name, $name2)))
 								$hasSubDirs = '1';
 					}
-					$path = str_replace($BASE_PATH, '', $path);
 					array_push($data, array(
 								'name' => $name,
-								'path' => $path,
+								'path' => $params,
 								'hasSubDirs' => $hasSubDirs
 							)
 					);
