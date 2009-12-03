@@ -62,27 +62,52 @@ class BaseActions_Rename extends SmartWFM_Command {
 	function process($params) {
 		$BASE_PATH = SmartWFM_Registry::get('basepath','/');
 		
-		if(!array_key_exists('path', $params)) {
-			throw new SmartWFM_Excaption('"path"-param is required');
+		$param_test = new SmartWFM_Param(
+			$type = 'object',
+			$items = array(
+				'path' => new SmartWFM_Param('string'),
+				'name' => new SmartWFM_Param('string'),
+				'name_new' => new SmartWFM_Param('string'),
+				'overwrite' => new SmartWFM_Param('boolean')
+			)
+		);
+
+		$params = $param_test->validate($params);
+		
+		$filename = Path::join(
+			$BASE_PATH,
+			$params['path'],
+			$params['name']
+		);
+		
+		$filename_new = Path::join(
+			$BASE_PATH,
+			$params['path'],
+			$params['name_new']
+		);
+
+		if(Path::validate($BASE_PATH, $filename) != true) {
+			throw new SmartWFM_Exception('Wrong filename for source');
 		}
 		
-		if(!array_key_exists('name', $params)) {
-			throw new SmartWFM_Excaption('"name"-param is required');
+		if(Path::validate($BASE_PATH, $filename_new) != true) {
+			throw new SmartWFM_Exception('Wrong filename for destination');
 		}
-		if(!array_key_exists('name_new', $params)) {
-			throw new SmartWFM_Excaption('"name_new"-param is required');
+
+		if(!file_exists($filename)) {
+			throw new SmartWFM_Exception('Source file doesn\t exist.', -1);
 		}
 		
-		$src = $BASE_PATH.$params['path'].'/'.$params['name'];
-		$dst = $BASE_PATH.$params['path'].'/'.$params['name_new'];
+		if(file_exists($filename_new) && $params['overwrite']) {
+			throw new SmartWFM_Exception('Destination file exists and I am not allowed to overwrite.', -2);
+		}
 		
 		$response = new SmartWFM_Response();
 		
-		if(@rename($src, $dst)) {
+		if(@rename($filename, $filename_new)) {
 			$response->data = true;
 		} else {
-			$response->error_code = -1;
-			$response->error_message = "Can't rename the file";
+			throw new SmartWFM_Exception('Error while renaming the file', -3);
 		}
 
 		return $response;
