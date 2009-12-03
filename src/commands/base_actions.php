@@ -170,14 +170,14 @@ class BaseActions_Copy extends SmartWFM_Command {
 					$items = array(
 						'path' => SmartWFM_Param('string'),
 						'name' => SmartWFM_Param('string')
-					),
+					)
 				),
 				'destination' => new SmartWFM_Param(
 					$type = 'object',
 					$items = array(
 						'path' => SmartWFM_Param('string'),
 						'name' => SmartWFM_Param('string')
-					),
+					)
 				),
 				'overwrite' => new SmartWFM_Param('string')
 			)
@@ -392,39 +392,46 @@ class BaseActions_Move extends SmartWFM_Command {
 
 		$params = $param_test->validate($params);
 
-		$source = $params['source'];
-		$destination = $params['destination'];
-		$overwrite = $params['overwrite'];
+		$source = Path::join(
+			$BASE_PATH,
+			$params['source']['path'],
+			$params['source']['name']
+		);
 
-		//ToDo: check for path an name in source and destination
+		if(Path::validate($BASE_PATH, $source) != true) {
+			throw new SmartWFM_Exception('Wrong filename');
+		}
 
-		$src = $BASE_PATH.$source['path'] . '/'. $source['name'];
-		$dst = $BASE_PATH.$destination['path'] . '/'. $destination['name'];
+		$destination = Path::join(
+			$BASE_PATH,
+			$params['destination']['path'],
+			$params['destination']['name']
+		);
 
-		$response = new SmartWFM_Response();
+		if(Path::validate($BASE_PATH, $destination) != true) {
+			throw new SmartWFM_Exception('Wrong filename');
+		}
+
+
+		if(!file_exists($source)) {
+			throw new SMartWFM_Exception('The source file doesn\'t exist', -1);
+		}
+
 		
-		if(file_exists($dst) && $overwrite == false) {
-			$response->error_data = array(
-				'source' => $source,
-				'destination' => $destination,
-			);
-			$response->error_code = -1;
-			return $response;
+		$response = new SmartWFM_Response();
+
+		if(file_exists($destination) && $params['overwrite'] == false) {
+			throw new SmartWFM_Exception('The destination exists and I am not allowed to overwrite', -2);
 		} else {
 			if(@rename($src, $dst)) {
 				$response->data = true;
 			} else {
-				$response->error_data = array(
-					'source' => $source,
-					'destination' => $destination,
-				);
-				$response->error_code = -2;
+				throw new SmartWFM_Exception('An error occurs', -3);
 			}
-			return $response;
 		}
-		$response->error_code = -1;
 		
 		return $response;
+
 	}	
 }
 
@@ -445,13 +452,13 @@ class BaseActions_Rename extends SmartWFM_Command {
 		);
 
 		$params = $param_test->validate($params);
-		
+
 		$filename = Path::join(
 			$BASE_PATH,
 			$params['path'],
 			$params['name']
 		);
-		
+
 		$filename_new = Path::join(
 			$BASE_PATH,
 			$params['path'],
