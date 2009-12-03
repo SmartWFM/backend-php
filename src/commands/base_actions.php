@@ -13,32 +13,37 @@
 class BaseActions_DirCreate extends SmartWFM_Command {
 	function process($params) {
 		$BASE_PATH = SmartWFM_Registry::get('basepath','/');
-		//$dir = $params->dir;
-		$path = $params['path'];
-		$name = $params['name'];
+		
+		$param_test = new SmartWFM_Param(
+			$type = 'object',
+			$items = array(
+				'path' => new SmartWFM_Param('string'),
+				'name' => new SmartWFM_Param('string')
+			)
+		);
 
-		$dir = $BASE_PATH.$path.'/'.$name;
+		$params = $param_test->validate($params);
+		
+		$filename = Path::join(
+			$BASE_PATH,
+			$params['path'],
+			$params['name']
+		);
+
+		if(Path::validate($BASE_PATH, $filename) != true) {
+			throw new SmartWFM_Exception('Wrong filename');
+		}
+
+
+		if(file_exists($dir) && is_dir($dir)) {
+			throw new SmartWFM_Exception('A directory with the given name already exists', -1);
+		}
 
 		$response = new SmartWFM_Response();
-		
-		if(file_exists($dir) && is_dir($dir)) {
-			$response->error_data = array(
-				'path' => $path,
-				'name' => $name,
-			);
-			$response->error_code = -1;
-			$response->error_message = 'Dir exists';
+		if(@mkdir($dir)) {
+			$response->data = true;
 		} else {
-			if(@mkdir($dir)) {
-				$response->data = true;
-			} else {
-				$response->error_data = array(
-					'path' => $path,
-					'name' => $name,
-				);
-				$response->error_code = -2;
-				$response->error_message = 'Wrong permissions';
-			}
+			throw new SmartWFM_Exception('Can\'t create the folder', -2);
 		}
 		return $response;
 	}	
