@@ -24,13 +24,13 @@ class BaseActions_DirCreate extends SmartWFM_Command {
 
 		$params = $param_test->validate($params);
 		
-		$filename = Path::join(
+		$dir = Path::join(
 			$BASE_PATH,
 			$params['path'],
 			$params['name']
 		);
 
-		if(Path::validate($BASE_PATH, $filename) != true) {
+		if(Path::validate($BASE_PATH, $dir) != true) {
 			throw new SmartWFM_Exception('Wrong filename');
 		}
 
