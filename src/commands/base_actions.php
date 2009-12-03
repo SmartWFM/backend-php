@@ -104,10 +104,33 @@ SmartWFM_CommandManager::register('dir.delete', new BaseActions_DirDelete());
 class BaseActions_DirList extends SmartWFM_Command {
 	function process($params) {
 		$BASE_PATH = SmartWFM_Registry::get('basepath','/');
-		$path = $params;
+		
+		$param_test = new SmartWFM_Param(
+			$type = 'object',
+			$items = array(
+				'path' => new SmartWFM_Param('string'),
+				'name' => new SmartWFM_Param('string')
+			)
+		);
+
+		$params = $param_test->validate($params);
+		
+		$dir = Path::join(
+			$BASE_PATH,
+			$params['path'],
+			$params['name']
+		);
+
+		if(Path::validate($BASE_PATH, $dir) != true) {
+			throw new SmartWFM_Exception('Wrong directory name');
+		}
+
+		if(!file_exists($dir)) {
+			throw new SmartWFM_Exception('Folder doesn\'t exist.', -1);
+		}
 
 		$data = array();
-		$d = dir($BASE_PATH.$path);
+		$d = dir($dir);
 		while (false !== ($name = $d->read())) {
 			if($name != '.' && $name != '..') {
 				if(is_dir($BASE_PATH.$path.'/'.$name)){
