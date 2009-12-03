@@ -11,6 +11,13 @@ class SmartWFM_Param {
 	}
 	function validate($params) {
 		switch($this->type) {
+			case 'boolean':
+				if(!is_bool($params)) {
+					throw new SmartWFM_Excaption_Params();
+				}
+				return $params;
+
+				break;
 			case 'array':
 				if(is_array($params)) {
 					for($i = 0; $i <count($params); $i++) {
