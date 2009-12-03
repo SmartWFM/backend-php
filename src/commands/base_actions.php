@@ -162,36 +162,65 @@ SmartWFM_CommandManager::register('dir.list', new BaseActions_DirList());
 class BaseActions_Copy extends SmartWFM_Command {
 	function process($params) {
 		$BASE_PATH = SmartWFM_Registry::get('basepath','/');
-		$source = $params['source'];
-		$destination = $params['destination'];
+		$param_test = new SmartWFM_Param(
+			$type = 'object',
+			$items = array(
+				'source' => new SmartWFM_Param(
+					$type = 'object',
+					$items = array(
+						'path' => SmartWFM_Param('string'),
+						'name' => SmartWFM_Param('string')
+					),
+				),
+				'destination' => new SmartWFM_Param(
+					$type = 'object',
+					$items = array(
+						'path' => SmartWFM_Param('string'),
+						'name' => SmartWFM_Param('string')
+					),
+				),
+				'overwrite' => new SmartWFM_Param('string')
+			)
+		);
 
-		$src = $BASE_PATH.$source['path'] . '/'. $source['name'];
-		$dst = $BASE_PATH.$destination['path'] . '/'. $destination['name'];
-		$overwrite = $params['overwrite'];
+		$params = $param_test->validate($params);
+		
+		$source = Path::join(
+			$BASE_PATH,
+			$params['source']['path'],
+			$params['source']['name']
+		);
+		
+		$destination = Path::join(
+			$BASE_PATH,
+			$params['destination']['path'],
+			$params['destination']['name']
+		);
+
+		if(Path::validate($BASE_PATH, $source) != true) {
+			throw new SmartWFM_Exception('Wrong directory name');
+		}
+		
+		if(Path::validate($BASE_PATH, $destination) != true) {
+			throw new SmartWFM_Exception('Wrong directory name');
+		}
 
 		$response = new SmartWFM_Response();
 		
-		if(file_exists($dst) && $overwrite == false) {
-			$response->error_data = array(
-				'source' => $source,
-				'destination' => $destination,
-			);
-			$response->error_code = -1;
+		if(!file_exists($source)) {
+			throw new SmartWFM_Exception('Source file doesn\'t exist', -1);
+		}
+		
+		if(file_exists($destination) && $overwrite == false) {
+			throw new SmartWFM_Exception('Destination file exists', -2);
 		} else {
 			if(@copy($src, $dst)) {
 				$response->data = true;
 			} else {
-				$response->error_code = -2;
-				$response->error_message = 'Test';
-				$response->error_data = array(
-					'source' => $source,
-					'destination' => $destination,
-				);
-
+				throw new SmartWFM_Exception('An error occurs', -3);
 			}
 		}
-		// for debuging	
-		sleep(1);
+
 		return $response;
 	}	
 }
