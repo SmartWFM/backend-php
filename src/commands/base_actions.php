@@ -160,15 +160,15 @@ class BaseActions_Copy extends SmartWFM_Command {
 				'source' => new SmartWFM_Param(
 					$type = 'object',
 					$items = array(
-						'path' => SmartWFM_Param('string'),
-						'name' => SmartWFM_Param('string')
+						'path' => new SmartWFM_Param('string'),
+						'name' => new SmartWFM_Param('string')
 					)
 				),
 				'destination' => new SmartWFM_Param(
 					$type = 'object',
 					$items = array(
-						'path' => SmartWFM_Param('string'),
-						'name' => SmartWFM_Param('string')
+						'path' => new SmartWFM_Param('string'),
+						'name' => new SmartWFM_Param('string')
 					)
 				),
 				'overwrite' => new SmartWFM_Param('string')
