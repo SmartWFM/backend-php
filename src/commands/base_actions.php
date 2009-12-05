@@ -171,7 +171,7 @@ class BaseActions_Copy extends SmartWFM_Command {
 						'name' => new SmartWFM_Param('string')
 					)
 				),
-				'overwrite' => new SmartWFM_Param('string')
+				'overwrite' => new SmartWFM_Param('boolean')
 			)
 		);
 
@@ -203,10 +203,10 @@ class BaseActions_Copy extends SmartWFM_Command {
 			throw new SmartWFM_Exception('Source file doesn\'t exist', -1);
 		}
 		
-		if(file_exists($destination) && $overwrite == false) {
+		if(file_exists($destination) && $params['overwrite'] == false) {
 			throw new SmartWFM_Exception('Destination file exists', -2);
 		} else {
-			if(@copy($src, $dst)) {
+			if(copy($source, $destination) === true ) {
 				$response->data = true;
 			} else {
 				throw new SmartWFM_Exception('An error occurs', -3);
@@ -415,7 +415,7 @@ class BaseActions_Move extends SmartWFM_Command {
 		if(file_exists($destination) && $params['overwrite'] == false) {
 			throw new SmartWFM_Exception('The destination exists and I am not allowed to overwrite', -2);
 		} else {
-			if(@rename($src, $dst)) {
+			if(@rename($source, $destination)) {
 				$response->data = true;
 			} else {
 				throw new SmartWFM_Exception('An error occurs', -3);
