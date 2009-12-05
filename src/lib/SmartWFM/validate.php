@@ -13,7 +13,7 @@ class SmartWFM_Param {
 		switch($this->type) {
 			case 'boolean':
 				if(!is_bool($params)) {
-					throw new SmartWFM_Excaption_Params();
+					throw new SmartWFM_Excaption_Params('The type of this value should be "boolean".');
 				}
 				return $params;
 
@@ -24,14 +24,14 @@ class SmartWFM_Param {
 						$this->items->validate($params[$i]);
 					}
 				} else {
-					throw new SmartWFM_Excaption_Params();
+					throw new SmartWFM_Excaption_Params('The type of this value should be "array".');
 				}
 				return $params;
 
 				break;	
 			case 'integer':
 				if(!is_integer($params)) {
-					throw new SmartWFM_Excaption_Params();
+					throw new SmartWFM_Excaption_Params('The type of this value should be "integer".');
 				}
 				return $params;
 
@@ -49,18 +49,18 @@ class SmartWFM_Param {
 					}
 					return $tmp_array;
 				} else {
-					throw new SmartWFM_Excaption_Params();
+					throw new SmartWFM_Excaption_Params('The type of this value should be "object".');
 				}
 				break;
 			case 'string':
 				if(!is_string($params)) {
-					throw new SmartWFM_Excaption_Params();
+					throw new SmartWFM_Excaption_Params('The type of this value should be "string"');
 				}
 				return $params;
 
 				break;
 			default:
-				throw new SmartWFM_Excaption_Params();
+				throw new SmartWFM_Excaption_Params('Unknown parameter type: "' . $this->type . '"');
 
 		}
 	}
