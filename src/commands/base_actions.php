@@ -469,7 +469,7 @@ class BaseActions_Rename extends SmartWFM_Command {
 			throw new SmartWFM_Exception('Source file doesn\t exist.', -1);
 		}
 		
-		if(file_exists($filename_new) && $params['overwrite']) {
+		if(file_exists($filename_new) && !$params['overwrite']) {
 			throw new SmartWFM_Exception('Destination file exists and I am not allowed to overwrite.', -2);
 		}
 		
