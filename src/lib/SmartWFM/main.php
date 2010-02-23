@@ -159,6 +159,40 @@ class SmartWFM_CommandManager {
 }
 
 /**
+ * The DirectCommandManager handles all the available direct commands
+ */
+
+class SmartWFM_DirectCommandManager {
+	private static $commands = array();
+
+	/**
+	 * Register a new command with the given name
+	 */
+	public static function register($name, $class) {
+		self::$commands[$name] = $class;
+	}
+
+
+	/**
+	 * Get a command.
+	 */
+	public static function get($name) {
+		if(array_key_exists($name, self::$commands)) {
+			return self::$commands[$name];
+		} else {
+			return NULL;
+		}
+	}
+
+	/**
+	 * Count the available commands
+	 */
+	public static function count() {
+		return count(self::$commands);
+	}
+}
+
+/**
  * The main class of the Connector
  */
 
@@ -192,7 +226,13 @@ class SmartWFM {
 	 * - handle errors
 	 */
 	function process() {
-		if(array_key_exists('data', $_REQUEST)) {
+		if(array_key_exists('command', $_REQUEST)) {
+			$command = SmartWFM_DirectCommandManager::get($_REQUEST['command']);
+			if($command != NULL) {
+				$command->process($_REQUEST);
+			}
+		}
+		elseif(array_key_exists('data', $_REQUEST)) {
 			$data = json_decode(stripslashes($_REQUEST['data']));
 			if(array_key_exists('method', $data)) {
 				$command = SmartWFM_CommandManager::get($data->method);
