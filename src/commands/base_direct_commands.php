@@ -45,5 +45,26 @@ class BaseDirectCommand_Download extends SmartWFM_Command {
 
 SmartWFM_DirectCommandManager::register('download', new BaseDirectCommand_Download());
 
+class BaseDirectCommand_Upload extends SmartWFM_Command {
+	function process($params) {
+		$BASE_PATH = SmartWFM_Registry::get('basepath','/');
+		$file = Path::join(
+			$BASE_PATH,
+			$params['path'],
+			$_FILES['file']['name']
+		);
+
+		if(Path::validate($BASE_PATH, $file) != true) {
+			print "error";
+			return;
+		}
+
+		move_uploaded_file($_FILES['file']['tmp_name'], $file);
+
+	}	
+}
+
+SmartWFM_DirectCommandManager::register('upload', new BaseDirectCommand_Upload());
+
 
 ?>
