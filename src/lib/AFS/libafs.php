@@ -16,8 +16,8 @@ if( !defined( 'AFS_CREATE' ) )
 	define( 'AFS_CREATE', 2 );
 if( !defined( 'AFS_DELETE' ) ) 
 	define( 'AFS_DELETE', 3 );
-if( !defined( 'AFS_DELETE' ) ) 
-	define( 'AFS_DELETE', 4 );
+if( !defined( 'AFS_READ' ) ) 
+	define( 'AFS_READ', 4 );
 
 class afs {
 	protected $cmd = array(
