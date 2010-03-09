@@ -10,7 +10,7 @@
 # WITHOUT ANY WARRANTY. See GPLv3 for more details.                           #
 ###############################################################################
 
-require_once('../lib/AFS/libafs.php');
+require_once('lib/AFS/libafs.php');
 
 /**
  * List all folders.
