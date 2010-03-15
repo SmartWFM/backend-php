@@ -59,6 +59,21 @@ class SmartWFM_Param {
 				return $params;
 
 				break;
+			case 'key_data_object':
+				if(is_object($params)) {
+					$tmp_array = array();
+					$keys = get_object_vars($params);
+					foreach($keys as $key => $value) {
+						$tmp_array[$this->items['key']->validate($key)] = $value;
+					}
+					foreach($tmp_array as $key => $value) {
+						$tmp_array[$key] = $this->items['value']->validate($value);
+					}
+					return $tmp_array;
+				} else {
+					throw new SmartWFM_Excaption_Params('The type of this value should be "object".');
+				}
+				break;
 			default:
 				throw new SmartWFM_Excaption_Params('Unknown parameter type: "' . $this->type . '"');
 
