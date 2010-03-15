@@ -24,7 +24,7 @@ class Path {
 
 		if( substr( $args[0], 0, 1 ) == '/' ) {
 			$paths[0] = '/' . $paths[0];
-			return join('/', $paths);
+			$path = join('/', $paths);
 		} else {
 			$path = join('/', $paths);
 			$path = join(
@@ -34,10 +34,24 @@ class Path {
 					$path
 				)
 			);
-			return '/'.$path;
-
-
+			$path = '/'.$path;
 		}
+		$path .= '/';
+		$path = str_replace( '/./', '/', $path );
+		$path = str_replace( '//', '/', $path );
+		while( preg_match( '!/[^/]+/../!', $path ) ) {
+			preg_match_all( '!/[^/]+/../!', $path, $tmp );
+			foreach( $tmp as $value ) {
+				if( $value != '/../../' ) {
+					$path = str_replace( $value, '/', $path );
+				}
+			}
+			if( substr( $path, 0, 3 ) == '/..' ) {
+				return false;
+			}
+		}		
+		$path = substr( $path, 0, -1 );
+		return $path;
 	}
 	static function validate($base, $path) {
 		$path_rep = str_replace('../','', $path);
