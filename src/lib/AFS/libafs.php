@@ -47,6 +47,7 @@ class afs {
 	
 	/**
 	  * constructor
+	  * @param dir
 	  */
 	public function afs( $dir ) {		
 		$this->dir = $dir;
@@ -56,7 +57,7 @@ class afs {
 	}
 	
 	/**
-	  * read rights
+	  * reads all rights the user has
 	  */
 	protected function listacl() {
 		$cmd = $this->cmd['fs'].' listacl "'.$this->dir.'"';
@@ -79,7 +80,7 @@ class afs {
 	}
 	
 	/**
-	  * get groupmemberships
+	  * retrieves groupmemberships of user
 	  */
 	protected function groupmemberships() {
 		$cmd = $this->cmd['pts'].' membership '.$this->username.' '.$this->cmd['errtostd'];
@@ -92,9 +93,11 @@ class afs {
 	}	
 	
 	/**
-	  * command allowed
+	  * check whether kind of command is allowed
+	  * @params cmd constant of kind of command
+	  * @return boolean
 	  */
-	public function allowed( $cmd = NULL ) {
+	public function allowed( $cmd ) {
 		switch( $cmd ) {
 			case AFS_LIST:
 				return $this->userrights['l'];

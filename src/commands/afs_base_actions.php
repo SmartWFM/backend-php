@@ -11,6 +11,9 @@
 ###############################################################################
 
 require_once('lib/AFS/libafs.php');
+if( file_exists('lib/AFS/mimetype.php') ) {
+	require_once('lib/AFS/mimetype.php');
+}
 
 /**
  * List all folders.
@@ -106,10 +109,12 @@ class AFSBaseActions_List extends SmartWFM_Command {
 				$filename = Path::join( $path, $name );
 				if( is_file( $filename ) ){
 					$size = @filesize( $filename );
-					//$mime_type = mime_content_type( $filename );		//TODO not supported
-					$mime_type = 'unknown';
+					$mime_type = @mime_content_type( $filename );		
 					if( $size === False ) {
 						$size = 0;
+					}
+					if($mime_type === False) {
+						$mime_type = 'unknown';
 					}
 					array_push(
 						$data,
