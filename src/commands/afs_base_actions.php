@@ -24,14 +24,26 @@ class AFSBaseActions_DirList extends SmartWFM_Command {
 		$BASE_PATH = SmartWFM_Registry::get( 'basepath', '/' );
 		
 		$param_test = new SmartWFM_Param( 'string' );
+				
+		/*		
+		$param_test = new SmartWFM_Param(
+			$type = 'object',
+			$items = array(
+				'path' => new SmartWFM_Param( 'string' ),
+				'showHidden' => new SmartWFM_Param( 'boolean' )
+			)
+		);		
+		*/
 
 		$params = $param_test->validate( $params);
 		
 		$showHidden = false;
+		//$showHidden = $params['showHidden'];
 		
 		$path = Path::join(
 			$BASE_PATH,
 			$params
+			//$params['path']
 		); 
 		
 		if( !@is_dir( $path ) ) {
@@ -61,6 +73,7 @@ class AFSBaseActions_DirList extends SmartWFM_Command {
 						array(
 							'name' => $name,
 							'path' => $params,
+							//'path' => $params['path'],
 							'hasSubDirs' => $hasSubDirs
 						)
 					);
@@ -86,14 +99,28 @@ class AFSBaseActions_List extends SmartWFM_Command {
 		$param_test = new SmartWFM_Param(
 			$type = 'string'
 		);
+				
+		/*		
+		$param_test = new SmartWFM_Param(
+			$type = 'object',
+			$items = array(
+				'path' => new SmartWFM_Param( 'string' ),
+				'showHidden' => new SmartWFM_Param( 'boolean' )
+			)
+		);		
+		*/
 
 		$params = $param_test->validate( $params );
 		
 		$showHidden = false;
+		//$showHidden = $params['showHidden'];
+		
+		$req_path = $params;
+		//$req_path = $params['path'];
 		
 		$path = Path::join(
 			$BASE_PATH,
-			$params
+			$req_path
 		);		
 
 		if( !@is_dir( $path ) ) {
@@ -126,7 +153,7 @@ class AFSBaseActions_List extends SmartWFM_Command {
 							array(
 								'type' => 'file',
 								'name' => $name,
-								'path' => $params,
+								'path' => $req_path,
 								'size' => $size,
 								'mime-type' => $mime_type,
 								'isDir' => false,
@@ -138,7 +165,7 @@ class AFSBaseActions_List extends SmartWFM_Command {
 							array(
 								'type' => 'file',
 								'name' => $name,
-								'path' => $params,
+								'path' => $req_path,
 								'size' => 0,
 								'mime-type' => '',
 								'isDir' => true,
