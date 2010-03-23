@@ -39,17 +39,16 @@ class Path {
 		$path .= '/';
 		$path = str_replace( '/./', '/', $path );
 		$path = str_replace( '//', '/', $path );
-		while( preg_match( '!/[^/]+/../!', $path ) ) {
-			preg_match_all( '!/[^/]+/../!', $path, $tmp );
-			foreach( $tmp as $value ) {
-				if( $value != '/../../' ) {
-					$path = str_replace( $value, '/', $path );
-				}
+		$regex = '!/[^/^(\.\.)]+/\.\./!';
+		while( preg_match( $regex, $path ) ) {
+			preg_match_all( $regex, $path, $tmp );
+			foreach( $tmp[0] as $key => $value ) {
+				$path = str_replace( $value, '/', $path );
 			}
 			if( substr( $path, 0, 3 ) == '/..' ) {
 				return false;
 			}
-		}		
+		}
 		$path = substr( $path, 0, -1 );
 		return $path;
 	}
