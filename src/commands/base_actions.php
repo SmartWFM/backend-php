@@ -109,6 +109,8 @@ class BaseActions_DirList extends SmartWFM_Command {
 
 		$params = $param_test->validate($params);
 		
+		$showHidden = false;
+		
 		$path = Path::join(
 			$BASE_PATH,
 			$params
@@ -126,7 +128,7 @@ class BaseActions_DirList extends SmartWFM_Command {
 		$d = dir($path);
 		while (false !== ($name = $d->read())) {
 			if($name != '.' && $name != '..') {
-				if(is_dir(Path::join($path, $name))){
+				if(is_dir(Path::join($path, $name)) && ( substr( $name, 0, 1 ) != '.' || $showHidden ) ){
 					$hasSubDirs = '0';
 					$d2 = dir(Path::join($path, $name));
 					while (false !== ($name2 = $d2->read())) {
@@ -281,6 +283,8 @@ class BaseActions_List extends SmartWFM_Command {
 
 		$params = $param_test->validate($params);
 		
+		$showHidden = false;
+				
 		$req_path = $params;
 
 		$path = Path::join($BASE_PATH,$req_path);
@@ -303,39 +307,41 @@ class BaseActions_List extends SmartWFM_Command {
 		$data = array();
 		while (false !== ($name = $d->read())) {
 			if($name != '.' && $name != '..') {
-				$filename = Path::join($path,$name);
-				if(is_file($filename)){
-					$size = @filesize($filename);
-					$mime_type = @mime_content_type($filename);
-					if($size === False) {
-						$size = 0;
+				if( substr( $name, 0, 1 ) != '.' || $showHidden ) {
+					$filename = Path::join($path,$name);
+					if(is_file($filename)){
+						$size = @filesize($filename);
+						$mime_type = @mime_content_type($filename);
+						if($size === False) {
+							$size = 0;
+						}
+						if($mime_type === False) {
+							$mime_type = 'unknown';
+						}
+						array_push(
+							$data,
+							array(
+								'type' => 'file',
+								'name' => $name,
+								'path' => $req_path,
+								'size' => $size,
+								'mime-type' => $mime_type,
+								'isDir' => false,
+							)
+						);
+					} else {
+						array_push(
+							$data,
+							array(
+								'type' => 'file',
+								'name' => $name,
+								'path' => $req_path,
+								'size' => 0,
+								'mime-type' => '',
+								'isDir' => true,
+							)
+						);
 					}
-					if($mime_type === False) {
-						$mime_type = 'unknown';
-					}
-					array_push(
-						$data,
-						array(
-							'type' => 'file',
-							'name' => $name,
-							'path' => $req_path,
-							'size' => $size,
-							'mime-type' => $mime_type,
-							'isDir' => false,
-						)
-					);
-				} else {
-					array_push(
-						$data,
-						array(
-							'type' => 'file',
-							'name' => $name,
-							'path' => $req_path,
-							'size' => 0,
-							'mime-type' => '',
-							'isDir' => true,
-						)
-					);
 				}
 			}
 		}

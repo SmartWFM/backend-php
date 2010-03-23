@@ -25,14 +25,16 @@ class AFSBaseActions_DirList extends SmartWFM_Command {
 		
 		$param_test = new SmartWFM_Param( 'string' );
 
-		$params = $param_test->validate( $params) ;
+		$params = $param_test->validate( $params);
+		
+		$showHidden = false;
 		
 		$path = Path::join(
 			$BASE_PATH,
 			$params
 		); 
 		
-		if( !is_dir( $path ) ) {
+		if( !@is_dir( $path ) ) {
 			throw new SmartWFM_Exception( 'Dir doesn\'t exist.', -1 );
 		}
 		
@@ -45,13 +47,13 @@ class AFSBaseActions_DirList extends SmartWFM_Command {
 		$data = array();
 		$d = dir( $path );
 		while ( false !== ( $name = $d->read()  )) {
-			if( $name != '.' && $name != '..' ) {
-				if( is_dir( Path::join( $path, $name ) ) ){
+			if( $name != '.' && $name != '..' ) {				
+				if( @is_dir( Path::join( $path, $name ) ) && ( substr( $name, 0, 1 ) != '.' || $showHidden ) ){
 					$hasSubDirs = '0';
 					$d2 = dir( Path::join( $path, $name ) );
 					while ( false !== ( $name2 = $d2->read() ) ) {
 						if( $name2 != '.' && $name2 != '..' )
-							if(is_dir(Path::join( $path, $name, $name2 ) ) )
+							if( @is_dir( Path::join( $path, $name, $name2 ) ) && ( substr( $name, 0, 1 ) != '.' || $showHidden ) )
 								$hasSubDirs = '1';
 					}
 					array_push( 
@@ -87,12 +89,14 @@ class AFSBaseActions_List extends SmartWFM_Command {
 
 		$params = $param_test->validate( $params );
 		
+		$showHidden = false;
+		
 		$path = Path::join(
 			$BASE_PATH,
 			$params
 		);		
 
-		if( !is_dir( $path ) ) {
+		if( !@is_dir( $path ) ) {
 			throw new SmartWFM_Exception( 'Dir doesn\'t exist.', -1 );
 		}
 				
@@ -106,39 +110,41 @@ class AFSBaseActions_List extends SmartWFM_Command {
 		$data = array();
 		while ( false !== ( $name = $d->read() ) ) {
 			if( $name != '.' && $name != '..' ) {
-				$filename = Path::join( $path, $name );
-				if( is_file( $filename ) ){
-					$size = @filesize( $filename );
-					$mime_type = @mime_content_type( $filename );		
-					if( $size === False ) {
-						$size = 0;
+				if( substr( $name, 0, 1 ) != '.' || $showHidden ) {
+					$filename = Path::join( $path, $name );
+					if( @is_file( $filename ) ){
+						$size = @filesize( $filename );
+						$mime_type = @mime_content_type( $filename );		
+						if( $size === False ) {
+							$size = 0;
+						}
+						if($mime_type === False) {
+							$mime_type = 'unknown';
+						}
+						array_push(
+							$data,
+							array(
+								'type' => 'file',
+								'name' => $name,
+								'path' => $params,
+								'size' => $size,
+								'mime-type' => $mime_type,
+								'isDir' => false,
+							)
+						);
+					} else {
+						array_push(
+							$data,
+							array(
+								'type' => 'file',
+								'name' => $name,
+								'path' => $params,
+								'size' => 0,
+								'mime-type' => '',
+								'isDir' => true,
+							)
+						);
 					}
-					if($mime_type === False) {
-						$mime_type = 'unknown';
-					}
-					array_push(
-						$data,
-						array(
-							'type' => 'file',
-							'name' => $name,
-							'path' => $params,
-							'size' => $size,
-							'mime-type' => $mime_type,
-							'isDir' => false,
-						)
-					);
-				} else {
-					array_push(
-						$data,
-						array(
-							'type' => 'file',
-							'name' => $name,
-							'path' => $params,
-							'size' => 0,
-							'mime-type' => '',
-							'isDir' => true,
-						)
-					);
 				}
 			}
 		}
@@ -187,7 +193,7 @@ class AFSBaseActions_DirCreate extends SmartWFM_Command {
 			$params['name']
 		);
 
-		if( file_exists( $path ) && is_dir( $path ) ) {
+		if( file_exists( $path ) && @is_dir( $path ) ) {
 			throw new SmartWFM_Exception( 'A directory with the given name already exists', -1 );
 		}
 
@@ -242,7 +248,7 @@ class AFSBaseActions_DirDelete extends SmartWFM_Command {
 			throw new SmartWFM_Exception( 'Folder doesn\'t exist.', -1 );
 		}
 		
-		if( !is_dir( $path ) ) {
+		if( !@is_dir( $path ) ) {
 			throw new SmartWFM_Exception( 'The folder with the given name is not a folder', -2 );
 		}
 		
@@ -324,7 +330,7 @@ class AFSBaseActions_Copy extends SmartWFM_Command {
 			throw new SmartWFM_Exception( 'Permission denied.', -9 );
 		}
 		
-		if( is_dir( $source ) ) { 
+		if( @is_dir( $source ) ) { 
 			throw new SmartWFM_Exception( 'Source is directory.', -4 );
 		}
 		
