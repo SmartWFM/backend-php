@@ -63,4 +63,44 @@ class Path {
 	}
 }
 
+class MimeType {
+	protected static $mime_types = NULL;
+	static function get($filename) {
+		$file_ext = substr(strrchr($filename, '.' ), 1);
+		$mode = SmartWFM_Registry::get('mimetype_detection_mode', 'internal');
+		if(!function_exists('mime_content_type') && $mode == 'internal') {
+			$mode = 'file';
+		}
+		if($mode == 'internal') {
+			return @mime_content_type($filename);
+		}
+		if($mode == 'cmd_file') {
+			exec('file --mime-type '. $filename, $output);
+			foreach($output as $line) {
+				if(preg_match('/^.*:\s+([\w-.\/]+)\s*/', $line, $matches)) {
+					return $matches[1];
+				}
+			}
+		} else {
+
+			if(self::$mime_types == NULL) {
+				self::$mime_types = array();
+				$lines = file('lib/SmartWFM/mime.types');
+				foreach($lines as $line) {
+					if(preg_match('/^([\w-.\/]+)\s+(\w(\s*\w+)+)/', $line, $matches)) {
+						$exts = preg_split('/ +/', $matches[2]);
+						foreach($exts as $ext) {
+							self::$mime_types[$ext] = $matches[1];
+						}
+					}
+				}
+			}
+			if(!empty($file_ext) && array_key_exists($file_ext, self::$mime_types)) {
+				return self::$mime_types[$file_ext];
+			}
+			return False;
+		}
+	}
+}
+
 ?>
