@@ -41,7 +41,7 @@ class AFSBaseDirectCommand_Download extends SmartWFM_Command {
 			$mime = @mime_content_type($file);
 			#Content-Description: File Transfer
 			#Content-Type: application/octet-stream
-			header('Content-Type: ' + $mime);
+			header('Content-Type: ' . $mime);
 			header('Content-Disposition: attachment; filename='.basename($file));
 			header('Content-Transfer-Encoding: binary');
 			header('Expires: 0');
