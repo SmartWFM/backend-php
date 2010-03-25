@@ -323,7 +323,7 @@ class BaseActions_List extends SmartWFM_Command {
 					$filename = Path::join($path,$name);
 					if(is_file($filename)){
 						$size = @filesize($filename);
-						$mime_type = @mime_content_type($filename);
+						$mime_type = MimeType::get($filename);
 						if($size === False) {
 							$size = 0;
 						}

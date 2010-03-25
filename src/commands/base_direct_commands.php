@@ -24,10 +24,10 @@ class BaseDirectCommand_Download extends SmartWFM_Command {
 			return;
 		}
 		if (file_exists($file)) {
-			$mime = @mime_content_type($file);
+			$mime = @MimeType::get($file);
 			#Content-Description: File Transfer
 			#Content-Type: application/octet-stream
-			header('Content-Type: ' + $mime);
+			header('Content-Type: ' . $mime);
 			header('Content-Disposition: attachment; filename='.basename($file));
 			header('Content-Transfer-Encoding: binary');
 			header('Expires: 0');
