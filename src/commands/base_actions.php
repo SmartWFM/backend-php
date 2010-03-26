@@ -330,28 +330,54 @@ class BaseActions_List extends SmartWFM_Command {
 						if($mime_type === False) {
 							$mime_type = 'unknown';
 						}
+						$item = array(
+							'type' => 'file',
+							'name' => $name,
+							'path' => $req_path,
+							'size' => $size,
+							'mime-type' => $mime_type,
+							'isDir' => false,
+							'atime' => NULL,
+							'ctime' => NULL,
+							'mtime' => NULL,
+						);
+						if($time = @fileatime($filename)) {
+							$item['atime'] = $time;
+						}
+						if($time = @filectime($filename)) {
+							$item['ctime'] = $time;
+						}
+						if($time = @filemtime($filename)) {
+							$item['mtime'] = $time;
+						}
 						array_push(
 							$data,
-							array(
-								'type' => 'file',
-								'name' => $name,
-								'path' => $req_path,
-								'size' => $size,
-								'mime-type' => $mime_type,
-								'isDir' => false,
-							)
+							$item
 						);
 					} else {
+						$item = array(
+							'type' => 'file',
+							'name' => $name,
+							'path' => $req_path,
+							'size' => 0,
+							'mime-type' => '',
+							'isDir' => true,
+							'atime' => NULL,
+							'ctime' => NULL,
+							'mtime' => NULL,
+						);
+						if($time = @fileatime($filename)) {
+							$item['atime'] = $time;
+						}
+						if($time = @filectime($filename)) {
+							$item['ctime'] = $time;
+						}
+						if($time = @filemtime($filename)) {
+							$item['mtime'] = $time;
+						}
 						array_push(
 							$data,
-							array(
-								'type' => 'file',
-								'name' => $name,
-								'path' => $req_path,
-								'size' => 0,
-								'mime-type' => '',
-								'isDir' => true,
-							)
+							$item
 						);
 					}
 				}
