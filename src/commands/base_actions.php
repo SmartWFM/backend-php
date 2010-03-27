@@ -582,8 +582,10 @@ SmartWFM_CommandManager::register('file.move', new BaseActions_Move());
 
 class BaseActions_Rename extends SmartWFM_Command {
 	function process($params) {
+		$fs_type = SmartWFM_Registry::get('filesystem_type');
+
 		$BASE_PATH = SmartWFM_Registry::get('basepath','/');
-		
+
 		$param_test = new SmartWFM_Param(
 			$type = 'object',
 			$items = array(
@@ -596,36 +598,52 @@ class BaseActions_Rename extends SmartWFM_Command {
 
 		$params = $param_test->validate($params);
 
-		$filename = Path::join(
+		$path = Path::join(
 			$BASE_PATH,
-			$params['path'],
+			$params['path']
+		);
+
+		$filename = Path::join(
+			$path,
 			$params['name']
 		);
 
 		$filename_new = Path::join(
-			$BASE_PATH,
-			$params['path'],
+			$path,
 			$params['name_new']
 		);
 
-		if(Path::validate($BASE_PATH, $filename) != true) {
+		if(Path::validate($BASE_PATH, $path) != true || Path::validate($BASE_PATH, $filename) != true) {
 			throw new SmartWFM_Exception('Wrong filename for source');
 		}
-		
+
 		if(Path::validate($BASE_PATH, $filename_new) != true) {
 			throw new SmartWFM_Exception('Wrong filename for destination');
+		}
+
+		if($fs_type == 'afs') {
+			$afs = new afs( $path );
+
+			if(!$afs->allowed(AFS_DELETE) || !$afs->allowed(AFS_CREATE)) {
+				throw new SmartWFM_Exception('Permission denied.', -9);
+			}
+
+		} else if($fs_type == 'local') {
+			if(!is_writable($path)) {
+				throw new SmartWFM_Exception('Permission denied.', -9);
+			}
 		}
 
 		if(!file_exists($filename)) {
 			throw new SmartWFM_Exception('Source file doesn\t exist.', -1);
 		}
-		
+
 		if(file_exists($filename_new) && !$params['overwrite']) {
 			throw new SmartWFM_Exception('Destination file exists and I am not allowed to overwrite.', -2);
 		}
-		
+
 		$response = new SmartWFM_Response();
-		
+
 		if(@rename($filename, $filename_new)) {
 			$response->data = true;
 		} else {
