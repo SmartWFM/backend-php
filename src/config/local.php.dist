@@ -9,4 +9,5 @@
 	     file: use an internal file to detect the mime type
 	*/
 	SmartWFM_Registry::set('mimetype_detection_mode', 'internal');
+	SmartWFM_Registry::set('filesystem_type', 'local');
 ?>
