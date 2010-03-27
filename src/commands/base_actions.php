@@ -473,8 +473,10 @@ SmartWFM_CommandManager::register('file.list', new BaseActions_List());
 
 class BaseActions_Move extends SmartWFM_Command {
 	function process($params) {
+		$fs_type = SmartWFM_Registry::get('filesystem_type');
+
 		$BASE_PATH = SmartWFM_Registry::get('basepath','/');
-		
+
 		$param_test = new SmartWFM_Param(
 			$type = 'object',
 			$items = array(
@@ -508,31 +510,56 @@ class BaseActions_Move extends SmartWFM_Command {
 
 		$params = $param_test->validate($params);
 
-		$source = Path::join(
+		$root_source = Path::join(
 			$BASE_PATH,
-			$params['source']['path'],
+			$params['source']['path']
+		);
+
+		$source = Path::join(
+			$root_source,
 			$params['source']['name']
 		);
 
-		if(Path::validate($BASE_PATH, $source) != true) {
-			throw new SmartWFM_Exception('Wrong filename');
-		}
+		$root_destination = Path::join(
+			$BASE_PATH,
+			$params['destination']['path']
+		);
 
 		$destination = Path::join(
-			$BASE_PATH,
-			$params['destination']['path'],
+			$root_destination,
 			$params['destination']['name']
 		);
 
-		if(Path::validate($BASE_PATH, $destination) != true) {
+		if(Path::validate($BASE_PATH, $root_source) != true || Path::validate($BASE_PATH, $source) != true) {
 			throw new SmartWFM_Exception('Wrong filename');
 		}
 
+		if(Path::validate($BASE_PATH, $root_destination) != true || Path::validate($BASE_PATH, $destination) != true) {
+			throw new SmartWFM_Exception('Wrong filename');
+		}
 
 		if(!file_exists($source)) {
 			throw new SMartWFM_Exception('The source file doesn\'t exist', -1);
 		}
 
+		if($fs_type == 'afs') {
+			$afs_source = new afs($root_source);
+			$afs_destination = new afs($root_destination);
+
+			if(!$afs_source->allowed(AFS_READ) || !$afs_source->allowed(AFS_DELETE)) {
+				throw new SmartWFM_Exception( 'Permission denied.', -9 );
+			}
+			if(!$afs_destination->allowed(AFS_CREATE)) {
+				throw new SmartWFM_Exception( 'Permission denied.', -9 );
+			}
+		} else if($fs_type == 'local') {
+			if(!is_readable($root_source) || !is_writeable($root_source)) {
+				throw new SmartWFM_Exception( 'Permission denied.', -9 );
+			}
+			if(!is_writable($root_destination)) {
+				throw new SmartWFM_Exception( 'Permission denied.', -9 );
+			}
+		}
 		
 		$response = new SmartWFM_Response();
 
@@ -545,10 +572,10 @@ class BaseActions_Move extends SmartWFM_Command {
 				throw new SmartWFM_Exception('An error occurs', -3);
 			}
 		}
-		
+
 		return $response;
 
-	}	
+	}
 }
 
 SmartWFM_CommandManager::register('file.move', new BaseActions_Move());
