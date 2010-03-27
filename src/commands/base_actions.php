@@ -197,6 +197,8 @@ SmartWFM_CommandManager::register('dir.list', new BaseActions_DirList());
 
 class BaseActions_Copy extends SmartWFM_Command {
 	function process($params) {
+		$fs_type = SmartWFM_Registry::get('filesystem_type');
+
 		$BASE_PATH = SmartWFM_Registry::get('basepath','/');
 		$param_test = new SmartWFM_Param(
 			$type = 'object',
@@ -220,37 +222,61 @@ class BaseActions_Copy extends SmartWFM_Command {
 		);
 
 		$params = $param_test->validate($params);
-		
-		$source = Path::join(
+
+		$root_source = Path::join(
 			$BASE_PATH,
-			$params['source']['path'],
+			$params['source']['path']
+		);
+
+		$source = Path::join(
+			$root_source,
 			$params['source']['name']
 		);
-		
-		$destination = Path::join(
+
+		$root_destination = Path::join(
 			$BASE_PATH,
-			$params['destination']['path'],
+			$params['destination']['path']
+		);
+
+		$destination = Path::join(
+			$root_destination,
 			$params['destination']['name']
 		);
 
-		if(Path::validate($BASE_PATH, $source) != true) {
+		if(Path::validate($BASE_PATH, $root_source) != true || Path::validate($BASE_PATH, $source) != true) {
 			throw new SmartWFM_Exception('Wrong directory name');
 		}
-		
-		if(Path::validate($BASE_PATH, $destination) != true) {
+
+		if(Path::validate($BASE_PATH, $root_destination) != true || Path::validate($BASE_PATH, $destination) != true) {
 			throw new SmartWFM_Exception('Wrong directory name');
+		}
+
+		if($fs_type == 'afs') {
+			$afs_source = new afs($root_source);
+			$afs_destination = new afs($root_destination);
+			if(!$afs_source->allowed(AFS_READ) || !$afs_destination->allowed(AFS_CREATE)) {
+				throw new SmartWFM_Exception( 'Permission denied.', -9 );
+			}
+		} else if ($fs_type == 'local') {
+			if(!is_readable($root_source) || !is_writable($root_destination)) {
+				throw new SmartWFM_Exception( 'Permission denied.', -9 );
+			}
+		}
+
+		if(@is_dir($source)) {
+			throw new SmartWFM_Exception( 'Source is directory.', -4 );
+		}
+
+		if(!file_exists($source)) {
+			throw new SmartWFM_Exception('Source file doesn\'t exist', -1);
 		}
 
 		$response = new SmartWFM_Response();
 		
-		if(!file_exists($source)) {
-			throw new SmartWFM_Exception('Source file doesn\'t exist', -1);
-		}
-		
 		if(file_exists($destination) && $params['overwrite'] == false) {
 			throw new SmartWFM_Exception('Destination file exists', -2);
 		} else {
-			if(copy($source, $destination) === true ) {
+			if(copy($source, $destination) === true) {
 				$response->data = true;
 			} else {
 				throw new SmartWFM_Exception('An error occurs', -3);
