@@ -1,7 +1,8 @@
 <?php
 ###############################################################################
 # This file is a part of the SmartWFM PHP-Backend                             #
-# Copyright (C) 2009 Philipp Seidel <phibo@oss.dinotools.de>                  #
+# Copyright (C) 2009-2010 Philipp Seidel <phibo@oss.dinotools.de>             #
+#                    2010 Morris Jobke <kabum@users.sourceforge.net>          #
 #                                                                             #
 # SmartWFM PHP-Backend is free software; you can redestribute it and/or modify#
 # it under terms of GNU General Public License by Free Software Foundation.   #
@@ -9,6 +10,10 @@
 # This program is distributed in the hope that it will be useful, but         #
 # WITHOUT ANY WARRANTY. See GPLv3 for more details.                           #
 ###############################################################################
+
+if(SmartWFM_Registry::get('filesystem_type') == 'afs') {
+	require_once('lib/AFS/libafs.php');
+}
 
 class BaseActions_DirCreate extends SmartWFM_Command {
 	function process($params) {
