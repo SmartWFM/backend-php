@@ -291,6 +291,8 @@ SmartWFM_CommandManager::register('file.copy', new BaseActions_Copy());
 
 class BaseActions_Delete extends SmartWFM_Command {
 	function process($params) {
+		$fs_type = SmartWFM_Registry::get('filesystem_type');
+
 		$BASE_PATH = SmartWFM_Registry::get('basepath','/');
 		
 		$param_test = new SmartWFM_Param(
@@ -303,21 +305,34 @@ class BaseActions_Delete extends SmartWFM_Command {
 
 		$params = $param_test->validate($params);
 		
-		$filename = Path::join(
+		$path = Path::join(
 			$BASE_PATH,
-			$params['path'],
+			$params['path']
+		);
+		
+		$filename = Path::join(
+			$path,
 			$params['name']
 		);
 
-		if(Path::validate($BASE_PATH, $filename) != true) {
+		if(Path::validate($BASE_PATH, $path) != true || Path::validate($BASE_PATH, $filename) != true) {
 			throw new SmartWFM_Exception('Wrong filename');
 		}
 
+		if($fs_type == 'afs') {
+			$afs = new afs($path);
+
+			if(!$afs->allowed(AFS_DELETE)) {
+				throw new SmartWFM_Exception('Permission denied.', -2);
+			}
+		} else if ($fs_type == 'local') {
+			if(!is_writable($path)) {
+				throw new SmartWFM_Exception('Permission denied.', -2);
+			}
+		}
+
 		if(!file_exists($filename)) {
-			throw new SmartWFM_Exception(
-				"File doesn't exist",
-				-1
-			);
+			throw new SmartWFM_Exception('File doesn\'t exist', -1);
 		}
 
 		$response = new SmartWFM_Response();
@@ -325,10 +340,7 @@ class BaseActions_Delete extends SmartWFM_Command {
 		if(@unlink($filename) === true) {
 			$response->data = true;
 		} else {
-			throw new SmartWFM_Exception(
-				"Can't delete the file",
-				-2
-			);
+			throw new SmartWFM_Exception('Can\'t delete the file', -2);
 		}
 		
 		return $response;

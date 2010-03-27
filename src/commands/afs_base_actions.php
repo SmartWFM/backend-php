@@ -184,57 +184,6 @@ class AFSBaseActions_List extends SmartWFM_Command {
 SmartWFM_CommandManager::register( 'file.list', new AFSBaseActions_List() );
 
 /**
- * Delete a file
- */
-class AFSBaseActions_Delete extends SmartWFM_Command {
-	function process( $params ) {
-		$BASE_PATH = SmartWFM_Registry::get( 'basepath', '/' );
-		
-		$param_test = new SmartWFM_Param(
-			$type = 'object',
-			$items = array(
-				'path' => new SmartWFM_Param( 'string' ),
-				'name' => new SmartWFM_Param( 'string' )
-			)
-		);
-
-		$params = $param_test->validate( $params );
-		
-		$path = Path::join(
-			$BASE_PATH,
-			$params['path']
-		);
-		
-		$afs = new afs( $path );	
-		
-		if( !$afs->allowed( AFS_DELETE ) ) { 
-			throw new SmartWFM_Exception( 'Permission denied.', -2 );
-		}
-		
-		$filename = Path::join(
-			$path,
-			$params['name']
-		);
-
-		if( !file_exists( $filename ) ) {
-			throw new SmartWFM_Exception( 'File doesn\'t exist', -1	);
-		}
-
-		$response = new SmartWFM_Response();
-		
-		if( @unlink( $filename ) === true ) {
-			$response->data = true;
-		} else {
-			throw new SmartWFM_Exception( 'Can\'t delete the file', -3 );
-		}
-		
-		return $response;
-	}	
-}
-
-SmartWFM_CommandManager::register( 'file.delete', new AFSBaseActions_Delete() );
-
-/**
  * Move a file
  */
 class AFSBaseActions_Move extends SmartWFM_Command {
