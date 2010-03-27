@@ -78,6 +78,8 @@ SmartWFM_CommandManager::register('dir.create', new BaseActions_DirCreate());
 
 class BaseActions_DirDelete extends SmartWFM_Command {
 	function process($params) {
+		$fs_type = SmartWFM_Registry::get('filesystem_type');
+
 		$BASE_PATH = SmartWFM_Registry::get('basepath','/');
 		
 		$param_test = new SmartWFM_Param(
@@ -90,27 +92,42 @@ class BaseActions_DirDelete extends SmartWFM_Command {
 
 		$params = $param_test->validate($params);
 		
-		$dir = Path::join(
+		$root_path = Path::join(
 			$BASE_PATH,
-			$params['path'],
+			$params['path']
+		);
+
+		$path = Path::join(
+			$root_path,
 			$params['name']
 		);
 
-		if(Path::validate($BASE_PATH, $dir) != true) {
+		if(Path::validate($BASE_PATH, $root_path) != true || Path::validate($BASE_PATH, $path) != true) {
 			throw new SmartWFM_Exception('Wrong directory name');
+		}
+
+		if($fs_type == 'afs') {
+			$afs = new afs($root_path);
+			if(!$afs->allowed(AFS_DELETE)) {
+				throw new SmartWFM_Exception('Permission denied.', -9);
+			}
+		} else if ($fs_type == 'local') {
+			if(!is_writable($root_path)) {
+				throw new SmartWFM_Exception('Permission denied.', -9);
+			}
+		}
+
+		if(!@file_exists($path)) {
+			throw new SmartWFM_Exception('Folder doesn\'t exist.', -1);
+		}
+		
+		if(!@is_dir($path)) {
+			throw new SmartWFM_Exception('The folder with the given name is not a folder', -2);
 		}
 
 		$response = new SmartWFM_Response();
 		
-		if(!file_exists($dir)) {
-			throw new SmartWFM_Exception('Folder doesn\'t exist.', -1);
-		}
-		
-		if(!is_dir($dir)) {
-			throw new SmartWFM_Exception('The folder with the given name is not a folder', -2);
-		}
-		
-		if(@rmdir($dir)) {
+		if(@rmdir($path)) {
 			$response->data = true;
 		} else {
 			throw new SmartWFM_Exception('Can\'t remove the folder', -3);

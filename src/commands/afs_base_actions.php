@@ -183,62 +183,6 @@ class AFSBaseActions_List extends SmartWFM_Command {
 
 SmartWFM_CommandManager::register( 'file.list', new AFSBaseActions_List() );
 
-
-/**
- * Delete a directory
- */
-class AFSBaseActions_DirDelete extends SmartWFM_Command {
-	function process( $params ) {
-		$BASE_PATH = SmartWFM_Registry::get( 'basepath' , '/' );
-		
-		$param_test = new SmartWFM_Param(
-			$type = 'object',
-			$items = array(
-				'path' => new SmartWFM_Param( 'string' ),
-				'name' => new SmartWFM_Param( 'string' )
-			)
-		);
-
-		$params = $param_test->validate( $params );
-		
-		$root_path = Path::join(
-			$BASE_PATH,
-			$params['path']
-		);
-		
-		$afs = new afs( $root_path );	
-		
-		if( !$afs->allowed( AFS_DELETE ) ) { 
-			throw new SmartWFM_Exception( 'Permission denied.', -9 );
-		}
-
-		$path = Path::join(
-			$root_path,
-			$params['name']
-		);
-
-		$response = new SmartWFM_Response();
-		
-		if( !file_exists( $path ) ) {
-			throw new SmartWFM_Exception( 'Folder doesn\'t exist.', -1 );
-		}
-		
-		if( !@is_dir( $path ) ) {
-			throw new SmartWFM_Exception( 'The folder with the given name is not a folder', -2 );
-		}
-		
-		if( @rmdir( $path ) ) {
-			$response->data = true;
-		} else {
-			throw new SmartWFM_Exception( 'Can\'t remove the folder', -3 );
-		}
-		
-		return $response;
-	}	
-}
-
-SmartWFM_CommandManager::register( 'dir.delete', new AFSBaseActions_DirDelete() );
-
 /**
  * Copy a file
  */
