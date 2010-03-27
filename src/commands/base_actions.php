@@ -12,8 +12,11 @@
 
 class BaseActions_DirCreate extends SmartWFM_Command {
 	function process($params) {
+		$fs_type = SmartWFM_Registry::get('filesystem_type');
+
 		$BASE_PATH = SmartWFM_Registry::get('basepath','/');
-		
+
+		// check params		
 		$param_test = new SmartWFM_Param(
 			$type = 'object',
 			$items = array(
@@ -23,24 +26,46 @@ class BaseActions_DirCreate extends SmartWFM_Command {
 		);
 
 		$params = $param_test->validate($params);
-		
-		$dir = Path::join(
+
+		// join path
+		$root_path = Path::join(
 			$BASE_PATH,
-			$params['path'],
+			$params['path']
+		);
+
+		$path = Path::join(
+			$root_path,
 			$params['name']
 		);
 
-		if(Path::validate($BASE_PATH, $dir) != true) {
+		// validate path
+		if(Path::validate($BASE_PATH, $root_path) != true || Path::validate($BASE_PATH, $path) != true) {
 			throw new SmartWFM_Exception('Wrong filename');
 		}
 
+		// check some stuff
+		if($fs_type == 'afs') {
+			$afs = new afs($root_path);
+			if(!$afs->allowed(AFS_CREATE)) {
+				throw new SmartWFM_Exception('Permission denied.', -9);
+			}
+		} else if ($fs_type == 'local') {
+			if(!is_writable($root_path)) {
+				throw new SmartWFM_Exception('Permission denied.', -9);
+			}
+		}
 
-		if(file_exists($dir) && is_dir($dir)) {
+		if(preg_match('!/!', $params['name'])) {
+			throw new SmartWFM_Exception( 'Can\'t create folder recursively.', -3 );
+		}
+
+
+		if(@file_exists($dir) && @is_dir($dir)) {
 			throw new SmartWFM_Exception('A directory with the given name already exists', -1);
 		}
 
 		$response = new SmartWFM_Response();
-		if(@mkdir($dir)) {
+		if(@mkdir($path)) {
 			$response->data = true;
 		} else {
 			throw new SmartWFM_Exception('Can\'t create the folder', -2);

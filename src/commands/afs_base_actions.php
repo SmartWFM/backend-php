@@ -183,58 +183,6 @@ class AFSBaseActions_List extends SmartWFM_Command {
 
 SmartWFM_CommandManager::register( 'file.list', new AFSBaseActions_List() );
 
-/**
- * Create a directory
- */
-class AFSBaseActions_DirCreate extends SmartWFM_Command {
-	function process( $params ) {
-		$BASE_PATH = SmartWFM_Registry::get( 'basepath', '/' );
-		
-		$param_test = new SmartWFM_Param(
-			$type = 'object',
-			$items = array(
-				'path' => new SmartWFM_Param( 'string' ),
-				'name' => new SmartWFM_Param( 'string' )
-			)
-		);
-
-		$params = $param_test->validate( $params );
-		
-		$root_path = Path::join(
-			$BASE_PATH,
-			$params['path']
-		);
-		
-		$afs = new afs( $root_path );	
-		
-		if( !$afs->allowed( AFS_CREATE ) ) { 
-			throw new SmartWFM_Exception( 'Permission denied.', -9 );
-		}
-		
-		if( preg_match( '!/!', $params['name'] ) ) {
-			throw new SmartWFM_Exception( 'Can\'t create folder recursively.', -3 );
-		}
-				
-		$path = Path::join(
-			$root_path,
-			$params['name']
-		);
-
-		if( file_exists( $path ) && @is_dir( $path ) ) {
-			throw new SmartWFM_Exception( 'A directory with the given name already exists', -1 );
-		}
-
-		$response = new SmartWFM_Response();
-		if( @mkdir( $path ) ) {
-			$response->data = true;
-		} else {
-			throw new SmartWFM_Exception( 'Can\'t create the folder', -2 );
-		}
-		return $response;
-	}	
-}
-
-SmartWFM_CommandManager::register( 'dir.create', new AFSBaseActions_DirCreate() );
 
 /**
  * Delete a directory
