@@ -150,9 +150,21 @@ SmartWFM_CommandManager::register('dir.delete', new BaseActions_DirDelete());
 
 class BaseActions_DirList extends SmartWFM_Command {
 	function process($params) {
+		$fs_type = SmartWFM_Registry::get('filesystem_type');
+
 		$BASE_PATH = SmartWFM_Registry::get('basepath','/');
 		
 		$param_test = new SmartWFM_Param('string');
+
+		/*
+		$param_test = new SmartWFM_Param(
+			$type = 'object',
+			$items = array(
+				'path' => new SmartWFM_Param( 'string' ),
+				'showHidden' => new SmartWFM_Param( 'boolean' )
+			)
+		);
+		*/
 
 		$params = $param_test->validate($params);
 		
@@ -161,14 +173,23 @@ class BaseActions_DirList extends SmartWFM_Command {
 		$path = Path::join(
 			$BASE_PATH,
 			$params
+			//$params['path']
 		);
 
 		if(Path::validate($BASE_PATH, $path) != true) {
 			throw new SmartWFM_Exception('Wrong directory name');
 		}
 
-		if(!file_exists($path)) {
+		if(!@file_exists($path) || !@is_dir($path)) {
 			throw new SmartWFM_Exception('Folder doesn\'t exist.', -1);
+		}
+
+		if($fs_type == 'afs') {
+			$afs = new afs($path);
+
+			if(!$afs->allowed(AFS_LIST)) {
+				throw new SmartWFM_Exception('Permission denied.', -2);
+			}
 		}
 
 		$data = array();
@@ -180,14 +201,17 @@ class BaseActions_DirList extends SmartWFM_Command {
 					$d2 = dir(Path::join($path, $name));
 					while (false !== ($name2 = $d2->read())) {
 						if($name2 != '.' && $name2 != '..')
-							if(is_dir(Path::join($path, $name, $name2)))
+							if(@is_dir(Path::join($path, $name, $name2)) && (substr($name, 0, 1) != '.' || $showHidden))
 								$hasSubDirs = '1';
 					}
-					array_push($data, array(
-								'name' => $name,
-								'path' => $params,
-								'hasSubDirs' => $hasSubDirs
-							)
+					array_push(
+						$data,
+						array(
+							'name' => $name,
+							'path' => $params,
+							//'path' => $params['path'],
+							'hasSubDirs' => $hasSubDirs
+						)
 					);
 				}
 			}
