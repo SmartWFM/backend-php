@@ -11,6 +11,10 @@
 # WITHOUT ANY WARRANTY. See GPLv3 for more details.                           #
 ###############################################################################
 
+if(SmartWFM_Registry::get('filesystem_type') == 'afs') {
+	require_once('lib/AFS/libafs.php');
+}
+
 class BaseDirectCommand_Download extends SmartWFM_Command {
 	function process($params) {
 		$fs_type = SmartWFM_Registry::get('filesystem_type');
