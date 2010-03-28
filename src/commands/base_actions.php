@@ -384,6 +384,8 @@ SmartWFM_CommandManager::register('file.delete', new BaseActions_Delete());
 
 class BaseActions_List extends SmartWFM_Command {
 	function process($params) {
+		$fs_type = SmartWFM_Registry::get('filesystem_type');
+
 		$BASE_PATH = SmartWFM_Registry::get('basepath','/');
 		
 		$param_test = new SmartWFM_Param(
@@ -408,28 +410,34 @@ class BaseActions_List extends SmartWFM_Command {
 		$req_path = $params;
 		//$req_path = $params['path'];
 
-		$path = Path::join($BASE_PATH,$req_path);
+		$path = Path::join(
+			$BASE_PATH,
+			$req_path
+		);
+
 		if(Path::validate($BASE_PATH, $path) != true) {
 			throw new SmartWFM_Exception('Wrong path');
 		}
-		if(!is_dir($path)) {
-			$response = new SmartWFM_Response();
-			$response->error_code = -1;
-			$response->error_message = 'Dir doesn\'t exist';
-			throw new SmartWFM_Exception(
-				NULL,
-				-1,
-				$response
-			);
 
+		if($fs_type == 'afs') {
+			$afs = new afs($path);
+
+			if( !$afs->allowed(AFS_LIST)) {
+				throw new SmartWFM_Exception('Permission denied.', -2);
+			}
 		}
+
+		if(!@is_dir($path)) {
+			throw new SmartWFM_Exception( 'Dir doesn\'t exist.', -1 );
+		}
+
 		$d = dir($path);
 
 		$data = array();
 		while (false !== ($name = $d->read())) {
 			if($name != '.' && $name != '..') {
 				if( substr( $name, 0, 1 ) != '.' || $showHidden ) {
-					$filename = Path::join($path,$name);
+					$filename = Path::join($path, $name);
 					if(is_file($filename)){
 						$size = @filesize($filename);
 						$mime_type = MimeType::get($filename);
