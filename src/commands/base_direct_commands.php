@@ -1,7 +1,8 @@
 <?php
 ###############################################################################
 # This file is a part of the SmartWFM PHP-Backend                             #
-# Copyright (C) 2009 Philipp Seidel <phibo@oss.dinotools.de>                  #
+# Copyright (C) 2009-2010 Philipp Seidel <phibo@oss.dinotools.de>             #
+#                    2010 Morris Jobke <kabum@users.sourceforge.net           #
 #                                                                             #
 # SmartWFM PHP-Backend is free software; you can redestribute it and/or modify#
 # it under terms of GNU General Public License by Free Software Foundation.   #
