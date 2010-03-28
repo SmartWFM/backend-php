@@ -13,17 +13,33 @@
 
 class BaseDirectCommand_Download extends SmartWFM_Command {
 	function process($params) {
+		$fs_type = SmartWFM_Registry::get('filesystem_type');
+
 		$BASE_PATH = SmartWFM_Registry::get('basepath','/');
-		$file = Path::join(
+		$path = Path::join(
 			$BASE_PATH,
-			$params['path'],
+			$params['path']
+		);
+
+		$file = Path::join(
+			$path,
 			$params['name']
 		);
 
-		if(Path::validate($BASE_PATH, $file) != true) {
+		if(Path::validate($BASE_PATH, $path) != true || Path::validate($BASE_PATH, $file) != true) {
 			print "error";
 			return;
 		}
+
+		if($fs_type == 'afs') {
+			$afs = new afs($path);
+
+			if( !$afs->allowed( AFS_READ ) ) {
+				print 'Permission denied.';
+				return;
+			}
+		}
+
 		if (file_exists($file)) {
 			$mime = @MimeType::get($file);
 			#Content-Description: File Transfer

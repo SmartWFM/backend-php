@@ -14,50 +14,6 @@ require_once('lib/AFS/libafs.php');
 if( file_exists('lib/AFS/mimetype.php') ) {
 	require_once('lib/AFS/mimetype.php');
 }
-/**
-  * downloads the given file
-  */
-class AFSBaseDirectCommand_Download extends SmartWFM_Command {
-	function process($params) {
-		$BASE_PATH = SmartWFM_Registry::get('basepath','/');
-		$path = Path::join(
-			$BASE_PATH,
-			$params['path']
-		);
-		
-		$afs = new afs( $path );	
-		
-		if( !$afs->allowed( AFS_READ ) ) { 
-			print 'Permission denied.';
-			return;
-		}
-		
-		$file = Path::join(
-			$path,
-			$params['name']
-		);
-		
-		if (file_exists($file)) {
-			$mime = @mime_content_type($file);
-			#Content-Description: File Transfer
-			#Content-Type: application/octet-stream
-			header('Content-Type: ' . $mime);
-			header('Content-Disposition: attachment; filename='.basename($file));
-			header('Content-Transfer-Encoding: binary');
-			header('Expires: 0');
-			header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
-			header('Pragma: public');
-			header('Content-Length: ' . filesize($file));
-			ob_clean();
-			flush();
-			readfile($file);
-			exit;
-		}
-
-	}	
-}
-
-SmartWFM_DirectCommandManager::register('download', new AFSBaseDirectCommand_Download());
 
 /**
   * uploads a file
