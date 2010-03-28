@@ -42,6 +42,11 @@ class BaseDirectCommand_Download extends SmartWFM_Command {
 				print 'Permission denied.';
 				return;
 			}
+		} else if($fs_type == 'local') {
+			if(!is_readable($file)) {
+				print 'Permission denied.';
+				return;
+			}
 		}
 
 		if (file_exists($file)) {
