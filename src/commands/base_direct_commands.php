@@ -68,24 +68,45 @@ SmartWFM_DirectCommandManager::register('download', new BaseDirectCommand_Downlo
 
 class BaseDirectCommand_Upload extends SmartWFM_Command {
 	function process($params) {
+		$fs_type = SmartWFM_Registry::get('filesystem_type');
+
 		$BASE_PATH = SmartWFM_Registry::get('basepath','/');
-		$file = Path::join(
+
+		$path = Path::join(
 			$BASE_PATH,
-			$params['path'],
+			$params['path']
+		);
+
+		$file = Path::join(
+			$path,
 			$_FILES['file']['name']
 		);
 
-		if(Path::validate($BASE_PATH, $file) != true) {
+		if(Path::validate($BASE_PATH, $path) != true || Path::validate($BASE_PATH, $file) != true) {
 			print "error";
 			return;
 		}
 
+		if($fs_type == 'afs') {
+			$afs = new afs($path);
+
+			if(!$afs->allowed(AFS_INSERT)) {
+				print 'Permission denied.';
+				return;
+			}
+		} else if($fs_type == 'local') {
+			if(!is_writable($path)) {
+				print 'Permission denied.';
+				return;
+			}
+		}
+		//ToDo: check if file exists
+
 		move_uploaded_file($_FILES['file']['tmp_name'], $file);
 
-	}	
+	}
 }
 
 SmartWFM_DirectCommandManager::register('upload', new BaseDirectCommand_Upload());
-
 
 ?>
