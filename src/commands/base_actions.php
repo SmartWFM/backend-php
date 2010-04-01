@@ -389,26 +389,18 @@ class BaseActions_List extends SmartWFM_Command {
 		$BASE_PATH = SmartWFM_Registry::get('basepath','/');
 		
 		$param_test = new SmartWFM_Param(
-			$type = 'string'
-		);
-				
-		/*		
-		$param_test = new SmartWFM_Param(
 			$type = 'object',
 			$items = array(
-				'path' => new SmartWFM_Param( 'string' ),
-				'showHidden' => new SmartWFM_Param( 'boolean' )
+				'path' => new SmartWFM_Param('string'),
+				'showHidden' => new SmartWFM_Param('boolean')
 			)
 		);		
-		*/
 
 		$params = $param_test->validate($params);
 		
-		$showHidden = false;
-		//$showHidden = $params['showHidden'];
-				
-		$req_path = $params;
-		//$req_path = $params['path'];
+		$showHidden = $params['showHidden'];
+
+		$req_path = $params['path'];
 
 		$path = Path::join(
 			$BASE_PATH,
