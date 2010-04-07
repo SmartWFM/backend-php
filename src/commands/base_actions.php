@@ -156,7 +156,6 @@ class BaseActions_DirList extends SmartWFM_Command {
 		
 		$param_test = new SmartWFM_Param('string');
 
-		/*
 		$param_test = new SmartWFM_Param(
 			$type = 'object',
 			$items = array(
@@ -164,16 +163,14 @@ class BaseActions_DirList extends SmartWFM_Command {
 				'showHidden' => new SmartWFM_Param( 'boolean' )
 			)
 		);
-		*/
 
 		$params = $param_test->validate($params);
 		
-		$showHidden = false;
+		$showHidden = $params['showHidden'];
 		
 		$path = Path::join(
 			$BASE_PATH,
-			$params
-			//$params['path']
+			$params['path']
 		);
 
 		if(Path::validate($BASE_PATH, $path) != true) {
@@ -208,8 +205,7 @@ class BaseActions_DirList extends SmartWFM_Command {
 						$data,
 						array(
 							'name' => $name,
-							'path' => $params,
-							//'path' => $params['path'],
+							'path' => $params['path'],
 							'hasSubDirs' => $hasSubDirs
 						)
 					);
