@@ -344,6 +344,10 @@ class BaseActions_Delete extends SmartWFM_Command {
 			throw new SmartWFM_Exception('Wrong filename');
 		}
 
+		if(!file_exists($path)) {
+			throw new SmartWFM_Exception('File doesn\'t exist', -1);
+		}
+
 		if($fs_type == 'afs') {
 			$afs = new afs($path);
 
