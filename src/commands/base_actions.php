@@ -153,8 +153,6 @@ class BaseActions_DirList extends SmartWFM_Command {
 		$fs_type = SmartWFM_Registry::get('filesystem_type');
 
 		$BASE_PATH = SmartWFM_Registry::get('basepath','/');
-		
-		$param_test = new SmartWFM_Param('string');
 
 		$param_test = new SmartWFM_Param(
 			$type = 'object',
