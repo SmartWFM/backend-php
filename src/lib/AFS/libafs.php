@@ -60,7 +60,7 @@ class afs {
 	/**
 	  * reads all rights the user has
 	  */
-	protected function listacl() {
+	protected function listAcl() {
 		$cmd = $this->cmd['fs'] . ' listacl ' . escapeshellarg( $this->dir );
 		exec( $cmd, $output, $ret );
 		if( !$ret ) {
@@ -79,12 +79,12 @@ class afs {
 	/**
 	  * retrieves groupmemberships of user
 	  */
-	protected function groupmemberships() {
+	protected function groupMemberships() {
 		$cmd = $this->cmd['pts'] . ' membership ' . escapeshellarg( $this->username );
 		exec( $cmd, $output, $ret );
 		if( !$ret ) {
 			for( $i = 1; $i < sizeof($output); $i++ ) {
-				array_push( $this->groupmember, trim($output[$i]));
+				$this->groupmember[] = trim( $output[$i] );
 			}
 		}
 	}	
@@ -95,8 +95,8 @@ class afs {
 	  * @return boolean
 	  */
 	public function allowed( $cmd ) {
-		$this->groupmemberships();
-		$this->listacl();
+		$this->groupMemberships();
+		$this->listAcl();
 		switch( $cmd ) {
 			case AFS_LIST:
 				return $this->userrights['l'];
@@ -116,7 +116,7 @@ class afs {
 	/**
 	  * read quota
 	  */
-	protected function listquota() {
+	protected function listQuota() {
 		$cmd = $this->cmd['fs'] . ' listquota ' . escapeshellarg( $this->dir );
 		exec( $cmd, $output, $ret );
 		if( $ret || !isset( $output[1] ) ) {
@@ -139,8 +139,8 @@ class afs {
 	  *		percent_used		- percentage of used space
 	  *		percent_partition 	- percentage of used partition space
 	  */
-	public function getquota() {
-		$this->listquota();
+	public function getQuota() {
+		$this->listQuota();
 		return $this->quota;
 	}
 	
@@ -149,9 +149,9 @@ class afs {
 	  *		key 				- user/group name
 	  *		value				- rights [rlidwka]
 	  */
-	public function getacl() {
+	public function getAcl() {
 		if( empty( $this->rights ) ) {
-			$this->listacl();
+			$this->listAcl();
 		}
 		return $this->rights;
 	}
@@ -162,26 +162,21 @@ class afs {
 	  *		key 				- user/group name
 	  *		value				- rights [rlidwka]
 	  */
-	public function setacl( $acl ) {
+	public function setAcl( $acl ) {
 		foreach( $acl as $user => $rights ) {
 			if( $rights == '' ) {
 				$rights = $acl[$user] = 'none';
 			}
-			if( !$this->isaclstring( $rights ) ) {
+			if( !$this->isAclString( $rights ) ) {
 				return -1;
-				//unset( $acl[$user] ); //ERROR !!!
-				//continue;
 			}			
-			if( !$this->isuserstring( $user ) ) {
+			if( !$this->isUserString( $user ) ) {
 				return -2;
-				//unset( $acl[$user] ); //ERROR !!!
-				//continue;
 			}
 			if( strpos( $user, ':' ) !== false ) {
-				if( !$this->groupexists( $user ) && $rights != 'none' ) {					
-					if( !$this->creategroup( $user, $this->username ) ) {
-						return -3;
-						//unset( $acl[$user] ); //ERROR !!!						
+				if( !$this->groupExists( $user ) && $rights != 'none' ) {					
+					if( $this->createGroup( $user ) != true ) {
+						return -3;					
 					}
 				}
 			}
@@ -203,7 +198,7 @@ class afs {
 	  * @params rights string to be checked
 	  * @return boolean
 	  */
-	protected function isaclstring( $rights ) {
+	protected function isAclString( $rights ) {
 		if( $rights == 'read' ||
 			$rights == 'write' ||
 			$rights == 'all' ||
@@ -219,7 +214,7 @@ class afs {
 	  * @params username
 	  * @return boolean
 	  */
-	protected function isuserstring( $username ) {
+	protected function isUserString( $username ) {
 		$tmp = preg_match('![^a-zA-Z0-9-:]+!', $username);
 		return empty( $tmp );
 	}
@@ -229,8 +224,8 @@ class afs {
 	  * @params groupname
 	  * @return boolean
 	  */
-	protected function groupexists( $groupname ) {
-		$cmd = $this->cmd['pts'] . ' examine ' . $groupname;
+	protected function groupExists( $groupname ) {
+		$cmd = $this->cmd['pts'] . ' examine ' . escapeshellarg( $groupname );
 		exec( $cmd, $output, $ret );
 		if( !$ret ) {
 			return true; 
@@ -241,21 +236,92 @@ class afs {
 	/**
 	  * create group if allowed
 	  * @params groupname
-	  * @params owner
-	  * @return boolean
+	  * @return boolean or error code
 	  */
-	protected function creategroup( $groupname, $owner ) {
-		$pattern = '!^' . $owner . ':!';
+	protected function createGroup( $groupname ) {
+		$pattern = '!^' . $this->username . ':!';
 		if( !preg_match( $pattern, $groupname ) ) {
-			return false;
+			return -1;
 		}
-		$cmd = $this->cmd['pts'] . ' creategroup ' . $groupname;
+		$cmd = $this->cmd['pts'] . ' creategroup ' . escapeshellarg( $groupname );
 		exec( $cmd, $output, $ret );
-		if( !$ret ) {
+		if( !$ret ) {			
 			return true; 
 		}
 		return false;
 	}
+	
+	/**
+	  * retrieves groups the user owns
+	  * @return array groupnames
+	  */
+	public function getUsersGroups() {
+		$cmd = $this->cmd['pts'] . ' listowned ' . escapeshellarg( $this->username );
+		exec( $cmd, $output, $ret );
+		if( !$ret ) {
+			$groups = array();
+			unset( $output[0] );
+			foreach( $output as $group ) {
+				$groups[] = trim( $group );
+			}
+			return $groups; 
+		}
+		return false;
+	}	
+	
+	/**
+	  * create group
+	  * @params groupname
+	  * @return boolean or error code
+	  */
+	public function addGroup( $groupname ) {
+		if( !$this->groupExists( $groupname ) ) {
+			return $this->createGroup( $groupname );
+		} else {
+			return -2;
+		}
+	}
+	
+	/**
+	  * delete group
+	  * @params groupname
+	  * @return boolean or error code
+	  */
+	public function deleteGroup( $groupname ) {
+		if( $this->groupExists( $groupname ) ) {
+			$pattern = '!^' . $this->username . ':!';
+			if( !preg_match( $pattern, $groupname ) ) {
+				return -1;
+			}
+			$cmd = $this->cmd['pts'] . ' delete ' . escapeshellarg( $groupname );
+			exec( $cmd, $output, $ret );
+			if( !$ret ) {			
+				return true; 
+			}
+			return false;
+		} else {
+			return -2;
+		}
+	}
+	
+	/**
+	  * retrieves members of group
+	  * @params groupname
+	  * @return array groupnames
+	  */
+	public function getGroupMembers( $groupname ) {
+		$cmd = $this->cmd['pts'] . ' membership ' . escapeshellarg( $groupname );
+		exec( $cmd, $output, $ret );
+		if( !$ret ) {
+			$members = array();
+			unset( $output[0] );
+			foreach( $output as $group ) {
+				$members[] = trim( $group );
+			}
+			return $members; 
+		}
+		return false;
+	}	
 }
 
 
