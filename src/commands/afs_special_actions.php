@@ -41,7 +41,7 @@ class AFSSpecialActions_GetQuota extends SmartWFM_Command {
 		}
 		
 		$response = new SmartWFM_Response();
-		$response->data = $afs->getquota();
+		$response->data = $afs->getQuota();
 		return $response;
 	}
 }
@@ -75,19 +75,8 @@ class AFSSpecialActions_GetACL extends SmartWFM_Command {
 			throw new SmartWFM_Exception( 'Permission denied.', -2 );
 		}
 		
-		$res = $afs->getAcl();
-		switch( $res ) {
-			case -1:
-				throw new SmartWFM_Exception( 'Incorrect rights.', -3 );
-			case -2:
-				throw new SmartWFM_Exception( 'Incorrect user or group name.', -4 );
-			case -3:
-				throw new SmartWFM_Exception( 'Can\'t create new group.', -5 );
-			case -4:
-				throw new SmartWFM_Exception( 'Rights couldn\'t be set.', -6 );
-		}	
 		$response = new SmartWFM_Response();
-		$response->data = $res;	
+		$response->data = $afs->getAcl();	
 		return $response;
 	}
 }
@@ -139,14 +128,132 @@ class AFSSpecialActions_SetACL extends SmartWFM_Command {
 		
 		if( !$afs->allowed( AFS_ADMINISTER ) ) { 
 			throw new SmartWFM_Exception( 'Permission denied.', -2 );
-		}		
+		}				
 		
+		$res = $afs->setAcl( $params['acl']  );
+		switch( $res ) {
+			case -1:
+				throw new SmartWFM_Exception( 'Incorrect rights.', -3 );
+			case -2:
+				throw new SmartWFM_Exception( 'Incorrect user or group name.', -4 );
+			case -3:
+				throw new SmartWFM_Exception( 'New group couldn\'t be created.', -5 );
+			case -4:
+				throw new SmartWFM_Exception( 'Rights couldn\'t be set.', -6 );
+		}	
 		$response = new SmartWFM_Response();
-		$response->data = $afs->setAcl( $params['acl'] );
+		$response->data = $res;
 		return $response;
 	}
 }
 
 SmartWFM_CommandManager::register( 'acl.set', new AFSSpecialActions_SetACL() );
+
+
+/**
+ * Get array of groups that current user owns
+ */
+
+class AFSSpecialActions_GetGroups extends SmartWFM_Command {
+	function process( $params ) {						
+		$afs = new afs( NULL );	
+			
+		$response = new SmartWFM_Response();
+		$response->data = $afs->getUsersGroups();	
+		return $response;
+	}
+}
+
+SmartWFM_CommandManager::register( 'groups.get', new AFSSpecialActions_GetGroups() );
+
+
+/**
+ * Create new group
+ */
+
+class AFSSpecialActions_CreateGroup extends SmartWFM_Command {
+	function process( $params ) {			
+		$param_test = new SmartWFM_Param( 'string' );
+
+		$params = $param_test->validate( $params) ;
+					
+		$afs = new afs( NULL );	
+		
+		$res = $afs->addGroup( $params );
+		switch( $res ) {
+			case -1:
+				throw new SmartWFM_Exception( 'New group couldn\'t be created, because you aren\'t own it.', -1 );
+			case -2:
+				throw new SmartWFM_Exception( 'Group already exists.', -2 );
+			case false:
+				throw new SmartWFM_Exception( 'New group couldn\'t be created.', -3 );
+		}		
+		
+		$response = new SmartWFM_Response();
+		$response->data = $res;	
+		return $response;
+	}
+}
+
+SmartWFM_CommandManager::register( 'groups.create', new AFSSpecialActions_CreateGroup() );
+
+
+/**
+ * Delete group
+ */
+
+class AFSSpecialActions_DeleteGroup extends SmartWFM_Command {
+	function process( $params ) {			
+		$param_test = new SmartWFM_Param( 'string' );
+
+		$params = $param_test->validate( $params) ;
+					
+		$afs = new afs( NULL );	
+		
+		$res = $afs->deleteGroup( $params );
+		switch( $res ) {
+			case -1:
+				throw new SmartWFM_Exception( 'Group couldn\'t be deleted, because you aren\'t own it.', -1 );
+			case -2:
+				throw new SmartWFM_Exception( 'Group doesn\'t exist.', -2 );
+			case false:
+				throw new SmartWFM_Exception( 'Group couldn\'t be deleted.', -3 );
+		}
+		
+		$response = new SmartWFM_Response();
+		$response->data = $res;	
+		return $response;
+	}
+}
+
+SmartWFM_CommandManager::register( 'groups.delete', new AFSSpecialActions_DeleteGroup() );
+
+
+
+
+/**
+ * Get array of members of group
+ */
+
+class AFSSpecialActions_GetGroupMembers extends SmartWFM_Command {
+	function process( $params ) {	
+		$param_test = new SmartWFM_Param( 'string' );
+
+		$params = $param_test->validate( $params) ;
+							
+		$afs = new afs( NULL );	
+		
+		$res = $afs->getGroupMembers( $params );
+		if( $res === false ) {
+			throw new SmartWFM_Exception( 'Members couldn\'t be determined.', -1 );
+		}
+		
+		$response = new SmartWFM_Response();
+		$response->data = $res;	
+		return $response;
+	}
+}
+
+SmartWFM_CommandManager::register( 'groups.members.get', new AFSSpecialActions_GetGroupMembers() );
 
 ?>
