@@ -180,13 +180,15 @@ class AFSSpecialActions_CreateGroup extends SmartWFM_Command {
 		$afs = new afs( NULL );	
 		
 		$res = $afs->addGroup( $params );
-		switch( $res ) {
-			case -1:
-				throw new SmartWFM_Exception( 'New group couldn\'t be created, because you aren\'t own it.', -1 );
-			case -2:
-				throw new SmartWFM_Exception( 'Group already exists.', -2 );
-			case false:
-				throw new SmartWFM_Exception( 'New group couldn\'t be created.', -3 );
+		if( $res !== true ) {
+			switch( $res ) {
+				case -1:
+					throw new SmartWFM_Exception( 'New group couldn\'t be created, because you aren\'t own it.', -1 );
+				case -2:
+					throw new SmartWFM_Exception( 'Group already exists.', -2 );
+				case false:
+					throw new SmartWFM_Exception( 'New group couldn\'t be created.', -3 );
+			}
 		}		
 		
 		$response = new SmartWFM_Response();
