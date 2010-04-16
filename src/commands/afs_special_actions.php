@@ -292,4 +292,44 @@ class AFSSpecialActions_AddGroupMembers extends SmartWFM_Command {
 
 SmartWFM_CommandManager::register( 'groups.members.add', new AFSSpecialActions_AddGroupMembers() );
 
+
+
+/**
+ * Delete groups or members
+ */
+
+class AFSSpecialActions_DeleteGroupsMembers extends SmartWFM_Command {
+	function process( $params ) {			
+		FB::log($params);
+		$param_test = new SmartWFM_Param(
+			$type = 'array',
+			$items = new SmartWFM_Param( 'string' )
+		);
+
+		$params = $param_test->validate( $params ) ;
+					
+		$afs = new afs( NULL );	
+		
+		$res = array();
+		$fail = false;
+		foreach( $params as $value ) {
+			if( strpos( $value, '/' ) === false ) {
+				$res[$value] = $afs->deleteGroup( $value );
+			} else {
+				$tmp = explode( '/', $value );
+				$res[$value] = $afs->removeGroupMembers( $tmp[0], $tmp[1] );
+			}
+			if( !$fail && !$res[$value] ) {
+				$fail = true;
+			}
+		}
+		
+		$response = new SmartWFM_Response();
+		$response->data = array( 'fail' => $fail, 'result' => $res);	
+		return $response;
+	}
+}
+
+SmartWFM_CommandManager::register( 'groups.members.delete', new AFSSpecialActions_DeleteGroupsMembers() );
+
 ?>

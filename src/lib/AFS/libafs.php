@@ -353,6 +353,23 @@ class afs {
 		}
 		return false;
 	}	
+	
+	/**
+	  * remove user from group
+	  * @params groupname
+	  * @params user
+	  * @return boolean or error code
+	  */
+	public function removeGroupMembers( $groupname, $user ) {	
+		$user = preg_replace( '![^a-zA-Z0-9-:]+!', ' ', $user );						
+		
+		$cmd = $this->cmd['pts'] . ' removeuser -user ' . $user . ' -group ' . escapeshellarg( $groupname );
+		exec( $cmd, $output, $ret );
+		if( !$ret ) {
+			return true; 
+		}
+		return false;
+	}		
 }
 
 
