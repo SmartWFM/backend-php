@@ -22,7 +22,7 @@ class AFSSpecialActions_GetQuota extends SmartWFM_Command {
 		
 		$param_test = new SmartWFM_Param( 'string' );
 
-		$params = $param_test->validate( $params) ;
+		$params = $param_test->validate( $params ) ;
 		
 		$path = Path::join(
 			$BASE_PATH,
@@ -58,7 +58,7 @@ class AFSSpecialActions_GetACL extends SmartWFM_Command {
 		
 		$param_test = new SmartWFM_Param( 'string' );
 
-		$params = $param_test->validate( $params) ;
+		$params = $param_test->validate( $params ) ;
 		
 		$path = Path::join(
 			$BASE_PATH,
@@ -113,7 +113,7 @@ class AFSSpecialActions_SetACL extends SmartWFM_Command {
 			)
 		);
 
-		$params = $param_test->validate( $params) ;
+		$params = $param_test->validate( $params ) ;
 		
 		$path = Path::join(
 			$BASE_PATH,
@@ -149,7 +149,6 @@ class AFSSpecialActions_SetACL extends SmartWFM_Command {
 
 SmartWFM_CommandManager::register( 'acl.set', new AFSSpecialActions_SetACL() );
 
-
 /**
  * Get array of groups that current user owns
  */
@@ -166,7 +165,6 @@ class AFSSpecialActions_GetGroups extends SmartWFM_Command {
 
 SmartWFM_CommandManager::register( 'groups.get', new AFSSpecialActions_GetGroups() );
 
-
 /**
  * Create new group
  */
@@ -175,7 +173,7 @@ class AFSSpecialActions_CreateGroup extends SmartWFM_Command {
 	function process( $params ) {			
 		$param_test = new SmartWFM_Param( 'string' );
 
-		$params = $param_test->validate( $params) ;
+		$params = $param_test->validate( $params ) ;
 					
 		$afs = new afs( NULL );	
 		
@@ -199,7 +197,6 @@ class AFSSpecialActions_CreateGroup extends SmartWFM_Command {
 
 SmartWFM_CommandManager::register( 'groups.create', new AFSSpecialActions_CreateGroup() );
 
-
 /**
  * Delete group
  */
@@ -208,7 +205,7 @@ class AFSSpecialActions_DeleteGroup extends SmartWFM_Command {
 	function process( $params ) {			
 		$param_test = new SmartWFM_Param( 'string' );
 
-		$params = $param_test->validate( $params) ;
+		$params = $param_test->validate( $params ) ;
 					
 		$afs = new afs( NULL );	
 		
@@ -230,9 +227,6 @@ class AFSSpecialActions_DeleteGroup extends SmartWFM_Command {
 
 SmartWFM_CommandManager::register( 'groups.delete', new AFSSpecialActions_DeleteGroup() );
 
-
-
-
 /**
  * Get array of members of group
  */
@@ -241,7 +235,7 @@ class AFSSpecialActions_GetGroupMembers extends SmartWFM_Command {
 	function process( $params ) {	
 		$param_test = new SmartWFM_Param( 'string' );
 
-		$params = $param_test->validate( $params) ;
+		$params = $param_test->validate( $params ) ;
 							
 		$afs = new afs( NULL );	
 		
@@ -257,5 +251,45 @@ class AFSSpecialActions_GetGroupMembers extends SmartWFM_Command {
 }
 
 SmartWFM_CommandManager::register( 'groups.members.get', new AFSSpecialActions_GetGroupMembers() );
+
+/**
+ * Add user(s) to group
+ */
+
+class AFSSpecialActions_AddGroupMembers extends SmartWFM_Command {
+	function process( $params ) {		
+		$param_test = new SmartWFM_Param(
+			$type = 'object',
+			$items = array(
+				'group' => new SmartWFM_Param('string'),
+				'user' => new SmartWFM_Param('string')
+			)
+		);
+
+		$params = $param_test->validate( $params ) ;
+							
+		$afs = new afs( NULL );			
+
+		if( !$afs->groupExists( $params['group'] ) ) {
+			throw new SmartWFM_Exception( 'Group doesn\'t exist.', -1 );
+		}
+
+		if( !$afs->ownGroup( $params['group'] ) ) {
+			throw new SmartWFM_Exception( 'You aren\'t own this group.', -2 );
+		}		
+		
+		$res = $afs->addGroupMembers( $params['group'], $params['user'] );
+		
+		if( $res === false ) {
+			throw new SmartWFM_Exception( 'User(s) couldn\'t be added.', -3 );
+		}
+		
+		$response = new SmartWFM_Response();
+		$response->data = $res;	
+		return $response;
+	}
+}
+
+SmartWFM_CommandManager::register( 'groups.members.add', new AFSSpecialActions_AddGroupMembers() );
 
 ?>

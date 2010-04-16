@@ -224,7 +224,7 @@ class afs {
 	  * @params groupname
 	  * @return boolean
 	  */
-	protected function groupExists( $groupname ) {
+	public function groupExists( $groupname ) {
 		$cmd = $this->cmd['pts'] . ' examine ' . escapeshellarg( $groupname );
 		exec( $cmd, $output, $ret );
 		if( !$ret ) {
@@ -239,8 +239,7 @@ class afs {
 	  * @return boolean or error code
 	  */
 	protected function createGroup( $groupname ) {
-		$pattern = '!^' . $this->username . ':!';
-		if( !preg_match( $pattern, $groupname ) ) {
+		if( !$this->ownGroup( $groupname ) ) {
 			return -1;
 		}
 		$cmd = $this->cmd['pts'] . ' creategroup ' . escapeshellarg( $groupname );
@@ -292,8 +291,7 @@ class afs {
 	  */
 	public function deleteGroup( $groupname ) {
 		if( $this->groupExists( $groupname ) ) {
-			$pattern = '!^' . $this->username . ':!';
-			if( !preg_match( $pattern, $groupname ) ) {
+			if( !$this->ownGroup( $groupname ) ) {
 				return -1;
 			}
 			$cmd = $this->cmd['pts'] . ' delete ' . escapeshellarg( $groupname );
@@ -322,6 +320,36 @@ class afs {
 				$members[] = trim( $group );
 			}
 			return $members; 
+		}
+		return false;
+	}	
+	
+	/**
+	  * checks if user is owner of group
+	  * @params groupname
+	  * @return boolean
+	  */
+	public function ownGroup( $groupname ) {
+		$pattern = '!^' . $this->username . ':!';
+		if( !preg_match( $pattern, $groupname ) ) {
+			return false;
+		}
+		return true;
+	}	
+	
+	/**
+	  * add user to group
+	  * @params groupname
+	  * @params user
+	  * @return boolean or error code
+	  */
+	public function addGroupMembers( $groupname, $user ) {	
+		$user = preg_replace( '![^a-zA-Z0-9-:]+!', ' ', $user );						
+		
+		$cmd = $this->cmd['pts'] . ' adduser -user ' . $user . ' -group ' . escapeshellarg( $groupname );
+		exec( $cmd, $output, $ret );
+		if( !$ret ) {
+			return true; 
 		}
 		return false;
 	}	
