@@ -275,6 +275,9 @@ class afs {
 	  * @return boolean or error code
 	  */
 	public function addGroup( $groupname ) {
+		if( strpos( $groupname, ':' ) === false ) {
+			$groupname = $this->username . ':' . $groupname;
+		}
 		if( !$this->groupExists( $groupname ) ) {
 			return $this->createGroup( $groupname );
 		} else {
