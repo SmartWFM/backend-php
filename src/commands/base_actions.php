@@ -447,6 +447,7 @@ class BaseActions_List extends SmartWFM_Command {
 							'atime' => NULL,
 							'ctime' => NULL,
 							'mtime' => NULL,
+							'perms' => NULL,
 						);
 						if($time = @fileatime($filename)) {
 							$item['atime'] = $time;
@@ -456,6 +457,9 @@ class BaseActions_List extends SmartWFM_Command {
 						}
 						if($time = @filemtime($filename)) {
 							$item['mtime'] = $time;
+						}
+						if($perms = @fileperms($filename)) {
+							$item['perms'] = sprintf('%o', $perms);
 						}
 						array_push(
 							$data,
@@ -472,6 +476,7 @@ class BaseActions_List extends SmartWFM_Command {
 							'atime' => NULL,
 							'ctime' => NULL,
 							'mtime' => NULL,
+							'perms' => NULL,
 						);
 						if($time = @fileatime($filename)) {
 							$item['atime'] = $time;
@@ -481,6 +486,9 @@ class BaseActions_List extends SmartWFM_Command {
 						}
 						if($time = @filemtime($filename)) {
 							$item['mtime'] = $time;
+						}
+						if($perms = @fileperms($filename)) {
+							$item['perms'] = sprintf('%o', $perms);
 						}
 						array_push(
 							$data,
