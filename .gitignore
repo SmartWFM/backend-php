@@ -1,1 +1,7 @@
+# local config file
 src/config/local.php
+
+#dist and apidoc
+dist/*
+doc/apidoc/*
+
