@@ -65,7 +65,7 @@ class BaseActions_DirCreate extends SmartWFM_Command {
 		}
 
 
-		if(@file_exists($dir) && @is_dir($dir)) {
+		if(@file_exists($path) && @is_dir($path)) {
 			throw new SmartWFM_Exception('A directory with the given name already exists', -1);
 		}
 
