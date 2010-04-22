@@ -5,3 +5,9 @@ src/config/local.php
 dist/*
 doc/apidoc/*
 
+# vim swap files
+*.*.swp
+
+# backup files
+*.*~
+
