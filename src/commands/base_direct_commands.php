@@ -51,6 +51,13 @@ class BaseDirectCommand_Download extends SmartWFM_Command {
 
 		if (file_exists($file)) {
 			$mime = @MimeType::get($file);
+
+			$fp = fopen($file, 'r');
+			if($fp === False) {
+				print('Error reading the file');
+				return;
+			}
+
 			#Content-Description: File Transfer
 			#Content-Type: application/octet-stream
 			header('Content-Type: ' . $mime);
@@ -62,8 +69,11 @@ class BaseDirectCommand_Download extends SmartWFM_Command {
 			header('Content-Length: ' . filesize($file));
 			ob_clean();
 			flush();
-			readfile($file);
-			exit;
+
+			while(($content = fread($fp, 4096)) != '') {
+				print($content);
+			}
+			exit();
 		}
 
 	}	
