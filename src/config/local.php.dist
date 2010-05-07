@@ -10,4 +10,14 @@
 	*/
 	SmartWFM_Registry::set('mimetype_detection_mode', 'internal');
 	SmartWFM_Registry::set('filesystem_type', 'local');
+
+	/* Set to True to use the X-Sendfile header
+	   The Webserver must support X-Sendfile header!!!
+	   Apache 2.x:
+	   - install mod_xsendfile
+	   - Set config options:
+	     - XSendFIle On
+	     - XSendFileAllowAbove On
+	*/
+	SmartWFM_Registry::set('use_x_sendfile', False);
 ?>

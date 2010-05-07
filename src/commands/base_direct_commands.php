@@ -58,20 +58,22 @@ class BaseDirectCommand_Download extends SmartWFM_Command {
 				return;
 			}
 
-			#Content-Description: File Transfer
-			#Content-Type: application/octet-stream
 			header('Content-Type: ' . $mime);
 			header('Content-Disposition: attachment; filename='.basename($file));
 			header('Content-Transfer-Encoding: binary');
 			header('Expires: 0');
 			header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
 			header('Pragma: public');
-			header('Content-Length: ' . filesize($file));
-			ob_clean();
-			flush();
+			if(SmartWFM_Registry::get('use_x_sendfile') === True) {
+				header('X-Sendfile: ' . $file);
+			} else {
+				header('Content-Length: ' . filesize($file));
+				ob_clean();
+				flush();
 
-			while(($content = fread($fp, 4096)) != '') {
-				print($content);
+				while(($content = fread($fp, 4096)) != '') {
+					print($content);
+				}
 			}
 			exit();
 		}
