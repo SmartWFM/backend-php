@@ -12,7 +12,7 @@
 
 //date_default_timezone_set("Europe/Berlin");
 
-define('SMARTWFM_DEBUG', true);
+define('SMARTWFM_DEBUG', false);
 
 require_once("lib/FirePHPCore/fb.php");
 
