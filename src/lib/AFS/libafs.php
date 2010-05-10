@@ -24,10 +24,10 @@ if( !defined( 'AFS_ADMINISTER' ) )
 class afs {
 	protected $cmd = array(
 		'fs' => 'fs',			//'/usr/bin/fs',
-		'fsr' => 'fsr',			//'/usr/bin/fsr', //recursively
 		'pts' => 'pts',			//'/usr/bin/pts',
 		'errtostd' => '2>&1',
 		'todevnull' => '>/dev/null',
+		'finger' => 'finger',
 	);
 
 	protected $dir;
@@ -168,12 +168,19 @@ class afs {
 		foreach( $acl as $user => $rights ) {
 			if( $rights == '' ) {
 				$rights = $acl[$user] = 'none';
+				unset($acl[$user]);
+				continue;
 			}
 			if( !$this->isAclString( $rights ) ) {
 				return -1;
 			}	
 			if( !$this->isUserString( $user ) ) {
 				return -2;
+			}
+			if( strpos( $user, ':' ) === false && !$this->isUser( $user ) ) {
+				unset($acl[$user]);
+				$user = $this->username . ':' . $user;
+				$acl[$user] = $rights;
 			}
 			if( strpos( $user, ':' ) !== false ) {
 				if( !$this->groupExists( $user ) && $rights != 'none' ) {					
@@ -182,15 +189,21 @@ class afs {
 					}
 				}
 			}
-		}		
-		$fs = $recursively ? $this->cmd['fsr'] : $this->cmd['fs'];
-		$cmd = $fs . ' setacl -dir ' . escapeshellarg( $this->dir );
+		}	
+		$cmd = '';
 		foreach( $acl as $user => $rights ) {
 			$cmd .= ' -acl ' . $user . ' ' . $rights;
 		}
-		$cmd .= ' -clear';
+		$cmd .= ' -clear';				
+		
+		if( $recursively ){
+			$cmd = 'find ' . escapeshellarg( $this->dir ) . ' -type d -exec ' . $this->cmd['fs'] . ' setacl {} ' . $cmd . ' \;';
+		}else{
+			$cmd = $this->cmd['fs'] . ' setacl -dir ' . escapeshellarg( $this->dir ) . $cmd;
+		}
+		
 		exec( $cmd, $output, $ret );
-		if( !$ret || ( $fs == $this->cmd['fsr'] && $ret = 127 ) ) {
+		if( !$ret ) {
 			return true; 
 		}
 		return -4;
@@ -220,6 +233,17 @@ class afs {
 	protected function isUserString( $username ) {
 		$tmp = preg_match('![^a-zA-Z0-9-:]+!', $username);
 		return empty( $tmp );
+	}
+	
+	/**
+	  * check string whether it is a existing user
+	  * @params username
+	  * @return boolean
+	  */
+	protected function isUser( $username ) {
+		$cmd = $this->cmd['finger'] . ' ' . escapeshellarg( $username );
+		exec( $cmd, $output, $ret );
+		return !empty( $output );
 	}
 	
 	/**

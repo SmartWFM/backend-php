@@ -35,7 +35,6 @@ class AFSSpecialActions_GetQuota extends SmartWFM_Command {
 		
 		$afs = new afs( $path );	
 		
-		//TODO rights for quota???
 		if( !$afs->allowed( AFS_LIST ) ) { 
 			throw new SmartWFM_Exception( 'Permission denied.', -2 );
 		}
