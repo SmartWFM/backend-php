@@ -109,7 +109,10 @@ class AFSSpecialActions_SetACL extends SmartWFM_Command {
 							$type = 'string'
 						)
 					)
-				)
+				),
+				'subdirs' => new SmartWFM_Param(
+					$type = 'boolean'
+				),
 			)
 		);
 
@@ -130,17 +133,20 @@ class AFSSpecialActions_SetACL extends SmartWFM_Command {
 			throw new SmartWFM_Exception( 'Permission denied.', -2 );
 		}				
 		
-		$res = $afs->setAcl( $params['acl']  );
-		switch( $res ) {
-			case -1:
-				throw new SmartWFM_Exception( 'Incorrect rights.', -3 );
-			case -2:
-				throw new SmartWFM_Exception( 'Incorrect user or group name.', -4 );
-			case -3:
-				throw new SmartWFM_Exception( 'New group couldn\'t be created.', -5 );
-			case -4:
-				throw new SmartWFM_Exception( 'Rights couldn\'t be set.', -6 );
-		}	
+		$res = $afs->setAcl( $params['acl'], $params['subdirs']  );
+		FB::log($params);
+		if( $res !== true ){
+			switch( $res ) {
+				case -1:
+					throw new SmartWFM_Exception( 'Incorrect rights.', -3 );
+				case -2:
+					throw new SmartWFM_Exception( 'Incorrect user or group name.', -4 );
+				case -3:
+					throw new SmartWFM_Exception( 'New group couldn\'t be created.', -5 );
+				case -4:
+					throw new SmartWFM_Exception( 'Rights couldn\'t be set.', -6 );
+			}	
+		}
 		$response = new SmartWFM_Response();
 		$response->data = $res;
 		return $response;

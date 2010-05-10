@@ -24,6 +24,7 @@ if( !defined( 'AFS_ADMINISTER' ) )
 class afs {
 	protected $cmd = array(
 		'fs' => 'fs',			//'/usr/bin/fs',
+		'fsr' => 'fsr',			//'/usr/bin/fsr', //recursively
 		'pts' => 'pts',			//'/usr/bin/pts',
 		'errtostd' => '2>&1',
 		'todevnull' => '>/dev/null',
@@ -162,14 +163,14 @@ class afs {
 	  *		key 				- user/group name
 	  *		value				- rights [rlidwka]
 	  */
-	public function setAcl( $acl ) {
+	public function setAcl( $acl, $recursively = false ) {
 		foreach( $acl as $user => $rights ) {
 			if( $rights == '' ) {
 				$rights = $acl[$user] = 'none';
 			}
 			if( !$this->isAclString( $rights ) ) {
 				return -1;
-			}			
+			}	
 			if( !$this->isUserString( $user ) ) {
 				return -2;
 			}
@@ -180,13 +181,15 @@ class afs {
 					}
 				}
 			}
-		}
-		$cmd = $this->cmd['fs'] . ' setacl -dir ' . escapeshellarg( $this->dir );
+		}		
+		$fs = $recursively ? $this->cmd['fsr'] : $this->cmd['fs'];
+		$cmd = $fs . ' setacl -dir ' . escapeshellarg( $this->dir );
 		foreach( $acl as $user => $rights ) {
 			$cmd .= ' -acl ' . $user . ' ' . $rights;
 		}
+		$cmd .= ' -clear';
 		exec( $cmd, $output, $ret );
-		if( !$ret ) {
+		if( !$ret || ( $fs == $this->cmd['fsr'] && $ret = 127 ) ) {
 			return true; 
 		}
 		return -4;
