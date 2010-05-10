@@ -162,6 +162,7 @@ class afs {
 	  * @params acl - array:
 	  *		key 				- user/group name
 	  *		value				- rights [rlidwka]
+	  * @params recursively - boolean	- set acl recursively
 	  */
 	public function setAcl( $acl, $recursively = false ) {
 		foreach( $acl as $user => $rights ) {
