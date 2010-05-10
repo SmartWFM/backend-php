@@ -193,7 +193,6 @@ class afs {
 			return true; 
 		}
 		return -4;
-		//return false;
 	}
 	
 	/**
@@ -373,12 +372,5 @@ class afs {
 		}
 		return false;
 	}		
-}
-
-
-function pri( $hu ) {
-	echo '<pre>';
-	print_r( $hu );
-	echo '</pre>';
 }
 ?>
