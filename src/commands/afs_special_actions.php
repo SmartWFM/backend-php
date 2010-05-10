@@ -134,7 +134,6 @@ class AFSSpecialActions_SetACL extends SmartWFM_Command {
 		}				
 		
 		$res = $afs->setAcl( $params['acl'], $params['subdirs']  );
-		FB::log($params);
 		if( $res !== true ){
 			switch( $res ) {
 				case -1:
