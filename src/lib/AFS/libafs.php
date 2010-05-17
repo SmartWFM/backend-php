@@ -27,6 +27,7 @@ class afs {
 		'pts' => 'pts',			//'/usr/bin/pts',
 		'errtostd' => '2>&1',
 		'todevnull' => '>/dev/null',
+		'finger' => 'finger',
 	);
 
 	protected $dir;
@@ -161,17 +162,25 @@ class afs {
 	  * @params acl - array:
 	  *		key 				- user/group name
 	  *		value				- rights [rlidwka]
+	  * @params recursively - boolean	- set acl recursively
 	  */
-	public function setAcl( $acl ) {
+	public function setAcl( $acl, $recursively = false ) {
 		foreach( $acl as $user => $rights ) {
 			if( $rights == '' ) {
 				$rights = $acl[$user] = 'none';
+				unset($acl[$user]);
+				continue;
 			}
 			if( !$this->isAclString( $rights ) ) {
 				return -1;
-			}			
+			}	
 			if( !$this->isUserString( $user ) ) {
 				return -2;
+			}
+			if( strpos( $user, ':' ) === false && !$this->isUser( $user ) ) {
+				unset($acl[$user]);
+				$user = $this->username . ':' . $user;
+				$acl[$user] = $rights;
 			}
 			if( strpos( $user, ':' ) !== false ) {
 				if( !$this->groupExists( $user ) && $rights != 'none' ) {					
@@ -180,17 +189,24 @@ class afs {
 					}
 				}
 			}
-		}
-		$cmd = $this->cmd['fs'] . ' setacl -dir ' . escapeshellarg( $this->dir );
+		}	
+		$cmd = '';
 		foreach( $acl as $user => $rights ) {
 			$cmd .= ' -acl ' . $user . ' ' . $rights;
 		}
+		$cmd .= ' -clear';				
+		
+		if( $recursively ){
+			$cmd = 'find ' . escapeshellarg( $this->dir ) . ' -type d -exec ' . $this->cmd['fs'] . ' setacl {} ' . $cmd . ' \;';
+		}else{
+			$cmd = $this->cmd['fs'] . ' setacl -dir ' . escapeshellarg( $this->dir ) . $cmd;
+		}
+		
 		exec( $cmd, $output, $ret );
 		if( !$ret ) {
 			return true; 
 		}
 		return -4;
-		//return false;
 	}
 	
 	/**
@@ -217,6 +233,17 @@ class afs {
 	protected function isUserString( $username ) {
 		$tmp = preg_match('![^a-zA-Z0-9-:]+!', $username);
 		return empty( $tmp );
+	}
+	
+	/**
+	  * check string whether it is a existing user
+	  * @params username
+	  * @return boolean
+	  */
+	protected function isUser( $username ) {
+		$cmd = $this->cmd['finger'] . ' ' . escapeshellarg( $username );
+		exec( $cmd, $output, $ret );
+		return !empty( $output );
 	}
 	
 	/**
@@ -370,12 +397,5 @@ class afs {
 		}
 		return false;
 	}		
-}
-
-
-function pri( $hu ) {
-	echo '<pre>';
-	print_r( $hu );
-	echo '</pre>';
 }
 ?>
