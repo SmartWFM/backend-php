@@ -126,4 +126,55 @@ class BaseDirectCommand_Upload extends SmartWFM_Command {
 
 SmartWFM_DirectCommandManager::register('upload', new BaseDirectCommand_Upload());
 
+class BaseDirectCommand_SourceHighlight extends SmartWFM_Command {
+	function process($params) {
+		$fs_type = SmartWFM_Registry::get('filesystem_type');
+
+		$BASE_PATH = SmartWFM_Registry::get('basepath','/');
+		$path = Path::join(
+			$BASE_PATH,
+			$params['path']
+		);
+
+		$file = Path::join(
+			$path,
+			$params['name']
+		);
+
+		if(Path::validate($BASE_PATH, $path) != true || Path::validate($BASE_PATH, $file) != true) {
+			print "error";
+			return;
+		}
+
+		if($fs_type == 'afs') {
+			$afs = new afs($path);
+
+			if( !$afs->allowed( AFS_READ ) ) {
+				print 'Permission denied.';
+				return;
+			}
+		} else if($fs_type == 'local') {
+			if(!is_readable($file)) {
+				print 'Permission denied.';
+				return;
+			}
+		}
+
+		if (file_exists($file)) {
+			$mime = @MimeType::get($file);
+
+			include_once('lib/geshi/geshi.php');
+			#$tmp = file_get_contents($file);
+			$geshi = new GeSHi();
+			$geshi->load_from_file($file);
+			$geshi->enable_line_numbers(GESHI_FANCY_LINE_NUMBERS);
+			echo $geshi->parse_code();
+
+			exit();
+		}
+	}
+}
+
+SmartWFM_DirectCommandManager::register('source_highlight', new BaseDirectCommand_SourceHighlight());
+
 ?>
