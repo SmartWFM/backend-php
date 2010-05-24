@@ -10,13 +10,12 @@
 # WITHOUT ANY WARRANTY. See GPLv3 for more details.                           #
 ###############################################################################
 
-//date_default_timezone_set("Europe/Berlin");
-
 define('SMARTWFM_DEBUG', false);
 
 require_once("lib/FirePHPCore/fb.php");
 
 if(SMARTWFM_DEBUG == true) {
+	date_default_timezone_set("Europe/Berlin");
 	ini_set('display_errors',1);
 	error_reporting(E_ALL|E_STRICT);
 
