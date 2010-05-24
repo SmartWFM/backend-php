@@ -108,29 +108,6 @@ class BaseArchiveActions_Create extends SmartWFM_Command {
 			default:
 				throw new SmartWFM_Exception('Wrong archive type', -8);
 		}
-		
-		
-		
-
-		/*if(Path::validate($BASE_PATH, $path) != true) {
-			throw new SmartWFM_Exception('Wrong directory name');
-		}
-
-		if(!@file_exists($path) || !@is_dir($path)) {
-			throw new SmartWFM_Exception('Folder doesn\'t exist.', -1);
-		}
-
-		if($fs_type == 'afs') {
-			$afs = new afs($path);
-
-			if(!$afs->allowed(AFS_LIST)) {
-				throw new SmartWFM_Exception('Permission denied.', -2);
-			}
-		}*/
-		
-		$response = new SmartWFM_Response();
-		$response->data = 'ddf';	
-		return $response;
 	}
 }
 SmartWFM_CommandManager::register('archive.create', new BaseArchiveActions_Create());
