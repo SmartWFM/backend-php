@@ -15,7 +15,7 @@ if(SmartWFM_Registry::get('filesystem_type') == 'afs') {
 }
 
 /*
-	create a archive
+	create an archive
  */
 
 class BaseArchiveActions_Create extends SmartWFM_Command {
@@ -30,7 +30,7 @@ class BaseArchiveActions_Create extends SmartWFM_Command {
 			$items = array(
 				'path' => new SmartWFM_Param( 'string' ),
 				'archiveName' => new SmartWFM_Param( 'string' ),
-				'archiveType' => new SmartWFM_Param( 'integer' ),
+				'archiveType' => new SmartWFM_Param( 'string' ),
 				'files' => new SmartWFM_Param(
 					$type = 'array',
 					$items = new SmartWFM_Param( 'string' )
@@ -87,14 +87,14 @@ class BaseArchiveActions_Create extends SmartWFM_Command {
 		}
 		
 		switch($params['archiveType']) {
-			case 1: # ZIP
+			case 'zip':
 				$a = new ZipArchive;
 				$r = $a->open($path, ZipArchive::CREATE);
 				if( $r === true ) {
 					foreach($files as $f) {
 						$r = $a->addFile($f);
 						if( !$r ) {
-							throw new SmartWFM_Exception('Couldn\'t add file to archive: '.$f, -5);							
+							throw new SmartWFM_Exception('Couldn\'t add file to archive', -5);							
 						}
 					}
 					$a->close();
