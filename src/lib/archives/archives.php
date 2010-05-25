@@ -27,5 +27,27 @@ class Archives{
 			}
 		}
 		return $files;
+	}	
+	
+	static public function fileNamesToTreeStruct($files){
+		$tree = array();
+		foreach($files as $f) {
+			$tree = Archives::fileNameToArray($f, $tree);
+		}
+		return $tree;
+	}	
+	
+	static public function fileNameToArray($file, $array){
+		$s = explode('/',$file);
+		if(count($s) > 1) {
+			if(!array_key_exists($s[0], $array)) {
+				$array[$s[0]] = Archives::fileNameToArray(substr(strstr($file,'/'),1), array());
+			} else {
+				$array[$s[0]] = Archives::fileNameToArray(substr(strstr($file,'/'),1), $array[$s[0]]);
+			}
+		} else {
+			$array[$s[0]] = False;
+		}
+		return $array;
 	}
 }

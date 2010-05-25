@@ -166,14 +166,15 @@ class BaseArchiveActions_List extends SmartWFM_Command {
 			case 'application/zip':
 				$a = new ZipArchive;
 				if( $a->open($path) ) {
+					$files = array();
 					for($i = 0; $i < $a->numFiles; $i++) {
-						//echo 'Filename: ' . $a->getNameIndex($i) . '<br />';
+						$files[] = $a->getNameIndex($i);
 					}
 				} else {
 					throw new SmartWFM_Exception('Couldn\'t open archive', -6);				
 				}		
 				$response = new SmartWFM_Response();
-				$response->data = true;	
+				$response->data = Archives::fileNamesToTreeStruct($files);	
 				return $response;
 				break;
 			default:
