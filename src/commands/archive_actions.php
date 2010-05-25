@@ -22,12 +22,12 @@ require_once('lib/archives/archives.php');
 
 class BaseArchiveActions_Create extends SmartWFM_Command {
 	function process($params) {
-		$fs_type = SmartWFM_Registry::get('filesystem_type');
+		$fsType = SmartWFM_Registry::get('filesystem_type');
 
 		$BASE_PATH = SmartWFM_Registry::get('basepath','/');
 
 		// check params		
-		$param_test = new SmartWFM_Param(
+		$paramTest = new SmartWFM_Param(
 			$type = 'object',
 			$items = array(
 				'path' => new SmartWFM_Param( 'string' ),
@@ -41,15 +41,15 @@ class BaseArchiveActions_Create extends SmartWFM_Command {
 			)
 		);
 
-		$params = $param_test->validate($params);
+		$params = $paramTest->validate($params);
 		
-		$root_path = Path::join(
+		$rootPath = Path::join(
 			$BASE_PATH,
 			$params['path']
 		);
 		
 		$path = Path::join(
-			$root_path,
+			$rootPath,
 			$params['archiveName']
 		);
 		
@@ -57,13 +57,13 @@ class BaseArchiveActions_Create extends SmartWFM_Command {
 			throw new SmartWFM_Exception('Wrong directory name', -1);
 		}
 		
-		if($fs_type == 'afs') {
-			$afs = new afs($root_path);
+		if($fsType == 'afs') {
+			$afs = new afs($rootPath);
 			if(!$afs->allowed(AFS_CREATE)) {
 				throw new SmartWFM_Exception('Permission denied.', -9);
 			}
-		} else if ($fs_type == 'local') {
-			if(!is_writable($root_path)) {
+		} else if ($fsType == 'local') {
+			if(!is_writable($rootPath)) {
 				throw new SmartWFM_Exception('Permission denied.', -9);
 			}
 		}
@@ -76,7 +76,7 @@ class BaseArchiveActions_Create extends SmartWFM_Command {
 		
 		foreach($params['files'] as $p) {
 			$tmpPath = Path::join(
-				$root_path,
+				$rootPath,
 				$p
 			);
 			if(Path::validate($BASE_PATH, $tmpPath) != true) {
@@ -106,7 +106,7 @@ class BaseArchiveActions_Create extends SmartWFM_Command {
 								throw new SmartWFM_Exception('Couldn\'t add file to archive', -5);							
 							}
 						} else {
-							if( !$a->addFile($f, str_replace($root_path.'/','',$f)) ) {
+							if( !$a->addFile($f, str_replace($rootPath.'/','',$f)) ) {
 								throw new SmartWFM_Exception('Couldn\'t add file to archive', -5);							
 							}
 						}
@@ -130,13 +130,13 @@ SmartWFM_CommandManager::register('archive.create', new BaseArchiveActions_Creat
 
 class BaseArchiveActions_List extends SmartWFM_Command {
 	function process($params) {
-		$fs_type = SmartWFM_Registry::get('filesystem_type');
+		$fsType = SmartWFM_Registry::get('filesystem_type');
 
 		$BASE_PATH = SmartWFM_Registry::get('basepath','/');
 
-		$param_test = new SmartWFM_Param('string');
+		$paramTest = new SmartWFM_Param('string');
 
-		$params = $param_test->validate($params);
+		$params = $paramTest->validate($params);
 		
 		$path = Path::join(
 			$BASE_PATH,
@@ -151,12 +151,12 @@ class BaseArchiveActions_List extends SmartWFM_Command {
 			throw new SmartWFM_Exception('A file with the given name doesn\'t exists', -2);
 		}
 		
-		if($fs_type == 'afs') {
+		if($fsType == 'afs') {
 			$afs = new afs($path);
 			if(!$afs->allowed(AFS_READ)) {
 				throw new SmartWFM_Exception('Permission denied.', -9);
 			}
-		} else if ($fs_type == 'local') {
+		} else if ($fsType == 'local') {
 			if(!is_readable($path)) {
 				throw new SmartWFM_Exception('Permission denied.', -9);
 			}
