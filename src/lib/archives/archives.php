@@ -32,6 +32,7 @@ class Archives{
 	static public function fileNamesToTreeStruct($files){
 		$tree = array();
 		foreach($files as $f) {
+			$f = ltrim($f, '/');
 			$tree = Archives::fileNameToArray($f, $tree);
 		}
 		return $tree;
