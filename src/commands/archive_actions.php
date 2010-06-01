@@ -257,19 +257,22 @@ class BaseArchiveActions_Extract extends SmartWFM_Command {
 				$a = new ZipArchive;
 				if( $a->open($archivePath) ) {
 					if( $params['files'] ){
-						if( $a->extractTo($extractPath, $params['files']) ) {
+						$files = array();
+						for($i = 0; $i < $a->numFiles; $i++) {
+							$tmp = $a->getNameIndex($i);
+							foreach($params['files'] as $k => $f){
+								if( strstr($tmp, $f) ){
+									$files[] = $tmp;
+									unset($params['files'][$k]);
+								}
+								
+							}
+						}
+						if( $a->extractTo($extractPath, $files) ) {
 							$response = new SmartWFM_Response();
 							$response->data = True;	
 							return $response;
 						} else {
-							/*foreach($params['files'] as $k => $f){
-								$params['files'][$k] = ltrim($f, './');	
-							}*/
-							//for($i = 0; $i < $a->numFiles; $i++) {
-								//echo $a->getNameIndex($i);
-							//}
-							//echo $a->extractTo($extractPath, array('/afs'));
-							//print_r($params['files']);
 							throw new SmartWFM_Exception('Couldn\'t extract archive', -7);	
 						}
 					} else {
@@ -278,7 +281,7 @@ class BaseArchiveActions_Extract extends SmartWFM_Command {
 							$response->data = True;	
 							return $response;
 						} else {
-							throw new SmartWFM_Exception('Couldn\'t exctract archive', -7);	
+							throw new SmartWFM_Exception('Couldn\'t extract archive', -11);	
 						}				
 					}
 				} else {
