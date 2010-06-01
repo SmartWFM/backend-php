@@ -30,13 +30,13 @@ class BaseArchiveActions_Create extends SmartWFM_Command {
 		$paramTest = new SmartWFM_Param(
 			$type = 'object',
 			$items = array(
-				'path' => new SmartWFM_Param( 'string' ),
-				'archiveName' => new SmartWFM_Param( 'string' ),
-				'archiveType' => new SmartWFM_Param( 'string' ),
-				'fullPath' => new SmartWFM_Param( 'boolean' ),
+				'path' => new SmartWFM_Param('string'),
+				'archiveName' => new SmartWFM_Param('string'),
+				'archiveType' => new SmartWFM_Param('string'),
+				'fullPath' => new SmartWFM_Param('boolean'),
 				'files' => new SmartWFM_Param(
 					$type = 'array',
-					$items = new SmartWFM_Param( 'string' )
+					$items = new SmartWFM_Param('string')
 				)
 			)
 		);
@@ -183,3 +183,114 @@ class BaseArchiveActions_List extends SmartWFM_Command {
 	}
 }
 SmartWFM_CommandManager::register('archive.list', new BaseArchiveActions_List());
+
+class BaseArchiveActions_Extract extends SmartWFM_Command {
+	function process($params) {
+		$fsType = SmartWFM_Registry::get('filesystem_type');
+
+		$BASE_PATH = SmartWFM_Registry::get('basepath','/');
+
+		// check params		
+		$paramTest = new SmartWFM_Param(
+			$type = 'object',
+			$items = array(
+				'path' => new SmartWFM_Param('string'),
+				'archive' => new SmartWFM_Param('string'),
+				'files' => new SmartWFM_Param(
+					$type = 'array',
+					$items = new SmartWFM_Param('string')
+				)
+			)
+		);
+
+		$params = $paramTest->validate($params);
+		
+		$extractPath = Path::join(
+			$BASE_PATH,
+			$params['path']
+		);
+		
+		if(Path::validate($BASE_PATH, $extractPath) != true) {
+			throw new SmartWFM_Exception('Wrong directory name', -1);
+		}
+		
+		$archivePath = Path::join(
+			$BASE_PATH,
+			$params['archive']
+		);
+		
+		if(Path::validate($BASE_PATH, $archivePath) != true) {
+			throw new SmartWFM_Exception('Wrong archive path', -1);
+		}
+		
+		if($fsType == 'afs') {
+			$afsExtract = new afs($extractPath);
+			if(!$afsExtract->allowed(AFS_CREATE)) {
+				throw new SmartWFM_Exception('Permission denied.', -9);
+			}
+			$afsArchive = new afs(substr($archivePath, 0, strrpos($archivePath, '/')));
+			if(!$afsExtract->allowed(AFS_READ)) {
+				throw new SmartWFM_Exception('Permission denied.', -9);
+			}			
+		} else if ($fsType == 'local') {
+			if(!is_writable($extractPath)) {
+				throw new SmartWFM_Exception('Permission denied.', -9);
+			}
+			if(!is_readable($archivePath)) {
+				throw new SmartWFM_Exception('Permission denied.', -9);
+			}
+		}
+		
+		foreach($params['files'] as $k => $f){
+			$tmpPath = Path::join(
+				$extractPath,
+				$f
+			);			
+			if(@file_exists($tmpPath)) {
+				throw new SmartWFM_Exception('A file with the given name already exists', -4);
+			}	
+			$params['files'][$k] = ltrim($f, './');	
+		}
+		
+		switch(MIMETYPE::get($archivePath)) {
+			case 'application/zip':
+				$a = new ZipArchive;
+				if( $a->open($archivePath) ) {
+					if( $params['files'] ){
+						if( $a->extractTo($extractPath, $params['files']) ) {
+							$response = new SmartWFM_Response();
+							$response->data = True;	
+							return $response;
+						} else {
+							/*foreach($params['files'] as $k => $f){
+								$params['files'][$k] = ltrim($f, './');	
+							}*/
+							//for($i = 0; $i < $a->numFiles; $i++) {
+								//echo $a->getNameIndex($i);
+							//}
+							//echo $a->extractTo($extractPath, array('/afs'));
+							//print_r($params['files']);
+							throw new SmartWFM_Exception('Couldn\'t extract archive', -7);	
+						}
+					} else {
+						if( $a->extractTo($extractPath) ) {
+							$response = new SmartWFM_Response();
+							$response->data = True;	
+							return $response;
+						} else {
+							throw new SmartWFM_Exception('Couldn\'t exctract archive', -7);	
+						}				
+					}
+				} else {
+					throw new SmartWFM_Exception('Couldn\'t open archive', -6);				
+				}		
+				$response = new SmartWFM_Response();
+				$response->data = True;	
+				return $response;
+				break;
+			default:
+				throw new SmartWFM_Exception('Unreadable archive type', -8);
+		}
+	}
+}
+SmartWFM_CommandManager::register('archive.extract', new BaseArchiveActions_Extract());
