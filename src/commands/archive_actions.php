@@ -188,6 +188,23 @@ class BaseArchiveActions_List extends SmartWFM_Command {
 			}
 		}
 		
+		$tar = array(
+			'.tar.gz' => 'z', 
+			'tar.bz2' => 'j'
+		);
+		$tmp = substr($path,-7);
+		if(array_key_exists($tmp, $tar)){
+			$cmd = 'tar -t'.$tar[$tmp].'f '.escapeshellarg($path);
+			exec( $cmd, $output, $ret );
+			if(!$ret){
+				$response = new SmartWFM_Response();
+				$response->data = Archives::fileNamesToTreeStruct($output);	
+				return $response;			
+			}else{			
+				throw new SmartWFM_Exception('Couldn\'t open archive', -6);
+			}
+		}
+		
 		switch(MIMETYPE::get($path)) {
 			case 'application/zip':
 				$a = new ZipArchive;
