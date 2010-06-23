@@ -121,6 +121,32 @@ class BaseArchiveActions_Create extends SmartWFM_Command {
 					throw new SmartWFM_Exception('Couldn\'t create archive', -7);				
 				}	
 				break;
+			case 'tarbz2':
+				$AT = 'j';
+			case 'targz':
+				if(!isset($AT))
+					$AT = 'z';		
+				$cmd = '';		
+				if(!$params['fullPath']){
+					$cmd .= 'cd '.escapeshellarg($rootPath).' && ';
+					$path = substr($path, strlen($rootPath)+1);
+				}
+				$cmd .= 'tar -c'.$AT.'f '.escapeshellarg($path);
+				foreach($files as $f) {
+					if(!$params['fullPath']){
+						$f = substr($f, strlen($rootPath)+1);
+					}
+					$cmd .= ' '.escapeshellarg($f);
+				}
+				exec( $cmd, $output, $ret );
+				if( !$ret ) {	
+					$response = new SmartWFM_Response();
+					$response->data = true;	
+					return $response;
+				}else{
+					throw new SmartWFM_Exception('Couldn\'t create archive', -9);
+				}
+				break;
 			default:
 				throw new SmartWFM_Exception('Wrong archive type', -8);
 		}
