@@ -295,6 +295,27 @@ class BaseArchiveActions_Extract extends SmartWFM_Command {
 			$params['files'][$k] = ltrim($f, './');	
 		}
 		
+		$tar = array(
+			'.tar.gz' => 'z', 
+			'tar.bz2' => 'j'
+		);
+		$tmp = substr($archivePath,-7);
+		if(array_key_exists($tmp, $tar)){
+			$cmd = 'tar -x'.$tar[$tmp].'f '.escapeshellarg($archivePath).
+				' -C '.escapeshellarg($extractPath);
+			foreach($params['files'] as $f){
+				$cmd .= ' '.escapeshellarg($f);
+			}
+			exec( $cmd, $output, $ret );
+			if(!$ret){
+				$response = new SmartWFM_Response();
+				$response->data = true;	
+				return $response;			
+			}else{			
+				throw new SmartWFM_Exception('Couldn\'t open and extract archive', -10);
+			}
+		}
+		
 		switch(MIMETYPE::get($archivePath)) {
 			case 'application/zip':
 				$a = new ZipArchive;
