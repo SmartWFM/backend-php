@@ -10,6 +10,12 @@
 # WITHOUT ANY WARRANTY. See GPLv3 for more details.                           #
 ###############################################################################
 
+if(file_exists('install')){
+	$HOST  = $_SERVER['HTTP_HOST'];
+	$URI   = rtrim(dirname($_SERVER['PHP_SELF']), '/\\');
+	header('Location: http://'.$HOST.$URI.'/install');
+}
+
 define('SMARTWFM_DEBUG', false);
 
 require_once("lib/FirePHPCore/fb.php");
