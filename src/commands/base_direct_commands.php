@@ -117,7 +117,7 @@ class BaseDirectCommand_Upload extends SmartWFM_Command {
 				return;
 			}
 		}
-		//ToDo: check if file exists
+		//TODO: check if file exists
 
 		move_uploaded_file($_FILES['file']['tmp_name'], $file);
 
