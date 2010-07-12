@@ -13,7 +13,7 @@
 if(file_exists('install')){
 	$HOST  = $_SERVER['HTTP_HOST'];
 	$URI   = rtrim(dirname($_SERVER['PHP_SELF']), '/\\');
-	header('Location: http://'.$HOST.$URI.'/install');
+	//header('Location: http://'.$HOST.$URI.'/install');
 }
 
 define('SMARTWFM_DEBUG', false);
