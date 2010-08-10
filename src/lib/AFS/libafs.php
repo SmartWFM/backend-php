@@ -92,9 +92,12 @@ class afs {
 	
 	/**
 	  * check whether kind of command is allowed
-	  * @params cmd constant of kind of command
-	  * @return boolean
-	  */
+	  * @param cmd constant of kind of command
+	  * @return
+	  *   Boolean
+	  *     - True  = command allowed
+	  *     - False = command not allowed
+	 */
 	public function allowed( $cmd ) {
 		$this->groupMemberships();
 		$this->listAcl();
@@ -115,8 +118,8 @@ class afs {
 	}	
 	
 	/**
-	  * read quota
-	  */
+	 * read quota
+	 */
 	protected function listQuota() {
 		$cmd = $this->cmd['fs'] . ' listquota ' . escapeshellarg( $this->dir );
 		exec( $cmd, $output, $ret );
@@ -134,22 +137,24 @@ class afs {
 	}	
 	
 	/**
-	  * @return array 
-	  *		total 				- total amount in KB
-	  *		used				- used space in KB
-	  *		percent_used		- percentage of used space
-	  *		percent_partition 	- percentage of used partition space
-	  */
+	 * @return
+	 *   Array
+	 *     - total             - total amount in KB
+	 *     - used              - used space in KB
+	 *     - percent_used      - percentage of used space
+	 *     - percent_partition - percentage of used partition space
+	 */
 	public function getQuota() {
 		$this->listQuota();
 		return $this->quota;
 	}
 	
 	/**
-	  * @return array:
-	  *		key 				- user/group name
-	  *		value				- rights [rlidwka]
-	  */
+	 * @return
+	 *   Array:
+	 *     - key   - user/group name
+	 *     - value - rights [rlidwka]
+	 */
 	public function getAcl() {
 		if( empty( $this->rights ) ) {
 			$this->listAcl();
@@ -159,10 +164,12 @@ class afs {
 	
 	/**
 	  * set acl
-	  * @params acl - array:
-	  *		key 				- user/group name
-	  *		value				- rights [rlidwka]
-	  * @params recursively - boolean	- set acl recursively
+	  * @param acl
+	  *   Array:
+	  *     - key   - user/group name
+	  *     - value - rights [rlidwka]
+	  * @param recursively
+	  *   Boolean - set acl recursively
 	  */
 	public function setAcl( $acl, $recursively = false ) {
 		foreach( $acl as $user => $rights ) {
@@ -211,7 +218,7 @@ class afs {
 	
 	/**
 	  * check string whether it is a correct acl argument
-	  * @params rights string to be checked
+	  * @param rights string to be checked
 	  * @return boolean
 	  */
 	protected function isAclString( $rights ) {
@@ -227,7 +234,7 @@ class afs {
 	
 	/**
 	  * check string whether it is a correct username
-	  * @params username
+	  * @param username
 	  * @return boolean
 	  */
 	protected function isUserString( $username ) {
@@ -237,7 +244,7 @@ class afs {
 	
 	/**
 	  * check string whether it is a existing user
-	  * @params username
+	  * @param username
 	  * @return boolean
 	  */
 	protected function isUser( $username ) {
@@ -248,7 +255,7 @@ class afs {
 	
 	/**
 	  * check whether group exists
-	  * @params groupname
+	  * @param groupname
 	  * @return boolean
 	  */
 	public function groupExists( $groupname ) {
@@ -262,7 +269,7 @@ class afs {
 	
 	/**
 	  * create group if allowed
-	  * @params groupname
+	  * @param groupname
 	  * @return boolean or error code
 	  */
 	protected function createGroup( $groupname ) {
@@ -297,7 +304,7 @@ class afs {
 	
 	/**
 	  * create group
-	  * @params groupname
+	  * @param groupname
 	  * @return boolean or error code
 	  */
 	public function addGroup( $groupname ) {
@@ -313,7 +320,7 @@ class afs {
 	
 	/**
 	  * delete group
-	  * @params groupname
+	  * @param groupname
 	  * @return boolean or error code
 	  */
 	public function deleteGroup( $groupname ) {
@@ -334,7 +341,7 @@ class afs {
 	
 	/**
 	  * retrieves members of group
-	  * @params groupname
+	  * @param groupname
 	  * @return array groupnames
 	  */
 	public function getGroupMembers( $groupname ) {
@@ -353,7 +360,7 @@ class afs {
 	
 	/**
 	  * checks if user is owner of group
-	  * @params groupname
+	  * @param groupname
 	  * @return boolean
 	  */
 	public function ownGroup( $groupname ) {
@@ -366,8 +373,8 @@ class afs {
 	
 	/**
 	  * add user to group
-	  * @params groupname
-	  * @params user
+	  * @param groupname
+	  * @param user
 	  * @return boolean or error code
 	  */
 	public function addGroupMembers( $groupname, $user ) {	
@@ -383,8 +390,8 @@ class afs {
 	
 	/**
 	  * remove user from group
-	  * @params groupname
-	  * @params user
+	  * @param groupname
+	  * @param user
 	  * @return boolean or error code
 	  */
 	public function removeGroupMembers( $groupname, $user ) {	
