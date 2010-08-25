@@ -126,7 +126,8 @@ FILE_PATTERNS          = *.c \
                          *.PY
 RECURSIVE              = YES
 EXCLUDE                = src/lib/FirePHPCore/ \
-                         src/lib/JSON/ \ 
+                         src/lib/JSON/ \
+                         src/lib/geshi/ \
 EXCLUDE_SYMLINKS       = NO
 EXCLUDE_PATTERNS       = 
 EXAMPLE_PATH           = 
