@@ -26,7 +26,7 @@ switch($check){
 	case 1: # check directory and files
 		$result['result']['config'] = array(
 			'base_path' => '/var/www',
-		
+			'commands_path' => 'commands/',		
 		);
 		$result['result']['writable'] = false;
 		$result['result']['overwrite'] = false;
@@ -37,7 +37,7 @@ switch($check){
 		if(file_exists($CONFIG_PATH.$CONFIG_FILE)) {
 			$result['result']['overwrite'] = true;
 			//$result['result']['config'] = NULL; //TODO read config
-		}		
+		}	
 		break;
 	case 2:
 		$path = @$_GET['path'];
@@ -48,6 +48,46 @@ switch($check){
 				$result['result']['correct'] = false;
 			else
 				$result['result']['correct'] = true;			
+		}
+		break;
+	case 3:
+		$path = @$_GET['path'];
+		if($path == '')
+			$result['error'] = true;
+		else {
+			if(!file_exists('../'.$path))
+				$result['result']['correct'] = false;
+			else
+				$result['result']['correct'] = true;			
+		}
+		break;
+	case 4:
+		$path = @$_GET['path'];
+		if($path == '')
+			$result['error'] = true;
+		else {		
+			$path = '../'.$path;	
+			if(!file_exists($path))
+				$result['error'] = true;
+			else {
+				$h = @opendir($path);
+				$commands = array();
+				if(is_resource($h)) {
+					while( ($f = readdir($h)) !== false ) {
+						if(preg_match('!^\.{1,2}$!', $f))
+							continue;
+						if(preg_match('!.*~$!', $f))
+							continue;
+						if(!is_dir($path.$f)) {
+							if(strlen($f) >= 4 and substr($f, -4) == '.php') {
+								$commands[] = substr($f,0,-4);
+							}
+						}
+					}
+					closedir($h);
+				}
+				$result['result'] = $commands;
+			}
 		}
 		break;
 	default:

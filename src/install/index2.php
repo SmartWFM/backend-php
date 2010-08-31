@@ -53,7 +53,9 @@
 							addNotice('Config file doesn\'t exists');
 						// load data
 						$('input[name="basepath"]').val(data.result.config.base_path);
+						$('input[name="commandspath"]').val(data.result.config.commands_path);
 						checkBasePath();
+						checkCommandsPath();
 					}
 				}
 			});
@@ -81,6 +83,48 @@
 				}
 			});
 		}
+		
+		function checkCommandsPath() {
+			$.ajax({
+				url: 'check.php',
+				data: {'check': 3, 'path': $('input[name="commandspath"]').val()},
+				success: function(data) {
+					if(data.error == false){
+						if(data.result.correct) {
+							setCorrectFlag('commandspath-check');
+							loadCommands();
+						} else {
+							setFalseFlag('commandspath-check');
+							$('#commands').html('');						
+						}
+						
+					}
+					else {
+						setFalseFlag('commandspath-check');
+						$('#commands').html('');	
+					}
+				}
+			});
+		}
+		
+		function loadCommands() {
+			$.ajax({
+				url: 'check.php',
+				data: {'check': 4, 'path': $('input[name="commandspath"]').val()},
+				success: function(data) {
+					if(data.error == false){
+						// TODO
+						$('#commands').html(
+							'<label for=\"commands\">commands</label><br/>');
+						for(i in data.result) {
+							$('#commands').append('<input name="commands[]" type="checkbox" value="'+data.result[i]+'" />'+data.result[i]+'<br />');
+						}				
+					}
+					else
+						setFalseFlag('commandspath-check');
+				}
+			});
+		}
 		//-->
 		</script>
 	</head>
@@ -100,19 +144,13 @@
 				<input name="basepath" type="text" size="50" onchange="checkBasePath()" />
 				<img id="basepath-check" src="images/false.png"/>
 			</p>
-			<!--<p>
-				<label for="commandspath">path to commands directory</label><br />
-				<input name="commandspath" type="text" size="50" value="<?php echo $COMMANDS_PATH; ?>" >
-			</p>
 			<p>
-				<label for="commands">commands</label><br />
-				<?php
-				foreach($commands as $c){
-					echo '<input name="commands[]" type="checkbox" value="'.$c.'" />'.$c.'<br />';
-				}
-				
-				?>
-			</p>-->
+				<label for="commandspath">path to commands directory</label><br />
+				<input name="commandspath" type="text" size="50" onchange="checkCommandsPath()" />
+				<img id="commandspath-check" src="images/false.png"/>
+			</p>
+			<p id="commands">
+			</p>
 			<p>
 				<label for="mimetype_detection_mode">mimetype_detection_mode</label><br />
 				<select name="mimetype_detection_mode" size="1">
