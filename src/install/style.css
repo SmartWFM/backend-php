@@ -1,0 +1,30 @@
+@charset "UTF-8";
+
+.notice {
+	padding:5px;
+	border:2px solid #009900;
+	background-color:#CCFFCC;
+	text-align:center;
+	margin:20px 50px;
+}
+
+.error {
+	padding:5px;
+	border:2px solid #CC0000;
+	background-color: #FFCCCC;
+	text-align:center;
+	margin:20px 00px;
+}
+
+body {
+	text-align: center;
+}
+
+#settings {
+	margin: 0px 50px;
+	text-align: left;
+}
+
+#wrapper {
+	width: 700px;
+}		
