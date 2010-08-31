@@ -20,11 +20,6 @@
 		<script type="text/javascript" src="jquery.js"></script>
 		<script type="text/javascript" src="install.js"></script>
 		<link rel="stylesheet" media="all" href="style.css" />
-		<script type="text/javascript">
-		<!--				
-		function save() {}
-		//-->
-		</script>
 	</head>
 <body onload="init()">
 	<center>
@@ -36,9 +31,9 @@
 	
 	
 	<div id="settings">
-		<form action="save.php" method="post">
+		<form id="settingsform">
 			<p id="basepath">
-				<label for="basepath">basepath of SWFM installation - access only under this directory</label><br />
+				<label for="basepath">basepath of SWFM installation - access only in this directory and its subdirs</label><br />
 				<input name="basepath" type="text" size="50" onchange="checkBasePath()" />
 				<img id="basepath-check" src="images/false.png"/>
 			</p>
@@ -68,10 +63,11 @@
 				<label for="use_x_sendfile">use_x_sendfile</label><br />
 				<input name="use_x_sendfile" type="checkbox" value="true" />
 			</p>-->
-			<input type="button" value="save config" onclick="save()" />
+			<input type="submit" value="save config"  />
 		
 		</form>
 	</div>
+	<div id="result"></div>
 	
 	
 	</div>
