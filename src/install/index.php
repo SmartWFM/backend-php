@@ -21,9 +21,7 @@
 		<script type="text/javascript" src="install.js"></script>
 		<link rel="stylesheet" media="all" href="style.css" />
 		<script type="text/javascript">
-		<!--		
-		
-		
+		<!--				
 		function save() {}
 		//-->
 		</script>
