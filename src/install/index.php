@@ -59,10 +59,10 @@
 					<option value="afs">afs</option>
 				</select>
 			</p>
-			<!--<p>
+			<p>
 				<label for="use_x_sendfile">use_x_sendfile</label><br />
-				<input name="use_x_sendfile" type="checkbox" value="true" />
-			</p>-->
+				<input name="use_x_sendfile" type="checkbox" />
+			</p>
 			<input type="submit" value="save config"  />
 		
 		</form>

@@ -22,7 +22,7 @@ class Config {
 	}
 	
 	public function write() {
-		echo "<?php\n";
+		echo "< ?php\n";
 		foreach($this->options as $i) {
 			switch($i['type']){
 				case 'string':
@@ -48,7 +48,7 @@ class Config {
 	}
 };
 
-$requiredSettings = array('basepath', 'commandspath', 'mimetype_detection_mode', 'filesystem_type',);
+$requiredSettings = array('basepath', 'commandspath', 'mimetype_detection_mode', 'filesystem_type', 'use_x_sendfile');
 $optionalSettings = array('commands',);
 
 $settings = array_merge($requiredSettings, $optionalSettings);
@@ -57,14 +57,14 @@ header("Content-Type: text/plain");
 $c = new Config();
 foreach($_GET as $k => $v) {
 	if(!in_array($k, $settings))
-		print 'ERROR'; //TODO
+		print 'ERROR1'; //TODO
 	else
 		$c->addOption($k, $v);
 	if(in_array($k, $requiredSettings))
 		unset($requiredSettings[array_search($k, $requiredSettings)]);
 }
 if(count($requiredSettings) != 0)
-	print 'ERROR'; //TODO
+	print 'ERROR2'; //TODO
 $c->write();
 
 
