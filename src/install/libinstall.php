@@ -12,7 +12,7 @@
 
 /**
   *	@author Morris Jobke
-  * @since	0.4
+  *	@since	0.4
   *
   *	This is an abstract class for other options saved by this script.
   */  
@@ -21,13 +21,15 @@ abstract class BaseOption {
 	protected $value;
 	protected $name;	
 	protected $type;	
-	protected $errorCode = 0;	
-	protected $errorMessage = '';	
+	protected $possibleValues;
+	protected $errorCode = NULL;	
+	protected $errorMessage = NULL;	
 	
-	public function __construct($n, $t, $d) {
+	public function __construct($n, $t, $d, $p = NULL) {
 		$this->name = $n;
 		$this->type = $t;
 		$this->defaultValue = $d;
+		$this->possibleValues = $p;
 	}
 	
 	public function getDefault() {
@@ -77,10 +79,9 @@ abstract class BaseOption {
 	abstract public function check($v);
 };
 
-
 /**
   *	@author Morris Jobke
-  * @since	0.4
+  *	@since	0.4
   *
   *	class to handle 'basepath' option
   *
@@ -110,6 +111,67 @@ class BasePathOption extends BaseOption {
 			}
 		}
 		return false;
+	}
+};
+
+/**
+  *	@author Morris Jobke
+  *	@since	0.4
+  *
+  *	class to handle 'setting_filename' option
+  *
+  *	errorCodes:
+  *		1 	path-string is empty
+  *		2	path is directory  
+  *		3	path doesn't exists
+  */ 
+class SettingFilenameOption extends BaseOption {
+	public function check($v) {
+		$this->value = $v;
+		
+		if($this->value == '') {
+			$this->errorCode = 1;
+			$this->errorMessage = 'path-string is empty';
+		} else {
+			if(file_exists($this->value)) {
+				if(is_dir($this->value)) {
+					$this->errorCode = 2;
+					$this->errorMessage = 'path is directory';	
+				} else	
+					return true;	
+			} else {
+				if(!file_exists(dirname($this->value))) {					
+					$this->errorCode = 3;
+					$this->errorMessage = 'path doesn\'t exists';	
+				} else 
+					return true;
+								
+			}
+		}
+		return false;
+	}
+};
+
+/**
+  *	@author Morris Jobke
+  *	@since	0.4
+  *
+  *	class to handle 'mimetype_detection_mode' option
+  *
+  *	errorCodes:
+  *		1	value isn't correct
+  */ 
+class MimetypeDetectionModeOption extends BaseOption {
+	public function check($v) {
+		$this->value = $v;
+		
+		if(in_array($this->value, $this->possibleValues))
+			return true;
+		else {
+			$this->errorCode = 1;
+			$this->errorMessage = 'value isn\'t correct';
+			return false;
+		}
 	}
 };
 
@@ -166,11 +228,28 @@ class Config {
 
 
 $c = new Config();
-$c->addOption( new BasePathOption('basepath', 'string', '/var/www') );
+$c->addOption( new BasePathOption(
+	'basepath', 
+	'string', 
+	'/var/www'
+) );
+$c->addOption( new SettingFilenameOption(
+	'setting_filename', 
+	'string', 
+	'/tmp/.smartwfm.ini'
+) );
+$c->addOption( new MimetypeDetectionModeOption(
+	'mimetype_detection_mode', 
+	'string', 
+	'internal', 
+	array('internal', 'cmd_file', 'file')
+) );
 
 // $a = $_GET;
 $a = array(
-	'basepath' => '/var/www',
+	'basepath' => '/home/kabum',
+	'setting_filename' => '/home/kabum/.smartwfm.ini',
+	'mimetype_detection_mode' => 'file',
 );
 $c->parse($a);
 
