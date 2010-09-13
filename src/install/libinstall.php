@@ -27,7 +27,7 @@ abstract class BaseOption {
 	protected $enabled = True;
 
 	protected function boolIt($v) {
-		$bool = array('false', 'False', '0');
+		$bool = array('False', 'False', '0');
 		if(in_array($v, $bool))
 			return False;
 		else
@@ -68,6 +68,10 @@ abstract class BaseOption {
 			return $this->defaultValue;
 					
 		return empty($this->value) ? $this->defaultValue : $this->value;
+	}
+	
+	public function hasError() {
+		return ($this->errorCode == NULL) ? False : True;
 	}
 	
 	/**
@@ -119,7 +123,7 @@ class BasePathOption extends BaseOption {
 		} else {
 			if(file_exists($this->value)) {
 				if(is_dir($this->value))
-					return true;
+					return True;
 				else {
 					$this->errorCode = 2;
 					$this->errorMessage = 'path is file';				
@@ -129,7 +133,7 @@ class BasePathOption extends BaseOption {
 				$this->errorMessage = 'path doesn\'t exists';				
 			}
 		}
-		return false;
+		return False;
 	}
 };
 
@@ -157,17 +161,17 @@ class SettingFilenameOption extends BaseOption {
 					$this->errorCode = 2;
 					$this->errorMessage = 'path is directory';	
 				} else	
-					return true;	
+					return True;	
 			} else {
 				if(!file_exists(dirname($this->value))) {					
 					$this->errorCode = 3;
 					$this->errorMessage = 'path doesn\'t exists';	
 				} else 
-					return true;
+					return True;
 								
 			}
 		}
-		return false;
+		return False;
 	}
 };
 
@@ -185,11 +189,11 @@ class MimetypeDetectionModeOption extends BaseOption {
 		$this->setValue($v);
 		
 		if(in_array($this->value, $this->possibleValues))
-			return true;
+			return True;
 		else {
 			$this->errorCode = 1;
 			$this->errorMessage = 'value isn\'t correct';
-			return false;
+			return False;
 		}
 	}
 };
@@ -209,17 +213,69 @@ class UseXSendfileOption extends BaseOption {
 	public function check($v) {
 		if(!$this->enabled) {
 			$this->value = $this->defaultValue;
-			return true;
+			return True;
 		}
-		$bool = array('false', 'False', '0');
+		$bool = array('False', 'False', '0');
 		$this->value = in_array($v, $bool) ? False : (boolean) $v;
 		
-		return true;
+		return True;
 	}
 
 	public function checkAvailablity() {
 		$this->enabled = False;
 		//TODO
+	}
+};
+
+/**
+  *	@author Morris Jobke
+  *	@since	0.4
+  *
+  *	class to handle 'commands_path' option
+  *
+  *	errorCodes:
+  *		1 	path-string is empty
+  *		2	path is file  
+  *		3	path doesn't exists
+  */
+class CommandsPathOption extends BaseOption {
+	public function check($v) {
+		$this->setValue('../'.$v);
+		
+		if($this->value == '') {
+			$this->errorCode = 1;
+			$this->errorMessage = 'path-string is empty';
+		} else {
+			if(file_exists($this->value)) {
+				if(is_dir($this->value))
+					return True;
+				else {
+					$this->errorCode = 2;
+					$this->errorMessage = 'path is file';				
+				}
+			} else {
+				$this->errorCode = 3;
+				$this->errorMessage = 'path doesn\'t exists';				
+			}
+		}
+		return False;
+	}
+};
+
+/**
+  *	@author Morris Jobke
+  *	@since	0.4
+  *
+  *	class to handle 'commands' option
+  *
+  *	errorCodes:
+  */
+class CommandsOption extends BaseOption {
+	public function check($v) {
+		$this->setValue($v);
+		$this->errorCode = 2;
+		$thit->value = array('asdas', 'asdas');
+		return False;
 	}
 };
 
@@ -247,9 +303,12 @@ class Config {
 	public function generate() {
 		$output = '';
 		$output .= "< ?php\n";
-		foreach($this->options as $o) {			
-			$output .= "SmartWFM_Registry::set('".$o->getName();
-			$output .= "', ".$o->getPHPValue().");\n";
+		foreach($this->options as $o) {	
+#			echo '<pre>'.print_r($o,1).'</pre>';
+			if(!$o->hasError()) {		
+				$output .= "SmartWFM_Registry::set('".$o->getName();
+				$output .= "', ".$o->getPHPValue().");\n";
+			}
 		}
 		$output .= "?>\n";
 		return $output;
@@ -262,8 +321,10 @@ class Config {
 	public function parse($input) {
 		foreach($input as $k => $v) {
 			if(array_key_exists($k, $this->options)) {
-				if(!$this->options[$k]->check($v))
+				if(!$this->options[$k]->check($v)) {
 					$this->errors[$k] = $this->options[$k]->getError();
+					echo 'df';
+				}
 			} else {
 				if(!array_key_exists('general', $this->errors))
 					$this->errors['general'] = array('incorrectKey' => array());
@@ -294,7 +355,17 @@ $c->addOption( new MimetypeDetectionModeOption(
 $c->addOption( new UseXSendfileOption(
 	'use_x_sendfile',
 	'boolean',
-	'false'
+	'False'
+) );
+$c->addOption( new CommandsPathOption(
+	'commands_path', 
+	'string', 
+	'commands/'
+) );
+$c->addOption( new CommandsOption(
+	'commands', 
+	'array', 
+	array()
 ) );
 
 // $a = $_GET;
@@ -302,7 +373,7 @@ $a = array(
 	'basepath' => '/home/kabum',
 	'setting_filename' => '/home/kabum/.smartwfm.ini',
 	'mimetype_detection_mode' => 'file',
-	'use_x_sendfile' => 'false',
+	'use_x_sendfile' => 'False',
 );
 $c->parse($a);
 
