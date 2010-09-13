@@ -15,7 +15,7 @@
   *	@since	0.4
   *
   *	This is an abstract class for other options saved by this script.
-  */  
+  */
 abstract class BaseOption {
 	protected $defaultValue;
 	protected $value;
@@ -24,11 +24,20 @@ abstract class BaseOption {
 	protected $possibleValues;
 	protected $errorCode = NULL;	
 	protected $errorMessage = NULL;	
+	protected $enabled = True;
+
+	protected function boolIt($v) {
+		$bool = array('false', 'False', '0');
+		if(in_array($v, $bool))
+			return False;
+		else
+			return (boolean) $v;
+	}
 	
 	public function __construct($n, $t, $d, $p = NULL) {
 		$this->name = $n;
 		$this->type = $t;
-		$this->defaultValue = $d;
+		$this->defaultValue = ($t == 'boolean') ? $this->boolIt($d) : $d;
 		$this->possibleValues = $p;
 	}
 	
@@ -47,7 +56,17 @@ abstract class BaseOption {
 		return $this->name;
 	}
 	
+	protected function setValue($v) {
+		if($this->type == 'boolean')
+			$this->value = $this->boolIt($v);
+		else
+			$this->value = $v;
+	}
+	
 	protected function getValue() {
+		if(!$this->enabled)
+			return $this->defaultValue;
+					
 		return empty($this->value) ? $this->defaultValue : $this->value;
 	}
 	
@@ -89,10 +108,10 @@ abstract class BaseOption {
   *		1 	path-string is empty
   *		2	path is file  
   *		3	path doesn't exists
-  */ 
+  */
 class BasePathOption extends BaseOption {
 	public function check($v) {
-		$this->value = $v;
+		$this->setValue($v);
 		
 		if($this->value == '') {
 			$this->errorCode = 1;
@@ -124,10 +143,10 @@ class BasePathOption extends BaseOption {
   *		1 	path-string is empty
   *		2	path is directory  
   *		3	path doesn't exists
-  */ 
+  */
 class SettingFilenameOption extends BaseOption {
 	public function check($v) {
-		$this->value = $v;
+		$this->setValue($v);
 		
 		if($this->value == '') {
 			$this->errorCode = 1;
@@ -160,10 +179,10 @@ class SettingFilenameOption extends BaseOption {
   *
   *	errorCodes:
   *		1	value isn't correct
-  */ 
+  */
 class MimetypeDetectionModeOption extends BaseOption {
 	public function check($v) {
-		$this->value = $v;
+		$this->setValue($v);
 		
 		if(in_array($this->value, $this->possibleValues))
 			return true;
@@ -175,13 +194,41 @@ class MimetypeDetectionModeOption extends BaseOption {
 	}
 };
 
+/**
+  *	@author Morris Jobke
+  *	@since	0.4
+  *
+  *	class to handle 'use_x_sendfile' option
+  */
+class UseXSendfileOption extends BaseOption {
+	public function __construct($n, $t, $d, $p = NULL) {
+		parent::__construct($n, $t, $d, $p);
+		$this->checkAvailablity();
+	}
+	
+	public function check($v) {
+		if(!$this->enabled) {
+			$this->value = $this->defaultValue;
+			return true;
+		}
+		$bool = array('false', 'False', '0');
+		$this->value = in_array($v, $bool) ? False : (boolean) $v;
+		
+		return true;
+	}
+
+	public function checkAvailablity() {
+		$this->enabled = False;
+		//TODO
+	}
+};
 
 /**
   *	@author Morris Jobke
   * @since	0.4
   *
   *	class to handle whole config file generation process
-  */ 
+  */
 class Config {
 	protected $options = array();
 	protected $errors = array();
@@ -244,12 +291,18 @@ $c->addOption( new MimetypeDetectionModeOption(
 	'internal', 
 	array('internal', 'cmd_file', 'file')
 ) );
+$c->addOption( new UseXSendfileOption(
+	'use_x_sendfile',
+	'boolean',
+	'false'
+) );
 
 // $a = $_GET;
 $a = array(
 	'basepath' => '/home/kabum',
 	'setting_filename' => '/home/kabum/.smartwfm.ini',
 	'mimetype_detection_mode' => 'file',
+	'use_x_sendfile' => 'false',
 );
 $c->parse($a);
 
