@@ -53,7 +53,6 @@ abstract class BaseOption {
 	  * @return	value in PHP-syntax
 	  */
 	public function getPHPValue() {
-		echo $this->getValue();
 		switch($this->type){
 			case 'string':
 				$value = "'".$this->getValue()."'";
@@ -115,16 +114,30 @@ class BasePathOption extends BaseOption {
 };
 
 
+/**
+  *	@author Morris Jobke
+  * @since	0.4
+  *
+  *	class to handle whole config file generation process
+  */ 
 class Config {
 	protected $options = array();
+	protected $errors = array();
 	
+	/**
+	  *	adds option to config
+	  */
 	public function addOption($o) {
-		$this->options[] = $o;
+		$this->options[$o->getName()] = $o;
 	}
 	
+	/**
+	  *	generates PHP config file
+	  *	@return	file content
+	  */
 	public function generate() {
 		$output = '';
-		$output .= "<?php\n";
+		$output .= "< ?php\n";
 		foreach($this->options as $o) {			
 			$output .= "SmartWFM_Registry::set('".$o->getName();
 			$output .= "', ".$o->getPHPValue().");\n";
@@ -133,15 +146,38 @@ class Config {
 		return $output;
 	}
 	
-	public function parse($input) {}
+	/**
+	  * parses input array
+	  * @params	input	associative array (option name - value)
+	  */
+	public function parse($input) {
+		foreach($input as $k => $v) {
+			if(array_key_exists($k, $this->options)) {
+				if(!$this->options[$k]->check($v))
+					$this->errors[$k] = $this->options[$k]->getError();
+			} else {
+				if(!array_key_exists('general', $this->errors))
+					$this->errors['general'] = array('incorrectKey' => array());
+				$this->errors['general']['incorrectKey'][] = $k;
+			}				
+		}
+	}
 };
+
 
 $c = new Config();
 $c->addOption( new BasePathOption('basepath', 'string', '/var/www') );
 
-$c->parse('asd');
+// $a = $_GET;
+$a = array(
+	'basepath' => '/var/www',
+);
+$c->parse($a);
 
-$c->generate();
+// DEBUG
+echo '<pre>'.$c->generate().'</pre>';
+echo '<pre>'.print_r($c,1).'</pre>';
+// DEBUG END
 
 
 ?>
