@@ -39,6 +39,8 @@ abstract class BaseOption {
 		$this->type = $t;
 		$this->defaultValue = ($t == 'boolean') ? $this->boolIt($d) : $d;
 		$this->possibleValues = $p;
+		if(method_exists($this, 'checkAvailablity'))
+			$this->checkAvailablity();
 	}
 	
 	public function getDefault() {
@@ -205,11 +207,6 @@ class MimetypeDetectionModeOption extends BaseOption {
   *	class to handle 'use_x_sendfile' option
   */
 class UseXSendfileOption extends BaseOption {
-	public function __construct($n, $t, $d, $p = NULL) {
-		parent::__construct($n, $t, $d, $p);
-		$this->checkAvailablity();
-	}
-	
 	public function check($v) {
 		if(!$this->enabled) {
 			$this->value = $this->defaultValue;
