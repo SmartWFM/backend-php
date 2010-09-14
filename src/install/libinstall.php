@@ -63,10 +63,10 @@ abstract class BaseOption {
 			$this->value = $v;
 	}
 	
-	protected function getValue() {
+	public function getValue() {
 		if(!$this->enabled)
 			return $this->defaultValue;
-					
+			
 		return empty($this->value) ? $this->defaultValue : $this->value;
 	}
 	
@@ -269,13 +269,60 @@ class CommandsPathOption extends BaseOption {
   *	class to handle 'commands' option
   *
   *	errorCodes:
+  *		1	couldn't read commands_path dir
+  *		2	incorrect command name or commands_path is incorrect
   */
 class CommandsOption extends BaseOption {
 	public function check($v) {
-		$this->setValue($v);
-		$this->errorCode = 2;
-		$thit->value = array('asdas', 'asdas');
-		return False;
+		$commands = $this->getCommands();
+		if($commands == False) {			
+			$this->errorCode = 1;
+			$this->errorMessage = 'couldn\'t read commands_path dir';
+			return False;
+		}
+		$checkedValues = array();
+		foreach($v as $command) {
+			if(in_array($command, $commands))
+				$checkedValues[] = $command;
+			else {
+				$this->errorCode = 2;
+				$this->errorMessage = 'incorrect command name or '.
+					'commands_path is incorrect';
+				return False;
+			}
+		}
+		$this->setValue($checkedValues);
+		return True;
+	}
+	
+	/**
+	  *	reads commands_path dir and extracts importable files
+	  +	@return	array	list of filenames
+	  */
+	public function getCommands() {
+		global $c;
+		$path = $c->getValue('commands_path');
+		if(!file_exists($path) || !is_dir($path))
+			return False;
+		else {
+			$h = @opendir($path);
+			$commands = array();
+			if(is_resource($h)) {
+				while( ($f = readdir($h)) !== false ) {
+					if(preg_match('!^\.{1,2}$!', $f))
+						continue;
+					if(preg_match('!.*~$!', $f))
+						continue;
+					if(!is_dir($path.$f)) {
+						if(strlen($f) >= 4 and substr($f, -4) == '.php') {
+							$commands[] = substr($f,0,-4);
+						}
+					}
+				}
+				closedir($h);
+			}
+			return $commands;
+		}
 	}
 };
 
@@ -303,8 +350,7 @@ class Config {
 	public function generate() {
 		$output = '';
 		$output .= "< ?php\n";
-		foreach($this->options as $o) {	
-#			echo '<pre>'.print_r($o,1).'</pre>';
+		foreach($this->options as$k => $o) {	
 			if(!$o->hasError()) {		
 				$output .= "SmartWFM_Registry::set('".$o->getName();
 				$output .= "', ".$o->getPHPValue().");\n";
@@ -323,7 +369,6 @@ class Config {
 			if(array_key_exists($k, $this->options)) {
 				if(!$this->options[$k]->check($v)) {
 					$this->errors[$k] = $this->options[$k]->getError();
-					echo 'df';
 				}
 			} else {
 				if(!array_key_exists('general', $this->errors))
@@ -331,6 +376,12 @@ class Config {
 				$this->errors['general']['incorrectKey'][] = $k;
 			}				
 		}
+	}
+	
+	public function getValue($k) {
+		if(array_key_exists($k, $this->options))
+			return $this->options[$k]->getValue();
+		return False;
 	}
 };
 
@@ -374,6 +425,8 @@ $a = array(
 	'setting_filename' => '/home/kabum/.smartwfm.ini',
 	'mimetype_detection_mode' => 'file',
 	'use_x_sendfile' => 'False',
+	'commands_path' => 'commands/',
+	'commands' => array('archive_actions')
 );
 $c->parse($a);
 
