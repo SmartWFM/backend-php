@@ -345,6 +345,8 @@ class Config {
 	  *	@return	file content
 	  */
 	public function generate() {
+		if($this->errors != array())
+			return array('error' => True, 'result' => $this->errors);
 		$output = '';
 		$output .= "< ?php\n";
 		foreach($this->options as$k => $o) {	
@@ -354,7 +356,7 @@ class Config {
 			}
 		}
 		$output .= "?>\n";
-		return $output;
+		return array('error' => False, 'result' => $output);
 	}
 	
 	/**
@@ -428,8 +430,12 @@ $a = array(
 $c->parse($a);
 
 // DEBUG
-echo '<pre>'.$c->generate().'</pre>';
-echo '<pre>'.print_r($c,1).'</pre>';
+$r = $c->generate();
+if(!$r['error'])
+	echo '<pre>'.$r['result'].'</pre>';
+else
+	echo '<pre>'.print_r($r['result'],1).'</pre>';
+#echo '<pre>'.print_r($c,1).'</pre>';
 // DEBUG END
 
 
