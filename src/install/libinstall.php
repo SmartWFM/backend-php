@@ -25,6 +25,8 @@ abstract class BaseOption {
 	protected $errorCode = NULL;	
 	protected $errorMessage = NULL;	
 	protected $enabled = True;
+	protected $title;
+	protected $description;
 
 	protected function boolIt($v) {
 		$bool = array('False', 'False', '0');
@@ -34,13 +36,15 @@ abstract class BaseOption {
 			return (boolean) $v;
 	}
 	
-	public function __construct($n, $t, $d, $p = NULL) {
+	public function __construct($n, $t, $d, $title, $description, $p = NULL) {
 		$this->name = $n;
 		$this->type = $t;
 		$this->defaultValue = ($t == 'boolean') ? $this->boolIt($d) : $d;
 		$this->possibleValues = $p;
 		if(method_exists($this, 'checkAvailablity'))
 			$this->checkAvailablity();
+		$this->title = $title;
+		$this->description = $description;
 	}
 	
 	public function getDefault() {
@@ -389,32 +393,44 @@ $c = new Config();
 $c->addOption( new BasePathOption(
 	'basepath', 
 	'string', 
-	'/var/www'
+	'/var/www',
+	'Basepath',
+	'root path of SWFM' 
 ) );
 $c->addOption( new SettingFilenameOption(
 	'setting_filename', 
 	'string', 
-	'/tmp/.smartwfm.ini'
+	'/tmp/.smartwfm.ini',
+	'setting filename',
+	'filename for settings file'
 ) );
 $c->addOption( new MimetypeDetectionModeOption(
 	'mimetype_detection_mode', 
 	'string', 
 	'internal', 
+	'MIMETYPE detection mode',
+	'kind of MIMETYPE detection',
 	array('internal', 'cmd_file', 'file')
 ) );
 $c->addOption( new UseXSendfileOption(
 	'use_x_sendfile',
 	'boolean',
-	'False'
+	'False',
+	'use x-sendfile',
+	'enables x-sendfile mode'
 ) );
 $c->addOption( new CommandsPathOption(
 	'commands_path', 
 	'string', 
-	'commands/'
+	'commands/',
+	'commands path',
+	'path to commands directory'
 ) );
 $c->addOption( new CommandsOption(
 	'commands', 
 	'array', 
+	'commands',
+	'enabled commands',
 	array()
 ) );
 
