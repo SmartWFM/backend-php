@@ -42,6 +42,28 @@ function checkConfigDir() {
 function init() {
 	checkConfigDir();
 	$('#loading').hide();
+	$('#settingsform').submit(function() {
+		$.ajax({
+			url: 'save.php',
+			data: $('#settingsform').serializeArray(),
+			success: function(data) {
+				$('#result').html(data);
+				/*if(data.error == false){
+					if(data.result.correct) {
+						setCorrectFlag('commandspath-check');
+						loadCommands();
+					} else {
+						setFalseFlag('commandspath-check');
+						$('#commands').html('');						
+					}				
+				} else {
+					setFalseFlag('commandspath-check');
+					$('#commands').html('');	
+				}*/
+			}
+		});
+		return false;
+	});
 }
 		
 function checkBasePath() {

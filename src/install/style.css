@@ -27,5 +27,9 @@ body {
 
 #wrapper {
 	width: 700px;
-}		
+}	
+
+#result {
+	text-align: left;
+}	
 
