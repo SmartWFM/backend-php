@@ -68,7 +68,7 @@
 		</form>
 	</div>
 	<div id="result"></div>
-	
+	</pre>
 	
 	</div>
 	</center>

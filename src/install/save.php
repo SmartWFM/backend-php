@@ -48,8 +48,8 @@ class Config {
 	}
 };
 
-$requiredSettings = array('basepath', 'commandspath', 'mimetype_detection_mode', 'filesystem_type', 'use_x_sendfile');
-$optionalSettings = array('commands',);
+$requiredSettings = array('basepath', 'commandspath', 'mimetype_detection_mode', 'filesystem_type');
+$optionalSettings = array('commands', 'use_x_sendfile');
 
 $settings = array_merge($requiredSettings, $optionalSettings);
 
