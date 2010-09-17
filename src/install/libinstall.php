@@ -174,6 +174,7 @@ class SettingFilenameOption extends BaseOption {
 			'filename for settings file'
 		);
 	}
+	
 	public function check($v) {
 		$this->setValue($v);
 		
@@ -220,6 +221,7 @@ class MimetypeDetectionModeOption extends BaseOption {
 			array('internal', 'cmd_file', 'file')
 		);
 	}
+	
 	public function check($v) {
 		$this->setValue($v);
 		
@@ -249,6 +251,7 @@ class UseXSendfileOption extends BaseOption {
 			'enables x-sendfile mode'
 		);
 	}
+	
 	public function check($v) {
 		if(!$this->enabled) {
 			$this->value = $this->defaultValue;
@@ -287,6 +290,7 @@ class CommandsPathOption extends BaseOption {
 			'path to commands directory'
 		);
 	}
+	
 	public function check($v) {
 		$this->setValue('../'.$v);
 		
@@ -330,6 +334,7 @@ class CommandsOption extends BaseOption {
 			'commands ...'
 		);
 	}
+	
 	public function check($v) {
 		$commands = $this->getCommands();
 		if($commands == False) {			
