@@ -120,6 +120,16 @@ abstract class BaseOption {
   *		3	path doesn't exists
   */
 class BasePathOption extends BaseOption {
+	public function __construct() {
+		parent::__construct(
+			'basepath', 
+			'string', 
+			'/var/www',
+			'Basepath',
+			'root path of SWFM' 
+		);
+	}	
+	
 	public function check($v) {
 		$this->setValue($v);
 		
@@ -155,6 +165,15 @@ class BasePathOption extends BaseOption {
   *		3	path doesn't exists
   */
 class SettingFilenameOption extends BaseOption {
+	public function __construct() {
+		parent::__construct(
+			'setting_filename', 
+			'string', 
+			'/tmp/.smartwfm.ini',
+			'setting filename',
+			'filename for settings file'
+		);
+	}
 	public function check($v) {
 		$this->setValue($v);
 		
@@ -191,6 +210,16 @@ class SettingFilenameOption extends BaseOption {
   *		1	value isn't correct
   */
 class MimetypeDetectionModeOption extends BaseOption {
+	public function __construct() {
+		parent::__construct(
+			'mimetype_detection_mode', 
+			'string', 
+			'internal', 
+			'MIMETYPE detection mode',
+			'kind of MIMETYPE detection',
+			array('internal', 'cmd_file', 'file')
+		);
+	}
 	public function check($v) {
 		$this->setValue($v);
 		
@@ -211,6 +240,15 @@ class MimetypeDetectionModeOption extends BaseOption {
   *	class to handle 'use_x_sendfile' option
   */
 class UseXSendfileOption extends BaseOption {
+	public function __construct() {
+		parent::__construct(
+			'use_x_sendfile',
+			'boolean',
+			'False',
+			'use x-sendfile',
+			'enables x-sendfile mode'
+		);
+	}
 	public function check($v) {
 		if(!$this->enabled) {
 			$this->value = $this->defaultValue;
@@ -240,6 +278,15 @@ class UseXSendfileOption extends BaseOption {
   *		3	path doesn't exists
   */
 class CommandsPathOption extends BaseOption {
+	public function __construct() {
+		parent::__construct(
+			'commands_path', 
+			'string', 
+			'commands/',
+			'commands path',
+			'path to commands directory'
+		);
+	}
 	public function check($v) {
 		$this->setValue('../'.$v);
 		
@@ -274,6 +321,15 @@ class CommandsPathOption extends BaseOption {
   *		2	incorrect command name or commands_path is incorrect
   */
 class CommandsOption extends BaseOption {
+	public function __construct() {
+		parent::__construct(
+			'commands', 
+			'array', 
+			array(),
+			'enabled commands',
+			'commands ...'
+		);
+	}
 	public function check($v) {
 		$commands = $this->getCommands();
 		if($commands == False) {			
@@ -390,49 +446,12 @@ class Config {
 
 
 $c = new Config();
-$c->addOption( new BasePathOption(
-	'basepath', 
-	'string', 
-	'/var/www',
-	'Basepath',
-	'root path of SWFM' 
-) );
-$c->addOption( new SettingFilenameOption(
-	'setting_filename', 
-	'string', 
-	'/tmp/.smartwfm.ini',
-	'setting filename',
-	'filename for settings file'
-) );
-$c->addOption( new MimetypeDetectionModeOption(
-	'mimetype_detection_mode', 
-	'string', 
-	'internal', 
-	'MIMETYPE detection mode',
-	'kind of MIMETYPE detection',
-	array('internal', 'cmd_file', 'file')
-) );
-$c->addOption( new UseXSendfileOption(
-	'use_x_sendfile',
-	'boolean',
-	'False',
-	'use x-sendfile',
-	'enables x-sendfile mode'
-) );
-$c->addOption( new CommandsPathOption(
-	'commands_path', 
-	'string', 
-	'commands/',
-	'commands path',
-	'path to commands directory'
-) );
-$c->addOption( new CommandsOption(
-	'commands', 
-	'array', 
-	array(),
-	'enabled commands',
-	'commands ...'
-) );
+$c->addOption( new BasePathOption() );
+$c->addOption( new SettingFilenameOption() );
+$c->addOption( new MimetypeDetectionModeOption() );
+$c->addOption( new UseXSendfileOption() );
+$c->addOption( new CommandsPathOption() );
+$c->addOption( new CommandsOption() );
 
 $c->parse($_GET);
 // DEBUG
