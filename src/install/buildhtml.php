@@ -19,6 +19,7 @@ $c->addOption( new MimetypeDetectionModeOption() );
 $c->addOption( new UseXSendfileOption() );
 $c->addOption( new CommandsPathOption() );
 $c->addOption( new CommandsOption() );
+$c->addOption( new FilesystemTypeOption() );
 ?>
 <!DOCTYPE html 
      PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"

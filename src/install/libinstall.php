@@ -91,17 +91,16 @@ abstract class BaseOption {
 	public function buildFormElement() {
 		if($this->possibleValues == NULL) {
 			switch($this->type){
-				case 'string':
-					$element = "string";
+				case 'boolean':
+					$element = "<input name=\"".$this->getName();
+					$element .= "\" type=\"checkbox\" />\n";
 					break;
 				case 'array':
-					$element = "array";
-					break;
-				case 'boolean':
-					$element = "<input name=\"".$this->getName()."\" type=\"checkbox\" />\n";
-					break;
+				case 'string':
 				default:
-					$element = "default";
+					$element = "<input name=\"".$this->getName();
+					$element .= "\" type=\"text\" size=\"50\" value=\"";
+					$element .= $this->defaultValue."\" />\n";
 					break;
 			}
 		} else {
@@ -397,7 +396,7 @@ class CommandsOption extends BaseOption {
 	  */
 	public function getCommands() {
 		global $c;
-		$path = $c->getValue('commands_path');
+		$path = '../'.$c->getValue('commands_path');
 		if(!file_exists($path) || !is_dir($path))
 			return False;
 		else {
@@ -418,6 +417,53 @@ class CommandsOption extends BaseOption {
 				closedir($h);
 			}
 			return $commands;
+		}
+	}
+	
+	public function buildFormElement() {
+		$commands = $this->getCommands();
+		$element = '';
+		if($commands) {
+			foreach($commands as $c) {
+				$element .= "<input name=\"".$this->getName()."[]\" ";
+				$element .= "type=\"checkbox\" value=\"".$c."\" />".$c;
+				$element .= "<br />\n";
+			}
+		}
+		return $element;
+	}
+};
+
+/**
+  *	@author Morris Jobke
+  *	@since	0.4
+  *
+  *	class to handle 'filesystem_type' option
+  *
+  *	errorCodes:
+  *		1	value isn't correct
+  */
+class FilesystemTypeOption extends BaseOption {
+	public function __construct() {
+		parent::__construct(
+			'filesystem_type', 
+			'string', 
+			'local', 
+			'filesystem type',
+			'kind of filesystem',
+			array('local', 'afs')
+		);
+	}
+	
+	public function check($v) {
+		$this->setValue($v);
+		
+		if(in_array($this->value, $this->possibleValues))
+			return True;
+		else {
+			$this->errorCode = 1;
+			$this->errorMessage = 'value isn\'t correct';
+			return False;
 		}
 	}
 };
@@ -512,24 +558,8 @@ class Config {
 			</p>
 			<p id="commands">
 			</p>
-			<p>
-				<select name="mimetype_detection_mode" size="1">
-					<option value="internal">internal</option>
-					<option value="cmd_file">cmd_file</option>
-					<option value="file">file</option>
-				</select>
-			</p>
-			<!--<p>
-				<select name="filesystem_type" size="1">
-					<option value="local">local</option>
-					<option value="afs">afs</option>
-				</select>
-			</p>-->
 			<p id="setting_filename">
 				<input name="setting_filename" type="text" size="50" />				
-			</p>
-			<p>
-				<input name="use_x_sendfile" type="checkbox" />
 			</p>
 			<input type="submit" value="save config"  />
 		*/
