@@ -62,7 +62,7 @@
 			</p>-->
 			<p id="setting_filename">
 				<img id="setting_filename-check" src="images/false.png"/>
-				<label for="setting_filename">basepath of SWFM installation - access only in this directory and its subdirs</label><br />
+				<label for="setting_filename">settings_filename</label><br />
 				<input name="setting_filename" type="text" size="50" />				
 			</p>
 			<p>
