@@ -408,7 +408,7 @@ class Config {
 		if($this->errors != array())
 			return array('error' => True, 'result' => $this->errors);
 		$output = '';
-		$output .= "< ?php2\n";
+		$output .= "< ?php\n"; //TODO delete whitespace
 		foreach($this->options as$k => $o) {	
 			if(!$o->hasError()) {		
 				$output .= "SmartWFM_Registry::set('".$o->getName();
@@ -437,6 +437,11 @@ class Config {
 		}
 	}
 	
+	/**
+	  *	retrieves value for a given option name
+	  *	@params	k		name of option
+	  *	@return	value of corresponding option
+	  */
 	public function getValue($k) {
 		if(array_key_exists($k, $this->options))
 			return $this->options[$k]->getValue();
