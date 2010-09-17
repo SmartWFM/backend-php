@@ -89,19 +89,27 @@ abstract class BaseOption {
 	}
 	
 	public function buildFormElement() {
-		switch($this->type){
-			case 'string':
-				$element = "string";
-				break;
-			case 'array':
-				$element = "array";
-				break;
-			case 'boolean':
-				$element = "<input name=\"".$this->getName()."\" type=\"checkbox\" />\n";
-				break;
-			default:
-				$element = "default";
-				break;
+		if($this->possibleValues == NULL) {
+			switch($this->type){
+				case 'string':
+					$element = "string";
+					break;
+				case 'array':
+					$element = "array";
+					break;
+				case 'boolean':
+					$element = "<input name=\"".$this->getName()."\" type=\"checkbox\" />\n";
+					break;
+				default:
+					$element = "default";
+					break;
+			}
+		} else {
+			$element = "<select name=\"".$this->getName()."\" size=\"1\">\n";
+			foreach($this->possibleValues as $k => $v) {
+				$element .= "<option value=\"".$v."\">".$v."</option>\n";
+			}
+			$element .= "</select>\n";
 		}
 		return $element;
 	}
