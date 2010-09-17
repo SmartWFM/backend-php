@@ -539,7 +539,7 @@ class Config {
 	  */
 	public function buildHTML() {
 		$html = "<div id=\"settings\">\n";
-		$html .= "\t<form id=\"settingsform\">\n";
+		$html .= "\t<form id=\"settingsform\" method=\"post\">\n";
 		foreach($this->options as $k => $o) {
 			$html .= "\t\t<p id=\"".$k."\">\n";
 			$html .= "\t\t\t<img id=\"".$k."-check\" ";
