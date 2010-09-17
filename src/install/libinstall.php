@@ -429,23 +429,12 @@ $c->addOption( new CommandsPathOption(
 $c->addOption( new CommandsOption(
 	'commands', 
 	'array', 
-	'commands',
+	array(),
 	'enabled commands',
-	array()
+	'commands ...'
 ) );
 
-$a = array(
-	'basepath' => '/home/kabum',
-	'setting_filename' => '/home/kabum/.smartwfm.ini',
-	'mimetype_detection_mode' => 'file',
-	'use_x_sendfile' => 'False',
-	'commands_path' => 'commands/',
-	'commands' => array('archive_actions')
-);
-echo '<pre>'.print_r($a,1).'</pre>';
-$a = $_GET;
-echo '<pre>'.print_r($a,1).'</pre>';
-$c->parse($a);
+$c->parse($_GET);
 // DEBUG
 $r = $c->generate();
 if(!$r['error'])
