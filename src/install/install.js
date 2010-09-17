@@ -30,7 +30,7 @@ function checkConfigDir() {
 					addNotice('Config file doesn\'t exists');
 				// load data
 				$('input[name="basepath"]').val(data.result.config.base_path);
-				$('input[name="commandspath"]').val(
+				$('input[name="commands_path"]').val(
 					data.result.config.commands_path);
 				checkBasePath();
 				checkCommandsPath();
@@ -44,20 +44,20 @@ function init() {
 	$('#loading').hide();
 	$('#settingsform').submit(function() {
 		$.ajax({
-			url: 'save.php',
+			url: 'libinstall.php',
 			data: $('#settingsform').serializeArray(),
 			success: function(data) {
 				$('#result').html(data);
 				/*if(data.error == false){
 					if(data.result.correct) {
-						setCorrectFlag('commandspath-check');
+						setCorrectFlag('commands_path-check');
 						loadCommands();
 					} else {
-						setFalseFlag('commandspath-check');
+						setFalseFlag('commands_path-check');
 						$('#commands').html('');						
 					}				
 				} else {
-					setFalseFlag('commandspath-check');
+					setFalseFlag('commands_path-check');
 					$('#commands').html('');	
 				}*/
 			}
@@ -89,18 +89,18 @@ function checkBasePath() {
 function checkCommandsPath() {
 	$.ajax({
 		url: 'check.php',
-		data: {'check': 3, 'path': $('input[name="commandspath"]').val()},
+		data: {'check': 3, 'path': $('input[name="commands_path"]').val()},
 		success: function(data) {
 			if(data.error == false){
 				if(data.result.correct) {
-					setCorrectFlag('commandspath-check');
+					setCorrectFlag('commands_path-check');
 					loadCommands();
 				} else {
-					setFalseFlag('commandspath-check');
+					setFalseFlag('commands_path-check');
 					$('#commands').html('');						
 				}				
 			} else {
-				setFalseFlag('commandspath-check');
+				setFalseFlag('commands_path-check');
 				$('#commands').html('');	
 			}
 		}
@@ -112,7 +112,7 @@ function loadCommands() {
 		url: 'check.php',
 		data: {
 			'check': 4, 
-			'path': $('input[name="commandspath"]').val()
+			'path': $('input[name="commands_path"]').val()
 		},
 		success: function(data) {
 			if(data.error == false){
@@ -125,7 +125,7 @@ function loadCommands() {
 					);
 				}				
 			} else
-				setFalseFlag('commandspath-check');
+				setFalseFlag('commands_path-check');
 		}
 	});
 }

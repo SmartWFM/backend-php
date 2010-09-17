@@ -352,7 +352,7 @@ class Config {
 		if($this->errors != array())
 			return array('error' => True, 'result' => $this->errors);
 		$output = '';
-		$output .= "< ?php\n";
+		$output .= "< ?php2\n";
 		foreach($this->options as$k => $o) {	
 			if(!$o->hasError()) {		
 				$output .= "SmartWFM_Registry::set('".$o->getName();
@@ -434,7 +434,6 @@ $c->addOption( new CommandsOption(
 	array()
 ) );
 
-// $a = $_GET;
 $a = array(
 	'basepath' => '/home/kabum',
 	'setting_filename' => '/home/kabum/.smartwfm.ini',
@@ -443,8 +442,10 @@ $a = array(
 	'commands_path' => 'commands/',
 	'commands' => array('archive_actions')
 );
+echo '<pre>'.print_r($a,1).'</pre>';
+$a = $_GET;
+echo '<pre>'.print_r($a,1).'</pre>';
 $c->parse($a);
-
 // DEBUG
 $r = $c->generate();
 if(!$r['error'])

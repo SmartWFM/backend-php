@@ -38,9 +38,9 @@
 				<img id="basepath-check" src="images/false.png"/>
 			</p>
 			<p>
-				<label for="commandspath">path to commands directory</label><br />
-				<input name="commandspath" type="text" size="50" onchange="checkCommandsPath()" />
-				<img id="commandspath-check" src="images/false.png"/>
+				<label for="commands_path">path to commands directory</label><br />
+				<input name="commands_path" type="text" size="50" onchange="checkCommandsPath()" />
+				<img id="commands_path-check" src="images/false.png"/>
 			</p>
 			<p id="commands">
 			</p>
@@ -52,13 +52,13 @@
 					<option value="file">file</option>
 				</select>
 			</p>
-			<p>
+			<!--<p>
 				<label for="filesystem_type">type of filesystem</label><br />
 				<select name="filesystem_type" size="1">
 					<option value="local">local</option>
 					<option value="afs">afs</option>
 				</select>
-			</p>
+			</p>-->
 			<p>
 				<label for="use_x_sendfile">use_x_sendfile</label><br />
 				<input name="use_x_sendfile" type="checkbox" />
