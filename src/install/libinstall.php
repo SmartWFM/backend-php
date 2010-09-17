@@ -444,24 +444,4 @@ class Config {
 	}
 };
 
-
-$c = new Config();
-$c->addOption( new BasePathOption() );
-$c->addOption( new SettingFilenameOption() );
-$c->addOption( new MimetypeDetectionModeOption() );
-$c->addOption( new UseXSendfileOption() );
-$c->addOption( new CommandsPathOption() );
-$c->addOption( new CommandsOption() );
-
-$c->parse($_GET);
-// DEBUG
-$r = $c->generate();
-if(!$r['error'])
-	echo '<pre>'.$r['result'].'</pre>';
-else
-	echo '<pre>'.print_r($r['result'],1).'</pre>';
-#echo '<pre>'.print_r($c,1).'</pre>';
-// DEBUG END
-
-
 ?>

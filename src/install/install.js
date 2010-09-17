@@ -44,7 +44,7 @@ function init() {
 	$('#loading').hide();
 	$('#settingsform').submit(function() {
 		$.ajax({
-			url: 'libinstall.php',
+			url: 'save.php',
 			data: $('#settingsform').serializeArray(),
 			success: function(data) {
 				$('#result').html(data);

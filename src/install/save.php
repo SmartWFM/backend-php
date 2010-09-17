@@ -10,62 +10,24 @@
 # WITHOUT ANY WARRANTY. See GPLv3 for more details.                           #
 ###############################################################################
 
-class Config {
-	protected $options = array();
-	
-	public function addOption($name, $value) {
-		$this->options[] = array(
-			'type' => gettype($value),
-			'name' => $name,
-			'value' => $value
-		);
-	}
-	
-	public function write() {
-		echo "< ?php\n";
-		foreach($this->options as $i) {
-			switch($i['type']){
-				case 'string':
-					$a = "'".$i['value']."'";
-					break;
-				case 'array':
-					$a = 'array(';
-					foreach($i['value'] as $v){
-						$a .= "'".$v."', ";
-					}
-					$a .= ')';
-					break;
-				case 'boolean':
-					$a = $i['value'] ? 'True' : 'False';
-					break;
-				default:
-					$a = '';
-					break;
-			}
-			echo "SmartWFM_Registry::set('".$i['name']."', ".$a.");\n";
-		}
-		echo "?>\n";
-	}
-};
 
-$requiredSettings = array('basepath', 'commandspath', 'mimetype_detection_mode', 'filesystem_type');
-$optionalSettings = array('commands', 'use_x_sendfile');
+include('libinstall.php');
 
-$settings = array_merge($requiredSettings, $optionalSettings);
-
-header("Content-Type: text/plain");
 $c = new Config();
-foreach($_GET as $k => $v) {
-	if(!in_array($k, $settings))
-		print 'ERROR1'; //TODO
-	else
-		$c->addOption($k, $v);
-	if(in_array($k, $requiredSettings))
-		unset($requiredSettings[array_search($k, $requiredSettings)]);
-}
-if(count($requiredSettings) != 0)
-	print 'ERROR2'; //TODO
-$c->write();
+$c->addOption( new BasePathOption() );
+$c->addOption( new SettingFilenameOption() );
+$c->addOption( new MimetypeDetectionModeOption() );
+$c->addOption( new UseXSendfileOption() );
+$c->addOption( new CommandsPathOption() );
+$c->addOption( new CommandsOption() );
 
+$c->parse($_GET);
+// DEBUG
+$r = $c->generate();
+if(!$r['error'])
+	echo '<pre>'.$r['result'].'</pre>';
+else
+	echo '<pre>'.print_r($r['result'],1).'</pre>';
+// DEBUG END
 
 ?>
