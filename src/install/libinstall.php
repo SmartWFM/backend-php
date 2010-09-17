@@ -88,6 +88,24 @@ abstract class BaseOption {
 		return ($this->errorCode == NULL) ? False : True;
 	}
 	
+	public function buildFormElement() {
+		switch($this->type){
+			case 'string':
+				$element = "string";
+				break;
+			case 'array':
+				$element = "array";
+				break;
+			case 'boolean':
+				$element = "<input name=\"".$this->getName()."\" type=\"checkbox\" />\n";
+				break;
+			default:
+				$element = "default";
+				break;
+		}
+		return $element;
+	}
+	
 	/**
 	  * @return	value in PHP-syntax
 	  */
@@ -474,6 +492,7 @@ class Config {
 			$html .= "src=\"images/false.png\"/> <label for=\"".$k."\">";
 			$html .= "<span class=\"title\">".$o->getTitle();
 			$html .= "</span> - ".$o->getDescription()."</label><br />\n";
+			$html .= $o->buildFormElement();			
 			$html .= "\t\t</p>\n";
 		}
 		/*
