@@ -29,7 +29,7 @@ abstract class BaseOption {
 	protected $description;
 
 	protected function boolIt($v) {
-		$bool = array('False', 'False', '0');
+		$bool = array('False', 'false', '0', 'off', 'Off');
 		if(in_array($v, $bool))
 			return False;
 		else
@@ -92,21 +92,27 @@ abstract class BaseOption {
 		if($this->possibleValues == NULL) {
 			switch($this->type){
 				case 'boolean':
+					$checked = $this->getValue() ? " checked=\"checked\"" : "";
+					echo "###".$this->getValue()."###";
 					$element = "<input name=\"".$this->getName();
-					$element .= "\" type=\"checkbox\" />\n";
+					$element .= "\" type=\"checkbox\"".$checked." />\n";
 					break;
 				case 'array':
 				case 'string':
 				default:
 					$element = "<input name=\"".$this->getName();
 					$element .= "\" type=\"text\" size=\"50\" value=\"";
-					$element .= $this->defaultValue."\" />\n";
+					$element .= $this->getValue()."\" />\n";
 					break;
 			}
 		} else {
 			$element = "<select name=\"".$this->getName()."\" size=\"1\">\n";
 			foreach($this->possibleValues as $k => $v) {
-				$element .= "<option value=\"".$v."\">".$v."</option>\n";
+				$selected = "";
+				if($this->getValue() == $v)
+					$selected = " selected=\"selected\"";
+				$element .= "<option value=\"".$v."\"".$selected.">".$v
+				$element .= "</option>\n";
 			}
 			$element .= "</select>\n";
 		}
@@ -325,14 +331,14 @@ class CommandsPathOption extends BaseOption {
 	}
 	
 	public function check($v) {
-		$this->setValue('../'.$v);
+		$this->setValue($v);
 		
 		if($this->value == '') {
 			$this->errorCode = 1;
 			$this->errorMessage = 'path-string is empty';
 		} else {
-			if(file_exists($this->value)) {
-				if(is_dir($this->value))
+			if(file_exists('../'.$this->value)) {
+				if(is_dir('../'.$this->value))
 					return True;
 				else {
 					$this->errorCode = 2;
@@ -552,6 +558,8 @@ class Config {
 		$html .= "\t\t<p class=\"center\"><input type=\"submit\" value=\"check config\" /></p>\n";
 		$html .= "\t</form>\n";
 		$html .= "</div>\n";
+#		echo '<pre>';
+#		print_r($this->options);
 		return $html;
 	}
 };

@@ -37,7 +37,15 @@ $c->parse($_POST);
 	<center>
 	<h1>Installation SWFM - PHP Backend</h1>
 	<div id="wrapper">
-		<?php echo $c->buildHTML();	?>
+		<?php 
+			echo $c->buildHTML();
+		?>
 	</div>
+	<pre style="text-align:left">
+		<?php
+			print_r($_POST);
+			print_r($c);
+		?>
+	</pre>
 </body>
 </html>
