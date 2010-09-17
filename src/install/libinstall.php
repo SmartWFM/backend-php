@@ -89,30 +89,31 @@ abstract class BaseOption {
 	}
 	
 	public function buildFormElement() {
+		$disabled = $this->enabled ? "" : " disabled=\"disabled\"";
 		if($this->possibleValues == NULL) {
 			switch($this->type){
 				case 'boolean':
 					$checked = $this->getValue() ? " checked=\"checked\"" : "";
-					echo "###".$this->getValue()."###";
-					$element = "<input name=\"".$this->getName();
-					$element .= "\" type=\"checkbox\"".$checked." />\n";
+					$element = "<input name=\"".$this->getName()."\" ";
+					$element .= "type=\"checkbox\"".$checked.$disabled." />\n";
 					break;
 				case 'array':
 				case 'string':
 				default:
 					$element = "<input name=\"".$this->getName();
 					$element .= "\" type=\"text\" size=\"50\" value=\"";
-					$element .= $this->getValue()."\" />\n";
+					$element .= $this->getValue()."\"".$disabled." />\n";
 					break;
 			}
 		} else {
-			$element = "<select name=\"".$this->getName()."\" size=\"1\">\n";
+			$element = "<select name=\"".$this->getName()."\" size=\"1\"";
+			$element .= $disabled.">\n";
 			foreach($this->possibleValues as $k => $v) {
 				$selected = "";
 				if($this->getValue() == $v)
 					$selected = " selected=\"selected\"";
-				$element .= "<option value=\"".$v."\"".$selected.">".$v
-				$element .= "</option>\n";
+				$element .= "<option value=\"".$v."\"".$selected.">";
+				$element .= $v."</option>\n";
 			}
 			$element .= "</select>\n";
 		}
@@ -430,10 +431,11 @@ class CommandsOption extends BaseOption {
 		$commands = $this->getCommands();
 		$element = '';
 		if($commands) {
+			$disabled = $this->enabled ? "" : " disabled=\"disabled\"";
 			foreach($commands as $c) {
 				$element .= "<input name=\"".$this->getName()."[]\" ";
-				$element .= "type=\"checkbox\" value=\"".$c."\" />".$c;
-				$element .= "<br />\n";
+				$element .= "type=\"checkbox\" value=\"".$c."\"".$disabled;
+				$element .= " />".$c."<br />\n";
 			}
 		}
 		return $element;
