@@ -20,6 +20,7 @@ $c->addOption( new UseXSendfileOption() );
 $c->addOption( new CommandsPathOption() );
 $c->addOption( new CommandsOption() );
 $c->addOption( new FilesystemTypeOption() );
+
 ?>
 <!DOCTYPE html 
      PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
@@ -29,13 +30,13 @@ $c->addOption( new FilesystemTypeOption() );
 		<meta http-equiv="content-type" content="application/xhtml+xml;charset=utf-8" />
 		<title>Installation SWFM - PHP Backend</title>		
 		<link rel="stylesheet" media="all" href="style2.css" />
+		<script type="text/javascript" src="install2.js"></script>
 	</head>
 <body>
 	<center>
+	<h1>Installation SWFM - PHP Backend</h1>
 	<div id="wrapper">
-<?
-echo $c->buildHTML();
-?>
+		<?php echo $c->buildHTML();	?>
 	</div>
 </body>
 </html>

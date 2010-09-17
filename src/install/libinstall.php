@@ -549,20 +549,7 @@ class Config {
 			$html .= $o->buildFormElement();			
 			$html .= "\t\t</p>\n";
 		}
-		/*
-			<p id="basepath">
-				<input name="basepath" type="text" size="50" onchange="checkBasePath()" />				
-			</p>
-			<p>
-				<input name="commands_path" type="text" size="50" onchange="checkCommandsPath()" />
-			</p>
-			<p id="commands">
-			</p>
-			<p id="setting_filename">
-				<input name="setting_filename" type="text" size="50" />				
-			</p>
-			<input type="submit" value="save config"  />
-		*/
+		$html .= "\t\t<p class=\"center\"><input type=\"submit\" value=\"check config\" /></p>\n";
 		$html .= "\t</form>\n";
 		$html .= "</div>\n";
 		return $html;
