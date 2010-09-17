@@ -33,18 +33,19 @@
 	<div id="settings">
 		<form id="settingsform">
 			<p id="basepath">
-				<label for="basepath">basepath of SWFM installation - access only in this directory and its subdirs</label><br />
-				<input name="basepath" type="text" size="50" onchange="checkBasePath()" />
 				<img id="basepath-check" src="images/false.png"/>
+				<label for="basepath">basepath of SWFM installation - access only in this directory and its subdirs</label><br />
+				<input name="basepath" type="text" size="50" onchange="checkBasePath()" />				
 			</p>
 			<p>
+				<img id="commands_path-check" src="images/false.png"/>
 				<label for="commands_path">path to commands directory</label><br />
 				<input name="commands_path" type="text" size="50" onchange="checkCommandsPath()" />
-				<img id="commands_path-check" src="images/false.png"/>
 			</p>
 			<p id="commands">
 			</p>
 			<p>
+				<img id="mimetype_detection_mode-check" src="images/false.png"/>
 				<label for="mimetype_detection_mode">mimetype_detection_mode</label><br />
 				<select name="mimetype_detection_mode" size="1">
 					<option value="internal">internal</option>
@@ -59,7 +60,13 @@
 					<option value="afs">afs</option>
 				</select>
 			</p>-->
+			<p id="setting_filename">
+				<img id="setting_filename-check" src="images/false.png"/>
+				<label for="setting_filename">basepath of SWFM installation - access only in this directory and its subdirs</label><br />
+				<input name="setting_filename" type="text" size="50" />				
+			</p>
 			<p>
+				<img id="use_x_sendfile-check" src="images/false.png"/>
 				<label for="use_x_sendfile">use_x_sendfile</label><br />
 				<input name="use_x_sendfile" type="checkbox" />
 			</p>

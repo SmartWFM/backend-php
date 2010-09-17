@@ -117,7 +117,8 @@ function loadCommands() {
 		success: function(data) {
 			if(data.error == false){
 				$('#commands').html(
-					'<label for=\"commands\">commands</label><br/>');
+					'<img id="setting_filename-check" src="images/false.png"/>'+
+					' <label for=\"commands\">commands</label><br/>');
 				for(i in data.result) {
 					$('#commands').append(
 						'<input name="commands[]" type="checkbox" value="'+
