@@ -61,6 +61,14 @@ abstract class BaseOption {
 	public function getName() {
 		return $this->name;
 	}
+		
+	public function getTitle() {
+		return $this->title;
+	}
+		
+	public function getDescription() {
+		return $this->description;
+	}
 	
 	protected function setValue($v) {
 		if($this->type == 'boolean')
@@ -414,7 +422,7 @@ class Config {
 			return array('error' => True, 'result' => $this->errors);
 		$output = '';
 		$output .= "< ?php\n"; //TODO delete whitespace
-		foreach($this->options as$k => $o) {	
+		foreach($this->options as $k => $o) {	
 			if(!$o->hasError()) {		
 				$output .= "SmartWFM_Registry::set('".$o->getName();
 				$output .= "', ".$o->getPHPValue().");\n";
@@ -451,6 +459,68 @@ class Config {
 		if(array_key_exists($k, $this->options))
 			return $this->options[$k]->getValue();
 		return False;
+	}
+	
+	/**
+	  *	builds full using given config
+	  *	@return html with form
+	  */
+	public function buildHTML() {
+		$html = "<div id=\"settings\">\n";
+		$html .= "\t<form id=\"settingsform\">\n";
+		foreach($this->options as $k => $o) {
+			$html .= "\t\t<p id=\"".$k."\">\n";
+			$html .= "\t\t\t<img id=\"".$k."-check\" ";
+			$html .= "src=\"images/false.png\"/> <span class=\"title\">";
+			$html .= $o->getTitle()."</span> - ".$o->getDescription()."\n";
+			
+			$html .= "\t\t</p>\n";
+		}
+		/*
+			<p id="basepath">
+				<img id="basepath-check" src="images/false.png"/>
+				<label for="basepath">basepath of SWFM installation - access only in this directory and its subdirs</label><br />
+				<input name="basepath" type="text" size="50" onchange="checkBasePath()" />				
+			</p>
+			<p>
+				<img id="commands_path-check" src="images/false.png"/>
+				<label for="commands_path">path to commands directory</label><br />
+				<input name="commands_path" type="text" size="50" onchange="checkCommandsPath()" />
+			</p>
+			<p id="commands">
+			</p>
+			<p>
+				<img id="mimetype_detection_mode-check" src="images/false.png"/>
+				<label for="mimetype_detection_mode">mimetype_detection_mode</label><br />
+				<select name="mimetype_detection_mode" size="1">
+					<option value="internal">internal</option>
+					<option value="cmd_file">cmd_file</option>
+					<option value="file">file</option>
+				</select>
+			</p>
+			<!--<p>
+				<label for="filesystem_type">type of filesystem</label><br />
+				<select name="filesystem_type" size="1">
+					<option value="local">local</option>
+					<option value="afs">afs</option>
+				</select>
+			</p>-->
+			<p id="setting_filename">
+				<img id="setting_filename-check" src="images/false.png"/>
+				<label for="setting_filename">settings_filename</label><br />
+				<input name="setting_filename" type="text" size="50" />				
+			</p>
+			<p>
+				<img id="use_x_sendfile-check" src="images/false.png"/>
+				<label for="use_x_sendfile">use_x_sendfile</label><br />
+				<input name="use_x_sendfile" type="checkbox" />
+			</p>
+			<input type="submit" value="save config"  />
+		
+		</form>*/
+		$html .= "\t</form>\n";
+		$html .= "</div>\n";
+		return $html;
 	}
 };
 

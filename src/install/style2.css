@@ -1,0 +1,18 @@
+@charset "UTF-8";
+
+body {
+	text-align: center;
+}
+
+#settings {
+	margin: 0px 50px;
+	text-align: left;
+}
+
+#wrapper {
+	width: 700px;
+}	
+
+.title {
+	font-weight: bold;
+}
