@@ -398,7 +398,7 @@ class CommandsOption extends BaseOption {
 	
 	/**
 	  *	reads commands_path dir and extracts importable files
-	  +	@return	array	list of filenames
+	  *	@return	array	list of filenames
 	  */
 	public function getCommands() {
 		global $c;
