@@ -233,8 +233,7 @@ class SettingFilenameOption extends BaseOption {
 					$this->errorCode = 3;
 					$this->errorMessage = 'path doesn\'t exists';	
 				} else 
-					return True;
-								
+					return True;								
 			}
 		}
 		return False;
@@ -433,9 +432,12 @@ class CommandsOption extends BaseOption {
 		if($commands) {
 			$disabled = $this->enabled ? "" : " disabled=\"disabled\"";
 			foreach($commands as $c) {
+				$checked = "";
+				if($this->value and in_array($c, $this->value))
+					$checked = " checked=\"checked\"";
 				$element .= "<input name=\"".$this->getName()."[]\" ";
 				$element .= "type=\"checkbox\" value=\"".$c."\"".$disabled;
-				$element .= " />".$c."<br />\n";
+				$element .= $checked." />".$c."<br />\n";
 			}
 		}
 		return $element;
@@ -549,11 +551,21 @@ class Config {
 		$html = "<div id=\"settings\">\n";
 		$html .= "\t<form id=\"settingsform\" method=\"post\">\n";
 		foreach($this->options as $k => $o) {
+			$image = 'correct.png';
+			$error = '';
+			if(array_key_exists($k, $this->errors)) {
+				$image = 'false.png';
+				$error = "<p class=\"error\">";
+				$error .= $this->errors[$k]['message']." (";
+				$error .= $this->errors[$k]['code'].")</p>\n";
+				//$html .= print_r($this->errors[$k],1);
+			}
 			$html .= "\t\t<p id=\"".$k."\">\n";
 			$html .= "\t\t\t<img id=\"".$k."-check\" ";
-			$html .= "src=\"images/false.png\"/> <label for=\"".$k."\">";
+			$html .= "src=\"images/".$image."\"/> <label for=\"".$k."\">";
 			$html .= "<span class=\"title\">".$o->getTitle();
 			$html .= "</span> - ".$o->getDescription()."</label><br />\n";
+			$html .= $error;
 			$html .= $o->buildFormElement();			
 			$html .= "\t\t</p>\n";
 		}

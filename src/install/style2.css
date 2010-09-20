@@ -16,3 +16,11 @@ body, .center {
 .title {
 	font-weight: bold;
 }
+
+.error {
+	padding:5px;
+	border:2px solid #CC0000;
+	background-color: #FFCCCC;
+	text-align:center;
+	margin:20px 00px;
+}
