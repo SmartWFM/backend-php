@@ -20,8 +20,10 @@ $c->addOption( new UseXSendfileOption() );
 $c->addOption( new CommandsPathOption() );
 $c->addOption( new CommandsOption() );
 $c->addOption( new FilesystemTypeOption() );
+
 if(array_key_exists('submit', $_POST))
 	unset($_POST['submit']);
+	
 $c->parse($_POST);
 ?>
 <!DOCTYPE html 
@@ -41,7 +43,6 @@ $c->parse($_POST);
 			echo $c->buildHTML();
 			$output = $c->generate();
 			echo '<pre style="text-align:left">'.$output['result'].'</pre>';
-			echo '<pre style="text-align:left">'.$output['error'].'</pre>';
 		?>
 	</div>
 </body>
