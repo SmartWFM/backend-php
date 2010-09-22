@@ -89,33 +89,33 @@ abstract class BaseOption {
 	}
 	
 	public function buildFormElement() {
-		$disabled = $this->enabled ? "" : " disabled=\"disabled\"";
+		$disabled = $this->enabled ? '' : ' disabled="disabled"';
 		if($this->possibleValues == NULL) {
 			switch($this->type){
 				case 'boolean':
-					$checked = $this->getValue() ? " checked=\"checked\"" : "";
-					$element = "<input name=\"".$this->getName()."\" ";
-					$element .= "type=\"checkbox\"".$checked.$disabled." />\n";
+					$checked = $this->getValue() ? ' checked="checked"' : '';
+					$element = '<input name="'.$this->getName().'" ';
+					$element .= 'type="checkbox"'.$checked.$disabled.' />';
 					break;
 				case 'array':
 				case 'string':
 				default:
-					$element = "<input name=\"".$this->getName();
-					$element .= "\" type=\"text\" size=\"50\" value=\"";
-					$element .= $this->getValue()."\"".$disabled." />\n";
+					$element = '<input name="'.$this->getName();
+					$element .= '" type="text" size="50" value="';
+					$element .= $this->getValue().'"'.$disabled.' />';
 					break;
 			}
 		} else {
-			$element = "<select name=\"".$this->getName()."\" size=\"1\"";
-			$element .= $disabled.">\n";
+			$element = '<select name="'.$this->getName().'" size="1"';
+			$element .= $disabled.'>';
 			foreach($this->possibleValues as $k => $v) {
-				$selected = "";
+				$selected = '';
 				if($this->getValue() == $v)
-					$selected = " selected=\"selected\"";
-				$element .= "<option value=\"".$v."\"".$selected.">";
-				$element .= $v."</option>\n";
+					$selected = ' selected="selected"';
+				$element .= '<option value="'.$v.'"'.$selected.'>';
+				$element .= $v.'</option>';
 			}
-			$element .= "</select>\n";
+			$element .= '</select>';
 		}
 		return $element;
 	}
@@ -126,12 +126,12 @@ abstract class BaseOption {
 	public function getPHPValue() {
 		switch($this->type){
 			case 'string':
-				$value = "'".$this->getValue()."'";
+				$value = '\''.$this->getValue().'\'';
 				break;
 			case 'array':
 				$value = 'array(';
 				foreach($this->getValue() as $v){
-					$value .= "'".$v."', ";
+					$value .= '\''.$v.'\', ';
 				}
 				$value .= ')';
 				break;
@@ -430,14 +430,14 @@ class CommandsOption extends BaseOption {
 		$commands = $this->getCommands();
 		$element = '';
 		if($commands) {
-			$disabled = $this->enabled ? "" : " disabled=\"disabled\"";
+			$disabled = $this->enabled ? '' : ' disabled="disabled"';
 			foreach($commands as $c) {
-				$checked = "";
+				$checked = '';
 				if($this->value and in_array($c, $this->value))
-					$checked = " checked=\"checked\"";
-				$element .= "<input name=\"".$this->getName()."[]\" ";
-				$element .= "type=\"checkbox\" value=\"".$c."\"".$disabled;
-				$element .= $checked." />".$c."<br />\n";
+					$checked = ' checked="checked"';
+				$element .= '<input name="'.$this->getName().'[]" ';
+				$element .= 'type="checkbox" value="'.$c.'"'.$disabled;
+				$element .= $checked.' />'.$c.'<br />';
 			}
 		}
 		return $element;
@@ -506,11 +506,11 @@ class Config {
 		$output .= "< ?php\n"; //TODO delete whitespace
 		foreach($this->options as $k => $o) {	
 			if(!$o->hasError()) {		
-				$output .= "SmartWFM_Registry::set('".$o->getName();
-				$output .= "', ".$o->getPHPValue().");\n";
+				$output .= 'SmartWFM_Registry::set(\''.$o->getName();
+				$output .= '\', '.$o->getPHPValue().");\n";
 			}
 		}
-		$output .= "?>\n";
+		$output .= '?>';
 		return array('error' => False, 'result' => $output);
 	}
 	
@@ -548,33 +548,31 @@ class Config {
 	  *	@return html with form
 	  */
 	public function buildHTML() {
-		$html = "<div id=\"settings\">\n";
-		$html .= "\t<form id=\"settingsform\" method=\"post\">\n";
+		$html = '<div id="settings">';
+		$html .= '<form id="settingsform" method="post">';
 		foreach($this->options as $k => $o) {
 			$image = 'correct.png';
 			$error = '';
 			if(array_key_exists($k, $this->errors)) {
 				$image = 'false.png';
-				$error = "<p class=\"error\">";
-				$error .= $this->errors[$k]['message']." (";
-				$error .= $this->errors[$k]['code'].")</p>\n";
+				$error = '<p class="error">';
+				$error .= $this->errors[$k]['message'].' (';
+				$error .= $this->errors[$k]['code'].')</p>';
 				//$html .= print_r($this->errors[$k],1);
 			}
-			$html .= "\t\t<p id=\"".$k."\">\n";
-			$html .= "\t\t\t<img id=\"".$k."-check\" ";
-			$html .= "src=\"images/".$image."\"/> <label for=\"".$k."\">";
-			$html .= "<span class=\"title\">".$o->getTitle();
-			$html .= "</span> - ".$o->getDescription()."</label><br />\n";
+			$html .= '<p id="'.$k.'">';
+			$html .= '<img id="'.$k.'-check" ';
+			$html .= 'src="images/'.$image.'"/> <label for="'.$k.'">';
+			$html .= '<span class="title">'.$o->getTitle();
+			$html .= '</span> - '.$o->getDescription().'</label><br />';
 			$html .= $error;
 			$html .= $o->buildFormElement();			
-			$html .= "\t\t</p>\n";
+			$html .= '</p>';
 		}
-		$html .= "\t\t<p class=\"center\"><input type=\"submit\" ";
-		$html .= "name=\"submit\" value=\"check config\" />"."";
-		$html .= "</p>\n\t</form>\n";
-		$html .= "</div>\n";
-#		echo '<pre>';
-#		print_r($this->options);
+		$html .= '<p class="center"><input type="submit" ';
+		$html .= 'name="submit" value="check config" />'.'';
+		$html .= '</p></form>';
+		$html .= '</div>';
 		return $html;
 	}
 };
