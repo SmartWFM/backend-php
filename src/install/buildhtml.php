@@ -32,7 +32,6 @@ $c->parse($_POST);
 		<meta http-equiv="content-type" content="application/xhtml+xml;charset=utf-8" />
 		<title>Installation SWFM - PHP Backend</title>		
 		<link rel="stylesheet" media="all" href="style2.css" />
-		<script type="text/javascript" src="install2.js"></script>
 	</head>
 <body>
 	<center>
