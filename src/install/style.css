@@ -1,22 +1,6 @@
 @charset "UTF-8";
 
-.notice {
-	padding:5px;
-	border:2px solid #009900;
-	background-color:#CCFFCC;
-	text-align:center;
-	margin:20px 50px;
-}
-
-.error {
-	padding:5px;
-	border:2px solid #CC0000;
-	background-color: #FFCCCC;
-	text-align:center;
-	margin:20px 00px;
-}
-
-body {
+body, .center {
 	text-align: center;
 }
 
@@ -27,6 +11,22 @@ body {
 
 #wrapper {
 	width: 700px;
+}	
+
+.error {
+	padding:5px;
+	border:2px solid #CC0000;
+	background-color: #FFCCCC;
+	text-align:center;
+	margin:20px 00px;
+}
+
+.notice {
+	padding:5px;
+	border:2px solid #009900;
+	background-color:#CCFFCC;
+	text-align:center;
+	margin:20px 50px;
 }	
 
 #result {

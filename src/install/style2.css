@@ -11,16 +11,17 @@ body, .center {
 
 #wrapper {
 	width: 700px;
+}
+
+.error {
+	padding:2px;
+	border:2px solid #CC0000;
+	background-color: #FFCCCC;
+	text-align:center;
+	margin:5px 0px;
+	margin-top:-15px;
 }	
 
 .title {
 	font-weight: bold;
-}
-
-.error {
-	padding:5px;
-	border:2px solid #CC0000;
-	background-color: #FFCCCC;
-	text-align:center;
-	margin:20px 00px;
 }

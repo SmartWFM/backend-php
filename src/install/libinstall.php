@@ -541,7 +541,7 @@ class Config {
 		if(array_key_exists($k, $this->options))
 			return $this->options[$k]->getValue();
 		return False;
-	}
+	}h
 	
 	/**
 	  *	builds full using given config
@@ -569,8 +569,9 @@ class Config {
 			$html .= $o->buildFormElement();			
 			$html .= "\t\t</p>\n";
 		}
-		$html .= "\t\t<p class=\"center\"><input type=\"submit\" value=\"check config\" /></p>\n";
-		$html .= "\t</form>\n";
+		$html .= "\t\t<p class=\"center\"><input type=\"submit\" ";
+		$html .= "name=\"submit\" value=\"check config\" />"."";
+		$html .= "</p>\n\t</form>\n";
 		$html .= "</div>\n";
 #		echo '<pre>';
 #		print_r($this->options);
