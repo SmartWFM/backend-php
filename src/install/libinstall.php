@@ -569,11 +569,21 @@ class Config {
 			$html .= $o->buildFormElement();			
 			$html .= '</p>';
 		}
-		$html .= '<p class="center"><input type="submit" ';
-		$html .= 'name="submit" value="check config" />'.'';
-		$html .= '</p></form>';
+		$html .= '<p class="center"><input type="submit" name="submit" ';
+		$html .= 'value="check config" /> <input type="submit" ';
+		$html .= 'name="submit" value="save config" /></p></form>';
 		$html .= '</div>';
 		return $html;
+	}
+	
+	/**
+	  *	saves config to file
+	  *	@return True = successful // False - unsuccessful
+	  */
+	public function save() {
+		$r = $this->generate();
+		//if($r['error'])
+			
 	}
 };
 

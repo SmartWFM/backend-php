@@ -21,10 +21,16 @@ $c->addOption( new CommandsPathOption() );
 $c->addOption( new CommandsOption() );
 $c->addOption( new FilesystemTypeOption() );
 
-if(array_key_exists('submit', $_POST))
+$save = False;
+if(array_key_exists('submit', $_POST)) {
+	$save = True;
 	unset($_POST['submit']);
-	
+}
+
 $c->parse($_POST);
+
+if($save)
+	$c->save;
 ?>
 <!DOCTYPE html 
      PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
@@ -43,6 +49,7 @@ $c->parse($_POST);
 			echo $c->buildHTML();
 			$output = $c->generate();
 			echo '<pre style="text-align:left">'.$output['result'].'</pre>';
+			
 		?>
 	</div>
 </body>
