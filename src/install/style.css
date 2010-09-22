@@ -1,3 +1,15 @@
+/*
+###############################################################################
+# This file is a part of the SmartWFM PHP-Backend                             #
+# Copyright (C) 2010 Morris Jobke <kabum@users.sourceforge.net>               #
+#                                                                             #
+# SmartWFM PHP-Backend is free software; you can redestribute it and/or modify#
+# it under terms of GNU General Public License by Free Software Foundation.   #
+#                                                                             #
+# This program is distributed in the hope that it will be useful, but         #
+# WITHOUT ANY WARRANTY. See GPLv3 for more details.                           #
+###############################################################################
+*/
 @charset "UTF-8";
 
 body, .center {
@@ -11,25 +23,17 @@ body, .center {
 
 #wrapper {
 	width: 700px;
-}	
+}
 
 .error {
-	padding:5px;
+	padding:2px;
 	border:2px solid #CC0000;
 	background-color: #FFCCCC;
 	text-align:center;
-	margin:20px 00px;
+	margin:5px 0px;
+	margin-top:-15px;
+}	
+
+.title {
+	font-weight: bold;
 }
-
-.notice {
-	padding:5px;
-	border:2px solid #009900;
-	background-color:#CCFFCC;
-	text-align:center;
-	margin:20px 50px;
-}	
-
-#result {
-	text-align: left;
-}	
-

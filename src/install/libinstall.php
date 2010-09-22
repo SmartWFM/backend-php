@@ -541,7 +541,7 @@ class Config {
 		if(array_key_exists($k, $this->options))
 			return $this->options[$k]->getValue();
 		return False;
-	}h
+	}
 	
 	/**
 	  *	builds full using given config
