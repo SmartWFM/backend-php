@@ -563,7 +563,6 @@ class Config {
 				$error = '<p class="error">';
 				$error .= $this->errors[$k]['message'].' (';
 				$error .= $this->errors[$k]['code'].')</p>';
-				//$html .= print_r($this->errors[$k],1);
 			}
 			$html .= '<p id="'.$k.'">';
 			$html .= '<img id="'.$k.'-check" ';
@@ -577,10 +576,18 @@ class Config {
 		$html .= '<p class="center"><input type="submit" name="submit" ';
 		$html .= 'value="check config" /> <input type="submit" ';
 		$html .= 'name="submit" value="save config" /></p></form>';
-		$html .= '</div>';
 		if($this->save) {
-			$html .= 'asd';
+			if(array_key_exists('save', $this->errors)) {
+				// if error code == 1:
+				$html .= '<div class="error">config file not written<br />';
+				$html .= $this->errors['save']['message'].' (';
+				$html .= $this->errors['save']['code'].')</div>';
+				// else create file manually
+			} else {
+				$html .= '<div class="notice">b'.'</div>';	
+			}
 		}
+		$html .= '</div>';
 		return $html;
 	}
 	
@@ -622,6 +629,7 @@ class Config {
 						}
 					} else {
 						// write config file
+						
 						return True;
 					}
 				} else {

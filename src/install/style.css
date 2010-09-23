@@ -26,14 +26,22 @@ body, .center {
 }
 
 .error {
-	padding:2px;
 	border:2px solid #CC0000;
 	background-color: #FFCCCC;
-	text-align:center;
-	margin:5px 0px;
-	margin-top:-15px;
 }	
+
+.notice {
+	border:2px solid #009900;
+	background-color:#CCFFCC;
+}
 
 .title {
 	font-weight: bold;
+}
+
+.error, .notice {
+	padding:2px;
+	margin:5px 0px;
+	text-align:center;
+	margin-top:-15px;
 }
