@@ -28,6 +28,10 @@ abstract class BaseOption {
 	protected $title;
 	protected $description;
 
+	/**
+	  *	method converts "boolean" strings to a boolean value
+	  *	@return boolean
+	  */
 	protected function boolIt($v) {
 		$bool = array('False', 'false', '0', 'off', 'Off');
 		if(in_array($v, $bool))
@@ -47,29 +51,49 @@ abstract class BaseOption {
 		$this->description = $description;
 	}
 	
+	/**
+	  * getter for defaultValue
+	  */
 	public function getDefault() {
 		return $this->defaultValue;
 	}
 	
+	
+	/**
+	  * getter for errorCode and errorMessage
+	  *	@return	array	'code' and 'message' as keys for values
+	  */
 	public function getError() {
 		return array(
 			'code' 		=> $this->errorCode,
 			'message' 	=> $this->errorMessage
 		);
 	}
-		
+	
+	/**
+	  * getter for name
+	  */
 	public function getName() {
 		return $this->name;
 	}
-		
+	
+	/**
+	  * getter for title
+	  */
 	public function getTitle() {
 		return $this->title;
 	}
-		
+	
+	/**
+	  * getter for description
+	  */
 	public function getDescription() {
 		return $this->description;
 	}
-	
+
+	/**
+	  * setter for value - automatically converts boolean values to boolean
+	  */
 	protected function setValue($v) {
 		if($this->type == 'boolean')
 			$this->value = $this->boolIt($v);
@@ -77,6 +101,9 @@ abstract class BaseOption {
 			$this->value = $v;
 	}
 	
+	/**
+	  * getter for value
+	  */
 	public function getValue() {
 		if(!$this->enabled)
 			return $this->defaultValue;
@@ -84,10 +111,18 @@ abstract class BaseOption {
 		return empty($this->value) ? $this->defaultValue : $this->value;
 	}
 	
+	/**
+	  * checks if option has an error
+	  *	@return	boolean
+	  */
 	public function hasError() {
 		return ($this->errorCode == NULL) ? False : True;
 	}
 	
+	/**
+	  *	generates html form element
+	  *	@return	string	corresponding html code
+	  */
 	public function buildFormElement() {
 		$disabled = $this->enabled ? '' : ' disabled="disabled"';
 		if($this->possibleValues == NULL) {
@@ -301,10 +336,13 @@ class UseXSendfileOption extends BaseOption {
 		
 		return True;
 	}
-
+	
+	/**
+	  * overloads parent method
+	  */
 	public function checkAvailablity() {
-		$this->enabled = False;
-		//TODO
+		// TODO
+		// $this->enabled = False;
 	}
 };
 
@@ -426,6 +464,11 @@ class CommandsOption extends BaseOption {
 		}
 	}
 	
+	/**
+	  *	overloads parent method
+	  *	generates html form element
+	  *	@return	string	corresponding html code
+	  */
 	public function buildFormElement() {
 		$commands = $this->getCommands();
 		$element = '';
@@ -495,6 +538,7 @@ class Config {
 	
 	/**
 	  *	adds option to config
+	  * @params	o	object inheriting from BaseOption class
 	  */
 	public function addOption($o) {
 		$this->options[$o->getName()] = $o;
@@ -584,12 +628,10 @@ class Config {
 		$html .= 'name="submit" value="save config" /></p></form>';
 		if($this->save) {
 			if(array_key_exists('save', $this->errors)) {
-				// if error code == 1:
 				$html .= '<div class="error less-margin">';
 				$html .= 'config file not written<br />';
 				$html .= $this->errors['save']['message'].' (';
 				$html .= $this->errors['save']['code'].')</div>';
-				// else create file manually
 				if($this->errors['save']['code'] != 1) {
 					$html .= '<div class="notice">Create a file ';
 					$html .= '"BACKENDPHP-DIR/config/local.php" with following';
