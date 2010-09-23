@@ -47,6 +47,10 @@ if($save)
 	<center>
 	<h1>Installation SWFM - PHP Backend</h1>
 	<div id="wrapper">
+		<div class="notice">
+			If you see this anyway and you have already set up the backend, 
+			just delete the "install" folder inside the backend folder. 
+		</div>
 		<?php 
 			echo $c->buildHTML();			
 		?>

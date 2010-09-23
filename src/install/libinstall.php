@@ -628,23 +628,23 @@ class Config {
 		$html .= 'name="submit" value="save config" /></p></form>';
 		if($this->save) {
 			if(array_key_exists('save', $this->errors)) {
-				$html .= '<div class="error less-margin">';
+				$html .= '<p class="error less-margin">';
 				$html .= 'config file not written<br />';
 				$html .= $this->errors['save']['message'].' (';
-				$html .= $this->errors['save']['code'].')</div>';
+				$html .= $this->errors['save']['code'].')</p>';
 				if($this->errors['save']['code'] != 1) {
-					$html .= '<div class="notice">Create a file ';
+					$html .= '<p class="notice">Create a file ';
 					$html .= '"BACKENDPHP-DIR/config/local.php" with following';
-					$html .= ' content:</div>';	
-					$html .= '<div class="code">';
+					$html .= ' content:</p>';	
+					$html .= '<p class="code">';
 					$o = $this->generate();
 					$html .= nl2br(htmlentities($o['result']));
-					$html .= '</div>';	
+					$html .= '</p>';	
 				
 				}
 			} else {
-				$html .= '<div class="notice">Config file successful written';
-				$html .= '</div>';	
+				$html .= '<p class="notice less-margin">Config file successful written';
+				$html .= '</p>';	
 			}
 		}
 		$html .= '</div>';
