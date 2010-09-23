@@ -23,7 +23,8 @@ $c->addOption( new FilesystemTypeOption() );
 
 $save = False;
 if(array_key_exists('submit', $_POST)) {
-	$save = True;
+	if($_POST['submit'] == 'save config')
+		$save = True;
 	unset($_POST['submit']);
 }
 
@@ -47,11 +48,7 @@ if($save)
 	<h1>Installation SWFM - PHP Backend</h1>
 	<div id="wrapper">
 		<?php 
-			echo $c->buildHTML();
-			$output = $c->generate();
-			echo '<p style="text-align:left">';
-			echo nl2br(htmlentities($output['result'])).'</p>';
-			
+			echo $c->buildHTML();			
 		?>
 	</div>
 </body>

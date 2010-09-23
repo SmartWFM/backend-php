@@ -25,6 +25,12 @@ body, .center {
 	width: 700px;
 }
 
+.error, .notice, .code {
+	padding:2px;
+	margin:5px 0px;
+	text-align:center;
+}
+
 .error {
 	border:2px solid #CC0000;
 	background-color: #FFCCCC;
@@ -35,13 +41,17 @@ body, .center {
 	background-color:#CCFFCC;
 }
 
+.code {
+	border:2px solid #848484;
+	background-color:#E6E6E6;
+	text-align:left;
+	padding:10px 15px;
+}
+
 .title {
 	font-weight: bold;
 }
 
-.error, .notice {
-	padding:2px;
-	margin:5px 0px;
-	text-align:center;
+.less-margin {
 	margin-top:-15px;
 }

@@ -505,7 +505,13 @@ class Config {
 	  *	@return	file content
 	  */
 	public function generate() {
-		if($this->errors != array())
+		$e = $this->errors;
+		if($this->errors != array() and 
+			!(
+				count($this->errors != 1) and 
+				array_key_exists('save', $this->errors)
+			)
+		)
 			return array('error' => True, 'result' => $this->errors);
 		$output = '';
 		$output .= "<?php\n"; 
@@ -560,7 +566,7 @@ class Config {
 			$error = '';
 			if(array_key_exists($k, $this->errors)) {
 				$image = 'false.png';
-				$error = '<p class="error">';
+				$error = '<p class="error less-margin">';
 				$error .= $this->errors[$k]['message'].' (';
 				$error .= $this->errors[$k]['code'].')</p>';
 			}
@@ -579,12 +585,24 @@ class Config {
 		if($this->save) {
 			if(array_key_exists('save', $this->errors)) {
 				// if error code == 1:
-				$html .= '<div class="error">config file not written<br />';
+				$html .= '<div class="error less-margin">';
+				$html .= 'config file not written<br />';
 				$html .= $this->errors['save']['message'].' (';
 				$html .= $this->errors['save']['code'].')</div>';
 				// else create file manually
+				if($this->errors['save']['code'] != 1) {
+					$html .= '<div class="notice">Create a file ';
+					$html .= '"BACKENDPHP-DIR/config/local.php" with following';
+					$html .= ' content:</div>';	
+					$html .= '<div class="code">';
+					$o = $this->generate();
+					$html .= nl2br(htmlentities($o['result']));
+					$html .= '</div>';	
+				
+				}
 			} else {
-				$html .= '<div class="notice">b'.'</div>';	
+				$html .= '<div class="notice">Config file successful written';
+				$html .= '</div>';	
 			}
 		}
 		$html .= '</div>';
@@ -601,13 +619,14 @@ class Config {
 	  *			4	config dir isn't writable
 	  *			5	config dir is file
 	  *			6	config dir doesn't exists
+	  *			7	error while writing file
 	  */
 	public function save() {
 		$this->save = True;
 		$r = $this->generate();
 		if($r['error']) {
 			$this->errors['save'] = array(
-				'message' => 'errors occured',
+				'message' => 'errors occured - see above',
 				'code' => 1
 			);
 			return False;
@@ -628,8 +647,20 @@ class Config {
 							);
 						}
 					} else {
-						// write config file
-						
+						$f = fopen(
+							$this->paths['root'].$this->paths['file'], 
+							'w'
+						);
+						$o = $this->generate();
+						if(!fwrite($f, $o['result'])) {
+							$this->errors['save'] = array(
+								'message' => 'error while writing file',
+								'code' => 7
+							);
+							fclose($f);
+							return False;
+						}
+						fclose($f);
 						return True;
 					}
 				} else {
