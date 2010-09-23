@@ -487,6 +487,11 @@ class FilesystemTypeOption extends BaseOption {
 class Config {
 	protected $options = array();
 	protected $errors = array();
+	protected $save = False;
+	protected $paths = array(
+		'root'	=>	'../config/',
+		'file'	=>	'local.php'
+	);
 	
 	/**
 	  *	adds option to config
@@ -503,7 +508,7 @@ class Config {
 		if($this->errors != array())
 			return array('error' => True, 'result' => $this->errors);
 		$output = '';
-		$output .= "< ?php\n"; //TODO delete whitespace
+		$output .= "<?php\n"; 
 		foreach($this->options as $k => $o) {	
 			if(!$o->hasError()) {		
 				$output .= 'SmartWFM_Registry::set(\''.$o->getName();
@@ -573,17 +578,72 @@ class Config {
 		$html .= 'value="check config" /> <input type="submit" ';
 		$html .= 'name="submit" value="save config" /></p></form>';
 		$html .= '</div>';
+		if($this->save) {
+			$html .= 'asd';
+		}
 		return $html;
 	}
 	
 	/**
 	  *	saves config to file
 	  *	@return True = successful // False - unsuccessful
+	  * 	creates error message:
+	  *			1	errors occured
+	  *			2	config file already exists
+	  *			3	config file is dir
+	  *			4	config dir isn't writable
+	  *			5	config dir is file
+	  *			6	config dir doesn't exists
 	  */
 	public function save() {
+		$this->save = True;
 		$r = $this->generate();
-		//if($r['error'])
-			
+		if($r['error']) {
+			$this->errors['save'] = array(
+				'message' => 'errors occured',
+				'code' => 1
+			);
+			return False;
+		}
+		if(file_exists($this->paths['root'])) {
+			if(is_dir($this->paths['root'])) {
+				if(is_writable($this->paths['root'])) {
+					if(file_exists($this->paths['root'].$this->paths['file'])) {
+						if(!is_dir($this->paths['root'].$this->paths['file'])) {
+							$this->errors['save'] = array(
+								'message' => 'config file already exists',
+								'code' => 2
+							);
+						} else {
+							$this->errors['save'] = array(
+								'message' => 'config file is dir',
+								'code' => 3
+							);
+						}
+					} else {
+						// write config file
+						return True;
+					}
+				} else {
+					$this->errors['save'] = array(
+						'message' => 'config dir isn\'t writable',
+						'code' => 4
+					);
+				}
+			} else {
+				$this->errors['save'] = array(
+					'message' => 'config dir is file',
+					'code' => 5
+				);
+			}
+		} else {
+			// 		
+			$this->errors['save'] = array(
+				'message' => 'config dir doesn\'t exists',
+				'code' => 6
+			);
+		}
+		return False;			
 	}
 };
 

@@ -30,14 +30,15 @@ if(array_key_exists('submit', $_POST)) {
 $c->parse($_POST);
 
 if($save)
-	$c->save;
+	$c->save();
 ?>
 <!DOCTYPE html 
      PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 	<head>
-		<meta http-equiv="content-type" content="application/xhtml+xml;charset=utf-8" />
+		<meta http-equiv="content-type" 
+			content="application/xhtml+xml;charset=utf-8" />
 		<title>Installation SWFM - PHP Backend</title>		
 		<link rel="stylesheet" media="all" href="style.css" />
 	</head>
@@ -48,7 +49,8 @@ if($save)
 		<?php 
 			echo $c->buildHTML();
 			$output = $c->generate();
-			echo '<pre style="text-align:left">'.$output['result'].'</pre>';
+			echo '<p style="text-align:left">';
+			echo nl2br(htmlentities($output['result'])).'</p>';
 			
 		?>
 	</div>
