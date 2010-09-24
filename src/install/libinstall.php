@@ -643,8 +643,8 @@ class Config {
 				
 				}
 			} else {
-				$html .= '<p class="notice less-margin">Config file successful written';
-				$html .= '</p>';	
+				$html .= '<p class="notice less-margin">Config file successful';
+				$html .= ' written</p>';	
 			}
 		}
 		$html .= '</div>';
