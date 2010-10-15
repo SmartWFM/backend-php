@@ -10,6 +10,8 @@
 # WITHOUT ANY WARRANTY. See GPLv3 for more details.                           #
 ###############################################################################
 
+require_once('lib/search/libsearch.php');
+
 class SearchActions_Search extends SmartWFM_Command {
 	function process($params) {
 		$fs_type = SmartWFM_Registry::get('filesystem_type');
@@ -31,6 +33,8 @@ class SearchActions_Search extends SmartWFM_Command {
 		);
 
 		$params = $param_test->validate($params);
+
+		$search = new search( NULL );
 
 		// join path
 		/*$root_path = Path::join(
@@ -70,12 +74,26 @@ class SearchActions_Search extends SmartWFM_Command {
 		}
 
 		*/
+		$tmp = $search->getResult();
+		if(gettype($tmp) == 'integer') {
+			switch($tmp) {
+				case ERROR_PERMISSION_DENIED:
+					throw new SmartWFM_Exception('Permission denied', -1);
+					break;
+				case ERROR_NO_SUCH_FILE_OR_DIRECTORY:
+					throw new SmartWFM_Exception('File or directory doesn\'t exists', -2);
+					break;
+				default:
+					throw new SmartWFM_Exception('Unknown Error', -9);
+			}
+		} else {
+			$response = new SmartWFM_Response();
+			$response->data = $tmp;
+			return $response;
+		}
 		
 		
 		
-		$response = new SmartWFM_Response();
-		$response->data = true;		
-		return $response;
 	}	
 }
 
