@@ -26,7 +26,7 @@ class search {
 		$cmd = 'find';
 		$cmd .= ' '.SmartWFM_Registry::get( 'basepath', '/' );
 		$cmd .= ' -name ';
-		$cmd .= ' \'*a*\'';
+		$cmd .= ' \'*j*\'';
 		$cmd .= ' 2>&1';
 		return $cmd;
 	}
@@ -34,9 +34,18 @@ class search {
 	public function getResult() {
 		$cmd = $this->getCmd();
 		exec($cmd, $output, $ret);
-		if(!$ret){
-			//
-		}else{
+		if(!$ret) {
+			$results = array();
+			foreach($output as $f) {
+				$i = strrpos($f, '/');
+				$results[] = array(
+					'isDir' => @is_dir($f) ? true : false,
+					'name' => substr($f, 0, $i),
+					'location' => substr($f, $i+1)
+				);
+			}
+			return $results;
+		} else {
 			if(count($output) and isset($output[0])){
 				if(strpos($output[0], 'Permission denied'))
 					return ERROR_PERMISSION_DENIED;
@@ -44,7 +53,6 @@ class search {
 					return ERROR_NO_SUCH_FILE_OR_DIRECTORY;
 			}
 		}
-		return array($cmd, $output);
 	}
 }
 ?>
