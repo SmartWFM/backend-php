@@ -37,54 +37,39 @@ class SearchActions_Search extends SmartWFM_Command {
 		$search = new search( NULL );
 
 		// join path
-		/*$root_path = Path::join(
+		$path = Path::join(
 			$BASE_PATH,
 			$params['path']
 		);
 
-		$path = Path::join(
-			$root_path,
-			$params['name']
-		);
-
 		// validate path
-		if(Path::validate($BASE_PATH, $root_path) != true || Path::validate($BASE_PATH, $path) != true) {
-			throw new SmartWFM_Exception('Wrong filename');
+		if(Path::validate($BASE_PATH, $path) != true) {
+			throw new SmartWFM_Exception('Wrong path', -1);
 		}
 
 		// check some stuff
 		if($fs_type == 'afs') {
-			$afs = new afs($root_path);
-			if(!$afs->allowed(AFS_CREATE)) {
+			$afs = new afs($path);
+			if(!$afs->allowed(AFS_READ)) {
 				throw new SmartWFM_Exception('Permission denied.', -9);
 			}
 		} else if ($fs_type == 'local') {
-			if(!is_writable($root_path)) {
+			if(!is_readable($path)) {
 				throw new SmartWFM_Exception('Permission denied.', -9);
 			}
 		}
 
-		if(preg_match('!/!', $params['name'])) {
-			throw new SmartWFM_Exception( 'Can\'t create folder recursively.', -3 );
-		}
-
-
-		if(@file_exists($path) && @is_dir($path)) {
-			throw new SmartWFM_Exception('A directory with the given name already exists', -1);
-		}
-
-		*/
 		$tmp = $search->getResult();
 		if(gettype($tmp) == 'integer') {
 			switch($tmp) {
 				case ERROR_PERMISSION_DENIED:
-					throw new SmartWFM_Exception('Permission denied', -1);
+					throw new SmartWFM_Exception('Permission denied', -8);
 					break;
 				case ERROR_NO_SUCH_FILE_OR_DIRECTORY:
 					throw new SmartWFM_Exception('File or directory doesn\'t exists', -2);
 					break;
 				default:
-					throw new SmartWFM_Exception('Unknown Error', -9);
+					throw new SmartWFM_Exception('Unknown Error', -7);
 			}
 		} else {
 			$response = new SmartWFM_Response();
