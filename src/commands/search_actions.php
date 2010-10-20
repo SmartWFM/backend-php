@@ -34,7 +34,7 @@ class SearchActions_Search extends SmartWFM_Command {
 
 		$params = $param_test->validate($params);
 
-		$search = new search( NULL );
+		$search = new search( $params );
 
 		// join path
 		$path = Path::join(

@@ -22,7 +22,7 @@ class search {
 	  * constructor
 	  */
 	public function search( $config = NULL ) {
-		$this->path = './SWFM-Testordner';
+		$this->path = $config['path'];
 	}
 
 	protected function getCmd() {
