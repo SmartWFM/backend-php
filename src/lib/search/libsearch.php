@@ -22,7 +22,7 @@ class search {
 	  * constructor
 	  */
 	public function search( $config = NULL ) {
-		$this->path = '.';
+		$this->path = './SWFM-Testordner';
 	}
 
 	protected function getCmd() {
@@ -32,7 +32,7 @@ class search {
 			$this->path
 		);
 		$cmd .= ' -name';
-		$cmd .= ' \'*j*\'';
+		$cmd .= ' \'*.zip*\'';
 		$cmd .= ' ! -iwholename \'*/.*\''; 
 		$cmd .= ' 2>&1';
 		return $cmd;
@@ -46,9 +46,9 @@ class search {
 			foreach($output as $f) {
 				$i = strrpos($f, '/');
 				$results[] = array(
-					'isDir' => @is_dir($f) ? true : false,
-					'name' => substr($f, 0, $i),
-					'location' => substr($f, $i+1)
+					substr($f, $i+1),
+					substr($f, 0, $i),
+					@is_dir($f) ? true : false
 				);
 			}
 			return $results;
