@@ -239,20 +239,24 @@ class SmartWFM {
 				$d = NULL;
 				if($command != NULL) {
 					$d = $data->params;
-				}
-				try {
-					$response = $command->process($d);
-				} catch (SmartWFM_Exception $e) {
-					$response = $e->getResponse();
-					if($response == Null) {
-						$response = new SmartWFM_Response();
-						$response->error_code = $e->getCode();
-						$msg = $e->getMessage();
-						if($msg == NULL) {
-							$msg = 'Invalid method parameters.';
+					try {
+						$response = $command->process($d);
+					} catch (SmartWFM_Exception $e) {
+						$response = $e->getResponse();
+						if($response == Null) {
+							$response = new SmartWFM_Response();
+							$response->error_code = $e->getCode();
+							$msg = $e->getMessage();
+							if($msg == NULL) {
+								$msg = 'Invalid method parameters.';
+							}
+							$response->error_message = $msg;
 						}
-						$response->error_message = $msg;
 					}
+				} else {
+					$response = new SmartWFM_Response();
+					$response->error_code = -32601;
+					$response->error_message = 'Method not found';
 				}
 				header("Content-Type: application/json");
 				print $response->generate();
