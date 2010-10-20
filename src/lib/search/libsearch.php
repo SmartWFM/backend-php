@@ -10,6 +10,8 @@
 # WITHOUT ANY WARRANTY. See GPLv3 for more details.                           #
 ###############################################################################
 
+require_once('lib/SmartWFM/tools.php');
+
 if( !defined( 'ERROR_PERMISSION_DENIED' ) )
 	define( 'ERROR_PERMISSION_DENIED', 1 );
 if( !defined( 'ERROR_NO_SUCH_FILE_OR_DIRECTORY' ) )
@@ -20,13 +22,18 @@ class search {
 	  * constructor
 	  */
 	public function search( $config = NULL ) {
+		$this->path = '.';
 	}
 
 	protected function getCmd() {
 		$cmd = 'find';
-		$cmd .= ' '.SmartWFM_Registry::get( 'basepath', '/' );
-		$cmd .= ' -name ';
+		$cmd .= ' '.Path::join(
+			SmartWFM_Registry::get( 'basepath', '/' ),
+			$this->path
+		);
+		$cmd .= ' -name';
 		$cmd .= ' \'*j*\'';
+		$cmd .= ' ! -iwholename \'*/.*\''; 
 		$cmd .= ' 2>&1';
 		return $cmd;
 	}
