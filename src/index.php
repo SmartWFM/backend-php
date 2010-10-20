@@ -11,7 +11,8 @@
 # WITHOUT ANY WARRANTY. See GPLv3 for more details.                           #
 ###############################################################################
 
-if(file_exists('install')){
+// run install if local.php doesn't exist
+if(file_exists('install') && !file_exists('config/local.php') {
 	$HOST  = $_SERVER['HTTP_HOST'];
 	$URI   = rtrim(dirname($_SERVER['PHP_SELF']), '/\\');
 	header('Location: http://'.$HOST.$URI.'/install');
