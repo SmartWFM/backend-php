@@ -23,6 +23,7 @@ class search {
 	  */
 	public function search( $config = NULL ) {
 		$this->path = $config['path'];
+		$this->name = explode(' ', $config['options']['name']);
 	}
 
 	protected function getCmd() {
@@ -31,8 +32,9 @@ class search {
 			SmartWFM_Registry::get( 'basepath', '/' ),
 			$this->path
 		);
-		$cmd .= ' -name';
-		$cmd .= ' \'*.zip*\'';
+		foreach($this->name as $v) {
+			$cmd .= ' -name \'*'.$v.'*\''; 
+		}		
 		$cmd .= ' ! -iwholename \'*/.*\''; 
 		$cmd .= ' 2>&1';
 		return $cmd;
@@ -44,10 +46,12 @@ class search {
 		if(!$ret) {
 			$results = array();
 			foreach($output as $f) {
-				$i = strrpos($f, '/');
+				$basePath = SmartWFM_Registry::get( 'basepath', '/' );
+				if(substr($f, 0, strlen($basePath)) == $basePath)
+					$f = substr($f, strlen($basePath)+1);		// eliminate leading /
 				$results[] = array(
-					substr($f, $i+1),
-					substr($f, 0, $i),
+					basename($f),
+					dirname($f),
 					@is_dir($f) ? true : false
 				);
 			}
