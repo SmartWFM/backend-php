@@ -18,3 +18,7 @@ archive:
 clean:
 	rm -rf doc/apidoc
 	rm -rf ${ARCHIVE_PATH}
+
+remove_whitespace:
+	# remove whitespaces at the end of a line
+	find ./src/commands ./src/lib/SmartWFM ./src/lib/search ./src/lib/archives -name *.php -exec sed -i 's/[ \t]*$$//' {} \;
