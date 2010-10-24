@@ -10,6 +10,10 @@
 # WITHOUT ANY WARRANTY. See GPLv3 for more details.                           #
 ###############################################################################
 
+if(SmartWFM_Registry::get('filesystem_type') == 'afs') {
+	require_once('lib/AFS/libafs.php');
+}
+
 class NewFile_List extends SmartWFM_Command {
 	function process($params) {
 		$fs_type = SmartWFM_Registry::get('filesystem_type');
@@ -44,6 +48,73 @@ class NewFile_List extends SmartWFM_Command {
 }
 
 SmartWFM_CommandManager::register('new_file.list', new NewFile_List());
+
+class NewFile_Create extends SmartWFM_Command {
+	function process($params) {
+		$fs_type = SmartWFM_Registry::get('filesystem_type');
+
+		$base_path = SmartWFM_Registry::get('basepath','/');
+
+		// check params
+		$param_test = new SmartWFM_Param(
+			$type = 'object',
+			$items = array(
+				'id' => new SmartWFM_Param('string'),
+				'path' => new SmartWFM_Param('string'),
+				'name' => new SmartWFM_Param('string')
+			)
+		);
+
+		$params = $param_test->validate($params);
+
+		// join path
+		$root_path = Path::join(
+			$base_path,
+			$params['path']
+		);
+
+		$filename = Path::join(
+			$root_path,
+			$params['name']
+		);
+
+		// validate path
+		if(Path::validate($base_path, $root_path) != true || Path::validate($base_path, $filename) != true) {
+			throw new SmartWFM_Exception('Wrong filename');
+		}
+
+		// check some stuff
+		if($fs_type == 'afs') {
+			$afs = new afs($root_path);
+			if(!$afs->allowed(AFS_CREATE)) {
+				throw new SmartWFM_Exception('Permission denied.', -9);
+			}
+		} else if ($fs_type == 'local') {
+			if(!is_writable($root_path)) {
+				throw new SmartWFM_Exception('Permission denied.', -9);
+			}
+		}
+		// ToDo: check if file exists
+
+		$ini = parse_ini_file('config/new_file.cfg', True);
+		if(!array_key_exists($params['id'], $ini)) {
+			throw new SmartWFM_Exception('Id not found');
+		}
+
+		// ToDo: Check path
+		$tpl_filename = 'config/new_file/' . $ini[$params['id']]['filename'];
+
+		if(@copy($tpl_filename, $filename) === False) {
+			throw new SmartWFM_Exception('Error');
+		}
+
+		$response = new SmartWFM_Response();
+		$response->data = True;
+		return $response;
+	}
+}
+
+SmartWFM_CommandManager::register('new_file.create', new NewFile_Create());
 
 ?>
 
