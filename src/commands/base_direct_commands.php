@@ -78,7 +78,7 @@ class BaseDirectCommand_Download extends SmartWFM_Command {
 			exit();
 		}
 
-	}	
+	}
 }
 
 SmartWFM_DirectCommandManager::register('download', new BaseDirectCommand_Download());

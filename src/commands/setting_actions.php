@@ -18,7 +18,7 @@ class SettingActions_Load extends SmartWFM_Command {
 		$BASE_PATH = SmartWFM_Registry::get('basepath','/');
 
 		$filename = SmartWFM_Registry::get('setting_filename', NULL);
-		
+
 		$response = new SmartWFM_Response();
 		$response->data = array();
 
@@ -40,7 +40,7 @@ class SettingActions_Load extends SmartWFM_Command {
 
 		}
 		return $response;
-	}	
+	}
 }
 
 SmartWFM_CommandManager::register('setting.load', new SettingActions_Load());
@@ -50,11 +50,11 @@ class SettingActions_Store extends SmartWFM_Command {
 		$fs_type = SmartWFM_Registry::get('filesystem_type');
 
 		$BASE_PATH = SmartWFM_Registry::get('basepath','/');
-		
+
 		$filename = SmartWFM_Registry::get('setting_filename', NULL);
 
 		$fp = fopen($filename, 'w');
-		
+
 		$response = new SmartWFM_Response();
 
 		if($fp === False) {
@@ -77,7 +77,7 @@ class SettingActions_Store extends SmartWFM_Command {
 		}
 
 		return $response;
-	}	
+	}
 }
 
 SmartWFM_CommandManager::register('setting.save', new SettingActions_Store());

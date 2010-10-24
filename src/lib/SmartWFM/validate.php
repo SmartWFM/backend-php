@@ -28,7 +28,7 @@ class SmartWFM_Param {
 				}
 				return $params;
 
-				break;	
+				break;
 			case 'integer':
 				if(!is_integer($params)) {
 					throw new SmartWFM_Excaption_Params('The type of this value should be "integer".');

@@ -18,7 +18,7 @@ class NewFile_List extends SmartWFM_Command {
 	function process($params) {
 		$fs_type = SmartWFM_Registry::get('filesystem_type');
 
-		// check params		
+		// check params
 		$param_test = new SmartWFM_Param(
 			$type = 'object',
 			$items = array(
@@ -44,7 +44,7 @@ class NewFile_List extends SmartWFM_Command {
 			array_push($response->data, $tmp);
 		}
 		return $response;
-	}	
+	}
 }
 
 SmartWFM_CommandManager::register('new_file.list', new NewFile_List());

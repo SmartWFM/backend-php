@@ -19,26 +19,26 @@ require_once('lib/AFS/libafs.php');
 class AFSSpecialActions_GetQuota extends SmartWFM_Command {
 	function process( $params ) {
 		$BASE_PATH = SmartWFM_Registry::get( 'basepath', '/' );
-		
+
 		$param_test = new SmartWFM_Param( 'string' );
 
 		$params = $param_test->validate( $params ) ;
-		
+
 		$path = Path::join(
 			$BASE_PATH,
 			$params
-		); 
-		
+		);
+
 		if( !is_dir( $path ) ) {
 			throw new SmartWFM_Exception( 'Dir doesn\'t exist.', -1 );
 		}
-		
-		$afs = new afs( $path );	
-		
-		if( !$afs->allowed( AFS_LIST ) ) { 
+
+		$afs = new afs( $path );
+
+		if( !$afs->allowed( AFS_LIST ) ) {
 			throw new SmartWFM_Exception( 'Permission denied.', -2 );
 		}
-		
+
 		$response = new SmartWFM_Response();
 		$response->data = $afs->getQuota();
 		return $response;
@@ -54,28 +54,28 @@ SmartWFM_CommandManager::register( 'quota.get', new AFSSpecialActions_GetQuota()
 class AFSSpecialActions_GetACL extends SmartWFM_Command {
 	function process( $params ) {
 		$BASE_PATH = SmartWFM_Registry::get( 'basepath', '/' );
-		
+
 		$param_test = new SmartWFM_Param( 'string' );
 
 		$params = $param_test->validate( $params ) ;
-		
+
 		$path = Path::join(
 			$BASE_PATH,
 			$params
-		); 
-		
+		);
+
 		if( !is_dir( $path ) ) {
 			throw new SmartWFM_Exception( 'Dir doesn\'t exist.', -1 );
 		}
-		
-		$afs = new afs( $path );	
-		
-		if( !$afs->allowed( AFS_ADMINISTER ) ) { 
+
+		$afs = new afs( $path );
+
+		if( !$afs->allowed( AFS_ADMINISTER ) ) {
 			throw new SmartWFM_Exception( 'Permission denied.', -2 );
 		}
-		
+
 		$response = new SmartWFM_Response();
-		$response->data = $afs->getAcl();	
+		$response->data = $afs->getAcl();
 		return $response;
 	}
 }
@@ -89,9 +89,9 @@ SmartWFM_CommandManager::register( 'acl.get', new AFSSpecialActions_GetACL() );
 class AFSSpecialActions_SetACL extends SmartWFM_Command {
 	function process( $params ) {
 		$BASE_PATH = SmartWFM_Registry::get( 'basepath', '/' );
-		
-		$param_test = new SmartWFM_Param( 'string' );		
-		
+
+		$param_test = new SmartWFM_Param( 'string' );
+
 		$param_test = new SmartWFM_Param(
 			$type = 'object',
 			$items = array(
@@ -116,22 +116,22 @@ class AFSSpecialActions_SetACL extends SmartWFM_Command {
 		);
 
 		$params = $param_test->validate( $params ) ;
-		
+
 		$path = Path::join(
 			$BASE_PATH,
 			$params['path']
-		); 
-		
+		);
+
 		if( !is_dir( $path ) ) {
 			throw new SmartWFM_Exception( 'Dir doesn\'t exist.', -1 );
 		}
-		
-		$afs = new afs( $path );	
-		
-		if( !$afs->allowed( AFS_ADMINISTER ) ) { 
+
+		$afs = new afs( $path );
+
+		if( !$afs->allowed( AFS_ADMINISTER ) ) {
 			throw new SmartWFM_Exception( 'Permission denied.', -2 );
-		}				
-		
+		}
+
 		$res = $afs->setAcl( $params['acl'], $params['subdirs']  );
 		if( $res !== true ){
 			switch( $res ) {
@@ -143,7 +143,7 @@ class AFSSpecialActions_SetACL extends SmartWFM_Command {
 					throw new SmartWFM_Exception( 'New group couldn\'t be created.', -5 );
 				case -4:
 					throw new SmartWFM_Exception( 'Rights couldn\'t be set.', -6 );
-			}	
+			}
 		}
 		$response = new SmartWFM_Response();
 		$response->data = $res;
@@ -158,11 +158,11 @@ SmartWFM_CommandManager::register( 'acl.set', new AFSSpecialActions_SetACL() );
  */
 
 class AFSSpecialActions_GetGroups extends SmartWFM_Command {
-	function process( $params ) {						
-		$afs = new afs( NULL );	
-			
+	function process( $params ) {
+		$afs = new afs( NULL );
+
 		$response = new SmartWFM_Response();
-		$response->data = $afs->getUsersGroups();	
+		$response->data = $afs->getUsersGroups();
 		return $response;
 	}
 }
@@ -174,13 +174,13 @@ SmartWFM_CommandManager::register( 'groups.get', new AFSSpecialActions_GetGroups
  */
 
 class AFSSpecialActions_CreateGroup extends SmartWFM_Command {
-	function process( $params ) {			
+	function process( $params ) {
 		$param_test = new SmartWFM_Param( 'string' );
 
 		$params = $param_test->validate( $params ) ;
-					
-		$afs = new afs( NULL );	
-		
+
+		$afs = new afs( NULL );
+
 		$res = $afs->addGroup( $params );
 		if( $res !== true ) {
 			switch( $res ) {
@@ -191,10 +191,10 @@ class AFSSpecialActions_CreateGroup extends SmartWFM_Command {
 				case false:
 					throw new SmartWFM_Exception( 'New group couldn\'t be created.', -3 );
 			}
-		}		
-		
+		}
+
 		$response = new SmartWFM_Response();
-		$response->data = $res;	
+		$response->data = $res;
 		return $response;
 	}
 }
@@ -206,13 +206,13 @@ SmartWFM_CommandManager::register( 'groups.create', new AFSSpecialActions_Create
  */
 
 class AFSSpecialActions_DeleteGroup extends SmartWFM_Command {
-	function process( $params ) {			
+	function process( $params ) {
 		$param_test = new SmartWFM_Param( 'string' );
 
 		$params = $param_test->validate( $params ) ;
-					
-		$afs = new afs( NULL );	
-		
+
+		$afs = new afs( NULL );
+
 		$res = $afs->deleteGroup( $params );
 		switch( $res ) {
 			case -1:
@@ -222,9 +222,9 @@ class AFSSpecialActions_DeleteGroup extends SmartWFM_Command {
 			case false:
 				throw new SmartWFM_Exception( 'Group couldn\'t be deleted.', -3 );
 		}
-		
+
 		$response = new SmartWFM_Response();
-		$response->data = $res;	
+		$response->data = $res;
 		return $response;
 	}
 }
@@ -236,20 +236,20 @@ SmartWFM_CommandManager::register( 'groups.delete', new AFSSpecialActions_Delete
  */
 
 class AFSSpecialActions_GetGroupMembers extends SmartWFM_Command {
-	function process( $params ) {	
+	function process( $params ) {
 		$param_test = new SmartWFM_Param( 'string' );
 
 		$params = $param_test->validate( $params ) ;
-							
-		$afs = new afs( NULL );	
-		
+
+		$afs = new afs( NULL );
+
 		$res = $afs->getGroupMembers( $params );
 		if( $res === false ) {
 			throw new SmartWFM_Exception( 'Members couldn\'t be determined.', -1 );
 		}
-		
+
 		$response = new SmartWFM_Response();
-		$response->data = $res;	
+		$response->data = $res;
 		return $response;
 	}
 }
@@ -261,7 +261,7 @@ SmartWFM_CommandManager::register( 'groups.members.get', new AFSSpecialActions_G
  */
 
 class AFSSpecialActions_AddGroupMembers extends SmartWFM_Command {
-	function process( $params ) {		
+	function process( $params ) {
 		$param_test = new SmartWFM_Param(
 			$type = 'object',
 			$items = array(
@@ -271,8 +271,8 @@ class AFSSpecialActions_AddGroupMembers extends SmartWFM_Command {
 		);
 
 		$params = $param_test->validate( $params ) ;
-							
-		$afs = new afs( NULL );			
+
+		$afs = new afs( NULL );
 
 		if( !$afs->groupExists( $params['group'] ) ) {
 			throw new SmartWFM_Exception( 'Group doesn\'t exist.', -1 );
@@ -280,16 +280,16 @@ class AFSSpecialActions_AddGroupMembers extends SmartWFM_Command {
 
 		if( !$afs->ownGroup( $params['group'] ) ) {
 			throw new SmartWFM_Exception( 'You aren\'t own this group.', -2 );
-		}		
-		
+		}
+
 		$res = $afs->addGroupMembers( $params['group'], $params['user'] );
-		
+
 		if( $res === false ) {
 			throw new SmartWFM_Exception( 'User(s) couldn\'t be added.', -3 );
 		}
-		
+
 		$response = new SmartWFM_Response();
-		$response->data = $res;	
+		$response->data = $res;
 		return $response;
 	}
 }
@@ -303,7 +303,7 @@ SmartWFM_CommandManager::register( 'groups.members.add', new AFSSpecialActions_A
  */
 
 class AFSSpecialActions_DeleteGroupsMembers extends SmartWFM_Command {
-	function process( $params ) {			
+	function process( $params ) {
 		FB::log($params);
 		$param_test = new SmartWFM_Param(
 			$type = 'array',
@@ -311,9 +311,9 @@ class AFSSpecialActions_DeleteGroupsMembers extends SmartWFM_Command {
 		);
 
 		$params = $param_test->validate( $params ) ;
-					
-		$afs = new afs( NULL );	
-		
+
+		$afs = new afs( NULL );
+
 		$res = array();
 		$fail = false;
 		foreach( $params as $value ) {
@@ -327,9 +327,9 @@ class AFSSpecialActions_DeleteGroupsMembers extends SmartWFM_Command {
 				$fail = true;
 			}
 		}
-		
+
 		$response = new SmartWFM_Response();
-		$response->data = array( 'fail' => $fail, 'result' => $res);	
+		$response->data = array( 'fail' => $fail, 'result' => $res);
 		return $response;
 	}
 }

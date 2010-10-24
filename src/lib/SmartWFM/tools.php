@@ -14,7 +14,7 @@ class Path {
 	static function join() {
 		$args = func_get_args();
 		$paths = array();
-		
+
 		foreach( $args as $arg ) {
 			$path = trim( $arg, '/' );
 			if($path != '') {

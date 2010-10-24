@@ -18,7 +18,7 @@ class SearchActions_Search extends SmartWFM_Command {
 
 		$BASE_PATH = SmartWFM_Registry::get('basepath','/');
 
-		// check params		
+		// check params
 		$param_test = new SmartWFM_Param(
 			$type = 'object',
 			$items = array(
@@ -76,10 +76,10 @@ class SearchActions_Search extends SmartWFM_Command {
 			$response->data = $tmp;
 			return $response;
 		}
-		
-		
-		
-	}	
+
+
+
+	}
 }
 
 SmartWFM_CommandManager::register('search', new SearchActions_Search());

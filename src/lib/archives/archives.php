@@ -20,15 +20,15 @@ class Archives{
 				if(@is_dir($p)){
 					foreach(Archives::getFiles($p) as $e) {
 						$files[] = $e;
-					}					
+					}
 				} else {
 					$files[] = $p;
-				}				
+				}
 			}
 		}
 		return $files;
-	}	
-	
+	}
+
 	static public function fileNamesToTreeStruct($files){
 		$tree = array();
 		foreach($files as $f) {
@@ -36,8 +36,8 @@ class Archives{
 			$tree = Archives::fileNameToArray($f, $tree);
 		}
 		return $tree;
-	}	
-	
+	}
+
 	static public function fileNameToArray($file, $array){
 		$s = explode('/',$file);
 		if(count($s) > 1) {

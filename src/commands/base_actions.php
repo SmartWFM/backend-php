@@ -21,7 +21,7 @@ class BaseActions_DirCreate extends SmartWFM_Command {
 
 		$BASE_PATH = SmartWFM_Registry::get('basepath','/');
 
-		// check params		
+		// check params
 		$param_test = new SmartWFM_Param(
 			$type = 'object',
 			$items = array(
@@ -76,7 +76,7 @@ class BaseActions_DirCreate extends SmartWFM_Command {
 			throw new SmartWFM_Exception('Can\'t create the folder', -2);
 		}
 		return $response;
-	}	
+	}
 }
 
 SmartWFM_CommandManager::register('dir.create', new BaseActions_DirCreate());
@@ -86,7 +86,7 @@ class BaseActions_DirDelete extends SmartWFM_Command {
 		$fs_type = SmartWFM_Registry::get('filesystem_type');
 
 		$BASE_PATH = SmartWFM_Registry::get('basepath','/');
-		
+
 		$param_test = new SmartWFM_Param(
 			$type = 'object',
 			$items = array(
@@ -96,7 +96,7 @@ class BaseActions_DirDelete extends SmartWFM_Command {
 		);
 
 		$params = $param_test->validate($params);
-		
+
 		$root_path = Path::join(
 			$BASE_PATH,
 			$params['path']
@@ -125,21 +125,21 @@ class BaseActions_DirDelete extends SmartWFM_Command {
 		if(!@file_exists($path)) {
 			throw new SmartWFM_Exception('Folder doesn\'t exist.', -1);
 		}
-		
+
 		if(!@is_dir($path)) {
 			throw new SmartWFM_Exception('The folder with the given name is not a folder', -2);
 		}
 
 		$response = new SmartWFM_Response();
-		
+
 		if(@rmdir($path)) {
 			$response->data = true;
 		} else {
 			throw new SmartWFM_Exception('Can\'t remove the folder', -3);
 		}
-		
+
 		return $response;
-	}	
+	}
 }
 
 SmartWFM_CommandManager::register('dir.delete', new BaseActions_DirDelete());
@@ -163,9 +163,9 @@ class BaseActions_DirList extends SmartWFM_Command {
 		);
 
 		$params = $param_test->validate($params);
-		
+
 		$showHidden = $params['showHidden'];
-		
+
 		$path = Path::join(
 			$BASE_PATH,
 			$params['path']
@@ -298,7 +298,7 @@ class BaseActions_Copy extends SmartWFM_Command {
 		}
 
 		$response = new SmartWFM_Response();
-		
+
 		if(file_exists($destination) && $params['overwrite'] == false) {
 			throw new SmartWFM_Exception('Destination file exists', -2);
 		} else {
@@ -310,7 +310,7 @@ class BaseActions_Copy extends SmartWFM_Command {
 		}
 
 		return $response;
-	}	
+	}
 }
 
 SmartWFM_CommandManager::register('file.copy', new BaseActions_Copy());
@@ -320,7 +320,7 @@ class BaseActions_Delete extends SmartWFM_Command {
 		$fs_type = SmartWFM_Registry::get('filesystem_type');
 
 		$BASE_PATH = SmartWFM_Registry::get('basepath','/');
-		
+
 		$param_test = new SmartWFM_Param(
 			$type = 'object',
 			$items = array(
@@ -330,12 +330,12 @@ class BaseActions_Delete extends SmartWFM_Command {
 		);
 
 		$params = $param_test->validate($params);
-		
+
 		$path = Path::join(
 			$BASE_PATH,
 			$params['path']
 		);
-		
+
 		$filename = Path::join(
 			$path,
 			$params['name']
@@ -366,15 +366,15 @@ class BaseActions_Delete extends SmartWFM_Command {
 		}
 
 		$response = new SmartWFM_Response();
-		
+
 		if(@unlink($filename) === true) {
 			$response->data = true;
 		} else {
 			throw new SmartWFM_Exception('Can\'t delete the file', -2);
 		}
-		
+
 		return $response;
-	}	
+	}
 }
 
 SmartWFM_CommandManager::register('file.delete', new BaseActions_Delete());
@@ -388,17 +388,17 @@ class BaseActions_List extends SmartWFM_Command {
 		$fs_type = SmartWFM_Registry::get('filesystem_type');
 
 		$BASE_PATH = SmartWFM_Registry::get('basepath','/');
-		
+
 		$param_test = new SmartWFM_Param(
 			$type = 'object',
 			$items = array(
 				'path' => new SmartWFM_Param('string'),
 				'showHidden' => new SmartWFM_Param('boolean')
 			)
-		);		
+		);
 
 		$params = $param_test->validate($params);
-		
+
 		$showHidden = $params['showHidden'];
 
 		$req_path = $params['path'];
@@ -598,7 +598,7 @@ class BaseActions_Move extends SmartWFM_Command {
 				throw new SmartWFM_Exception( 'Permission denied.', -9 );
 			}
 		}
-		
+
 		$response = new SmartWFM_Response();
 
 		if(file_exists($destination) && $params['overwrite'] == false) {
@@ -689,7 +689,7 @@ class BaseActions_Rename extends SmartWFM_Command {
 		}
 
 		return $response;
-	}	
+	}
 }
 
 SmartWFM_CommandManager::register('file.rename', new BaseActions_Rename());

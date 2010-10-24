@@ -26,7 +26,7 @@ if(!function_exists('json_decode')) {
 }
 
 if(!function_exists('json_encode')) {
-	require_once('lib/JSON/JSON.php');	
+	require_once('lib/JSON/JSON.php');
 	function json_encode($string) {
 		$services_json = new Services_JSON();
 		return $services_json->encode($string);
@@ -62,14 +62,14 @@ class SmartWFM_Response {
 	public $error_code = NULL;
 	public $error_message = NULL;
 	public $error_data = NULL;
-	
+
 	public function __construct($data = NULL, $error_code = NULL, $error_message = NULL, $error_data = NULL) {
 		$this->data = $data;
 		$this->error_code = $error_code;
 		$this->error_message = $error_message;
 		$this->error_data = $error_data;
 	}
-	
+
 	/**
 	 * Generate the output.
 	 */
@@ -86,7 +86,7 @@ class SmartWFM_Response {
 					);
 				if($this->error_data != NULL) {
 					$d['error']['data'] = $this->error_data;
-				}	
+				}
 			} else {
 				$d['result'] = $this->data;
 			}
@@ -198,7 +198,7 @@ class SmartWFM_DirectCommandManager {
 
 class SmartWFM {
 	function __construct() {
-	
+
 	}
 
 	/**
@@ -269,7 +269,7 @@ class SmartWFM {
 
 class SmartWFM_Command {
 	function __construct() {
-	
+
 	}
 
 	function process($params) {

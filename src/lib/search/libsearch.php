@@ -17,7 +17,7 @@ if( !defined( 'ERROR_PERMISSION_DENIED' ) )
 if( !defined( 'ERROR_NO_SUCH_FILE_OR_DIRECTORY' ) )
 	define( 'ERROR_NO_SUCH_FILE_OR_DIRECTORY', 2 );
 
-class search {	
+class search {
 	/**
 	  * constructor
 	  */
@@ -33,13 +33,13 @@ class search {
 			$this->path
 		);
 		foreach($this->name as $v) {
-			$cmd .= ' -name \'*'.$v.'*\''; 
-		}		
-		$cmd .= ' ! -iwholename \'*/.*\''; 
+			$cmd .= ' -name \'*'.$v.'*\'';
+		}
+		$cmd .= ' ! -iwholename \'*/.*\'';
 		$cmd .= ' 2>&1';
 		return $cmd;
 	}
-	
+
 	public function getResult() {
 		$cmd = $this->getCmd();
 		exec($cmd, $output, $ret);
