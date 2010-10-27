@@ -33,7 +33,7 @@ class search {
 			$this->path
 		);
 		foreach($this->name as $v) {
-			$cmd .= ' -name \'*'.$v.'*\'';
+			$cmd .= ' -iname \'*'.$v.'*\'';
 		}
 		$cmd .= ' ! -iwholename \'*/.*\'';
 		$cmd .= ' 2>&1';
@@ -47,12 +47,13 @@ class search {
 			$results = array();
 			foreach($output as $f) {
 				$basePath = SmartWFM_Registry::get( 'basepath', '/' );
+				$dir = @is_dir($f) ? true : false;
 				if(substr($f, 0, strlen($basePath)) == $basePath)
-					$f = substr($f, strlen($basePath)+1);		// eliminate leading /
+					$f = substr($f, strlen($basePath)+1);		// eliminate basePath and leading /
 				$results[] = array(
 					basename($f),
 					dirname($f),
-					@is_dir($f) ? true : false
+					$dir
 				);
 			}
 			return $results;
