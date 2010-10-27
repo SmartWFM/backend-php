@@ -20,6 +20,8 @@ if( !defined( 'AFS_READ' ) )
 	define( 'AFS_READ', 4 );
 if( !defined( 'AFS_ADMINISTER' ) ) 
 	define( 'AFS_ADMINISTER', 5 );
+if( !defined( 'AFS_INSERT' ) ) 
+	define( 'AFS_INSERT', 6 );
 
 class afs {
 	protected $cmd = array(
@@ -105,6 +107,8 @@ class afs {
 			case AFS_LIST:
 				return $this->userrights['l'];
 			case AFS_CREATE:
+				return $this->userrights['w'];
+			case AFS_INSERT:
 				return $this->userrights['i'];
 			case AFS_DELETE:
 				return $this->userrights['d'];
