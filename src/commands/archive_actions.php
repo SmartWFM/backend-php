@@ -54,7 +54,7 @@ class BaseArchiveActions_Create extends SmartWFM_Command {
 		);
 
 		if(Path::validate($BASE_PATH, $path) != true) {
-			throw new SmartWFM_Exception('Wrong directory name', -1);
+			throw new SmartWFM_Exception('Wrong directory name.', -1);
 		}
 
 		if($fsType == 'afs') {
@@ -69,7 +69,7 @@ class BaseArchiveActions_Create extends SmartWFM_Command {
 		}
 
 		if(@file_exists($path)) {
-			throw new SmartWFM_Exception('A file with the given name already exists', -2);
+			throw new SmartWFM_Exception('A file with the given name already exists.', -2);
 		}
 
 		$files = array();
@@ -80,11 +80,11 @@ class BaseArchiveActions_Create extends SmartWFM_Command {
 				$p
 			);
 			if(Path::validate($BASE_PATH, $tmpPath) != true) {
-				throw new SmartWFM_Exception('Wrong directory name', -3);
+				throw new SmartWFM_Exception('Wrong directory name.', -3);
 			}
 
 			if(!@file_exists($tmpPath)) {
-				throw new SmartWFM_Exception('A file with the given name doesn\'t exists', -4);
+				throw new SmartWFM_Exception('A file with the given name doesn\'t exists.', -4);
 			}
 
 			if(@is_dir($tmpPath)) {
@@ -103,22 +103,22 @@ class BaseArchiveActions_Create extends SmartWFM_Command {
 					foreach($files as $f) {
 						if($params['fullPath']){
 							if( !$a->addFile($f) ) {
-								throw new SmartWFM_Exception('Couldn\'t add file to archive', -5);
+								throw new SmartWFM_Exception('Couldn\'t add file to archive.', -5);
 							}
 						} else {
 							if( !$a->addFile($f, str_replace($rootPath.'/','',$f)) ) {
-								throw new SmartWFM_Exception('Couldn\'t add file to archive', -5);
+								throw new SmartWFM_Exception('Couldn\'t add file to archive.', -5);
 							}
 						}
 					}
 					if(!$a->close()) {
-						throw new SmartWFM_Exception('Couldn\'t create archive', -6);
+						throw new SmartWFM_Exception('Couldn\'t create archive.', -6);
 					}
 					$response = new SmartWFM_Response();
 					$response->data = true;
 					return $response;
 				} else {
-					throw new SmartWFM_Exception('Couldn\'t create archive', -7);
+					throw new SmartWFM_Exception('Couldn\'t create archive.', -7);
 				}
 				break;
 			case 'tarbz2':
@@ -144,11 +144,11 @@ class BaseArchiveActions_Create extends SmartWFM_Command {
 					$response->data = true;
 					return $response;
 				}else{
-					throw new SmartWFM_Exception('Couldn\'t create archive', -9);
+					throw new SmartWFM_Exception('Couldn\'t create archive.', -10);
 				}
 				break;
 			default:
-				throw new SmartWFM_Exception('Wrong archive type', -8);
+				throw new SmartWFM_Exception('Wrong archive type.', -8);
 		}
 	}
 }
@@ -170,11 +170,11 @@ class BaseArchiveActions_List extends SmartWFM_Command {
 		);
 
 		if(Path::validate($BASE_PATH, $path) != true) {
-			throw new SmartWFM_Exception('Wrong directory name', -1);
+			throw new SmartWFM_Exception('Wrong directory name.', -1);
 		}
 
 		if(! @file_exists($path)) {
-			throw new SmartWFM_Exception('A file with the given name doesn\'t exists', -2);
+			throw new SmartWFM_Exception('A file with the given name doesn\'t exists.', -2);
 		}
 
 		if($fsType == 'afs') {
@@ -201,7 +201,7 @@ class BaseArchiveActions_List extends SmartWFM_Command {
 				$response->data = Archives::fileNamesToTreeStruct($output);
 				return $response;
 			}else{
-				throw new SmartWFM_Exception('Couldn\'t open archive', -6);
+				throw new SmartWFM_Exception('Couldn\'t open archive.', -3);
 			}
 		}
 
@@ -214,14 +214,14 @@ class BaseArchiveActions_List extends SmartWFM_Command {
 						$files[] = $a->getNameIndex($i);
 					}
 				} else {
-					throw new SmartWFM_Exception('Couldn\'t open archive', -6);
+					throw new SmartWFM_Exception('Couldn\'t open archive.', -3);
 				}
 				$response = new SmartWFM_Response();
 				$response->data = Archives::fileNamesToTreeStruct($files);
 				return $response;
 				break;
 			default:
-				throw new SmartWFM_Exception('Unreadable archive type', -8);
+				throw new SmartWFM_Exception('Unreadable archive type.', -8);
 		}
 	}
 }
@@ -254,7 +254,7 @@ class BaseArchiveActions_Extract extends SmartWFM_Command {
 		);
 
 		if(Path::validate($BASE_PATH, $extractPath) != true) {
-			throw new SmartWFM_Exception('Wrong directory name', -1);
+			throw new SmartWFM_Exception('Wrong directory name.', -1);
 		}
 
 		$archivePath = Path::join(
@@ -263,7 +263,7 @@ class BaseArchiveActions_Extract extends SmartWFM_Command {
 		);
 
 		if(Path::validate($BASE_PATH, $archivePath) != true) {
-			throw new SmartWFM_Exception('Wrong archive path', -1);
+			throw new SmartWFM_Exception('Wrong archive path.', -2);
 		}
 
 		if($fsType == 'afs') {
@@ -290,7 +290,7 @@ class BaseArchiveActions_Extract extends SmartWFM_Command {
 				$f
 			);
 			if(@file_exists($tmpPath)) {
-				throw new SmartWFM_Exception('A file with the given name already exists', -4);
+				throw new SmartWFM_Exception('A file with the given name already exists.', -3);
 			}
 			$params['files'][$k] = ltrim($f, './');
 		}
@@ -315,7 +315,7 @@ class BaseArchiveActions_Extract extends SmartWFM_Command {
 					$response->data = true;
 					return $response;
 				}else{
-					throw new SmartWFM_Exception('Couldn\'t open and extract archive', -10);
+					throw new SmartWFM_Exception('Couldn\'t open and extract archive.', -4);
 				}
 			}
 		}
@@ -341,7 +341,7 @@ class BaseArchiveActions_Extract extends SmartWFM_Command {
 							$response->data = True;
 							return $response;
 						} else {
-							throw new SmartWFM_Exception('Couldn\'t extract archive', -7);
+							throw new SmartWFM_Exception('Couldn\'t extract archive.', -5);
 						}
 					} else {
 						if( $a->extractTo($extractPath) ) {
@@ -349,18 +349,18 @@ class BaseArchiveActions_Extract extends SmartWFM_Command {
 							$response->data = True;
 							return $response;
 						} else {
-							throw new SmartWFM_Exception('Couldn\'t extract archive', -11);
+							throw new SmartWFM_Exception('Couldn\'t extract archive.', -6);
 						}
 					}
 				} else {
-					throw new SmartWFM_Exception('Couldn\'t open archive', -6);
+					throw new SmartWFM_Exception('Couldn\'t open archive.', -7);
 				}
 				$response = new SmartWFM_Response();
 				$response->data = True;
 				return $response;
 				break;
 			default:
-				throw new SmartWFM_Exception('Unreadable archive type', -8);
+				throw new SmartWFM_Exception('Unreadable archive type.', -8);
 		}
 	}
 }

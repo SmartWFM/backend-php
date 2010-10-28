@@ -63,22 +63,19 @@ class SearchActions_Search extends SmartWFM_Command {
 		if(gettype($tmp) == 'integer') {
 			switch($tmp) {
 				case ERROR_PERMISSION_DENIED:
-					throw new SmartWFM_Exception('Permission denied', -8);
+					throw new SmartWFM_Exception('Permission denied.', -8);
 					break;
 				case ERROR_NO_SUCH_FILE_OR_DIRECTORY:
-					throw new SmartWFM_Exception('File or directory doesn\'t exists', -2);
+					throw new SmartWFM_Exception('File or directory doesn\'t exists.', -2);
 					break;
 				default:
-					throw new SmartWFM_Exception('Unknown Error', -7);
+					throw new SmartWFM_Exception('Unknown Error.', -7);
 			}
 		} else {
 			$response = new SmartWFM_Response();
 			$response->data = $tmp;
 			return $response;
 		}
-
-
-
 	}
 }
 
