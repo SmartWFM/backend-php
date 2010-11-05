@@ -30,7 +30,7 @@ class AFSSpecialActions_GetQuota extends SmartWFM_Command {
 		);
 
 		if( !is_dir( $path ) ) {
-			throw new SmartWFM_Exception( 'Dir doesn\'t exist.', -1 );
+			throw new SmartWFM_Exception( 'Dir doesn\'t exists.', -1 );
 		}
 
 		$afs = new afs( $path );
@@ -65,7 +65,7 @@ class AFSSpecialActions_GetACL extends SmartWFM_Command {
 		);
 
 		if( !is_dir( $path ) ) {
-			throw new SmartWFM_Exception( 'Dir doesn\'t exist.', -1 );
+			throw new SmartWFM_Exception( 'Dir doesn\'t exists.', -1 );
 		}
 
 		$afs = new afs( $path );
@@ -123,7 +123,7 @@ class AFSSpecialActions_SetACL extends SmartWFM_Command {
 		);
 
 		if( !is_dir( $path ) ) {
-			throw new SmartWFM_Exception( 'Dir doesn\'t exist.', -1 );
+			throw new SmartWFM_Exception( 'Dir doesn\'t exists.', -1 );
 		}
 
 		$afs = new afs( $path );
@@ -275,7 +275,7 @@ class AFSSpecialActions_AddGroupMembers extends SmartWFM_Command {
 		$afs = new afs( NULL );
 
 		if( !$afs->groupExists( $params['group'] ) ) {
-			throw new SmartWFM_Exception( 'Group doesn\'t exist.', -1 );
+			throw new SmartWFM_Exception( 'Group doesn\'t exists.', -1 );
 		}
 
 		if( !$afs->ownGroup( $params['group'] ) ) {
@@ -285,7 +285,7 @@ class AFSSpecialActions_AddGroupMembers extends SmartWFM_Command {
 		$res = $afs->addGroupMembers( $params['group'], $params['user'] );
 
 		if( $res === false ) {
-			throw new SmartWFM_Exception( 'User(s) couldn\'t be added.', -3 );
+			throw new SmartWFM_Exception( 'User couldn\'t be added.', -3 );
 		}
 
 		$response = new SmartWFM_Response();
