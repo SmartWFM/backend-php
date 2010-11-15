@@ -32,6 +32,7 @@ $c->parse($_POST);
 
 if($save)
 	$c->save();
+	
 ?>
 <!DOCTYPE html 
      PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
@@ -40,17 +41,19 @@ if($save)
 	<head>
 		<meta http-equiv="content-type" 
 			content="application/xhtml+xml;charset=utf-8" />
-		<title>Installation SWFM - PHP Backend</title>		
+		<title>Configuration SWFM - PHP Backend</title>
 		<link rel="stylesheet" media="all" href="style.css" />
 	</head>
 <body>
 	<center>
-	<h1>Installation SWFM - PHP Backend</h1>
+	<h1>Configuration SWFM - PHP Backend</h1>
 	<div id="wrapper">
+	  <?php if($c->fileExists()): ?>
 		<div class="notice">
 			If you see this anyway and you have already set up the backend, 
 			just delete the "install" folder inside the backend folder. 
 		</div>
+		<?php endif; ?>
 		<?php 
 			echo $c->buildHTML();			
 		?>

@@ -676,7 +676,7 @@ class Config {
 		if(file_exists($this->paths['root'])) {
 			if(is_dir($this->paths['root'])) {
 				if(is_writable($this->paths['root'])) {
-					if(file_exists($this->paths['root'].$this->paths['file'])) {
+					if($this->fileExists()) {
 						if(!is_dir($this->paths['root'].$this->paths['file'])) {
 							$this->errors['save'] = array(
 								'message' => 'config file already exists',
@@ -725,6 +725,14 @@ class Config {
 			);
 		}
 		return False;			
+	}
+	
+	/**
+	  * checks if config file already exists
+	  * @return	boolean
+	  */
+	public function fileExists() {
+		return(file_exists($this->paths['root'].$this->paths['file']));
 	}
 };
 
