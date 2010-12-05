@@ -257,6 +257,10 @@ class SettingFilenameOption extends BaseOption {
 			$this->errorCode = 1;
 			$this->errorMessage = 'path-string is empty';
 		} else {
+			# allow any string here, because this could be an user related path
+			# e.g. with username as path
+			return True;
+
 			if(file_exists($this->value)) {
 				if(is_dir($this->value)) {
 					$this->errorCode = 2;
