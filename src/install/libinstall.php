@@ -633,8 +633,11 @@ class Config {
 				$html .= $this->errors['save']['message'].' (';
 				$html .= $this->errors['save']['code'].')</p>';
 				if($this->errors['save']['code'] != 1) {
-					$html .= '<p class="notice">Create a file ';
-					$html .= '"BACKENDPHP-DIR/config/local.php" with following';
+					$html .= '<p class="notice">Create a file "';
+					$a = $_SERVER['SCRIPT_FILENAME'];
+					$html .= substr($a, 0, strlen($a) -
+						strlen('install/index.php'));
+					$html .= 'config/local.php" with following';
 					$html .= ' content:</p>';	
 					$html .= '<p class="code">';
 					$o = $this->generate();
