@@ -50,8 +50,11 @@ if($save)
 	<div id="wrapper">
 	  <?php if($c->fileExists()): ?>
 		<div class="notice">
+			The config file already exists. For security reasons you cannot overwrite 
+			it.<!--<br /><br />
+
 			If you see this anyway and you have already set up the backend, 
-			just delete the "install" folder inside the backend folder. 
+			just delete the "install" folder inside the backend folder. -->
 		</div>
 		<?php endif; ?>
 		<?php 
