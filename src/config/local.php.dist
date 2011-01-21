@@ -16,7 +16,7 @@
 	   Apache 2.x:
 	   - install mod_xsendfile
 	   - Set config options:
-	     - XSendFIle On
+	     - XSendFile On
 	     - XSendFileAllowAbove On
 	*/
 	SmartWFM_Registry::set('use_x_sendfile', False);
