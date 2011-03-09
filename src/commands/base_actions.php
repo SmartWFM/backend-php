@@ -415,7 +415,7 @@ class BaseActions_List extends SmartWFM_Command {
 		if($fs_type == 'afs') {
 			$afs = new afs($path);
 
-			if( !$afs->allowed(AFS_LIST)) {
+			if( !$afs->allowed(AFS_READ)) {
 				throw new SmartWFM_Exception('Permission denied.', -9);
 			}
 		}
