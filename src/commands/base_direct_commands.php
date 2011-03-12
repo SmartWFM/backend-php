@@ -89,6 +89,11 @@ class BaseDirectCommand_Upload extends SmartWFM_Command {
 
 		$BASE_PATH = SmartWFM_Registry::get('basepath','/');
 
+		$response = array(
+			'success' => true,
+			'msg' => ''
+		);
+
 		$path = Path::join(
 			$BASE_PATH,
 			$params['path']
@@ -100,27 +105,32 @@ class BaseDirectCommand_Upload extends SmartWFM_Command {
 		);
 
 		if(Path::validate($BASE_PATH, $path) != true || Path::validate($BASE_PATH, $file) != true) {
-			print "error";
-			return;
+			$response['success'] = false;
+			$response['msg'] = 'error'; //TODO
 		}
 
-		if($fs_type == 'afs') {
+		if($response['success'] && $fs_type == 'afs') {
 			$afs = new afs($path);
 
 			if(!$afs->allowed(AFS_INSERT)) {
-				print 'Permission denied.';
-				return;
+				$response['success'] = false;
+				$response['msg'] = 'Permission denied';
 			}
-		} else if($fs_type == 'local') {
+		} else if($response['success'] && $fs_type == 'local') {
 			if(!is_writable($path)) {
-				print 'Permission denied.';
-				return;
+				$response['success'] = false;
+				$response['msg'] = 'Permission denied';
 			}
 		}
+
 		//TODO: check if file exists
 
-		move_uploaded_file($_FILES['file']['tmp_name'], $file);
+		if($response['success']) {
+			move_uploaded_file($_FILES['file']['tmp_name'], $file);
+		}
 
+		echo json_encode($response);
+		exit();
 	}
 }
 
