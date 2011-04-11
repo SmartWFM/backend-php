@@ -90,8 +90,6 @@ class AFSSpecialActions_SetACL extends SmartWFM_Command {
 	function process( $params ) {
 		$BASE_PATH = SmartWFM_Registry::get( 'basepath', '/' );
 
-		$param_test = new SmartWFM_Param( 'string' );
-
 		$param_test = new SmartWFM_Param(
 			$type = 'object',
 			$items = array(
@@ -102,7 +100,7 @@ class AFSSpecialActions_SetACL extends SmartWFM_Command {
 					$type = 'key_data_object',
 					$items = array(
 						'key' => new SmartWFM_Param(
-							$type = 'string'
+							$type = 'stringorinteger'
 						),
 						'value' => new SmartWFM_Param(
 							$type = 'string'

@@ -74,6 +74,13 @@ class SmartWFM_Param {
 					throw new SmartWFM_Excaption_Params('The type of this value should be "object".');
 				}
 				break;
+			case 'stringorinteger':
+				if(!is_string($params) AND !is_integer($params)) {
+					throw new SmartWFM_Excaption_Params('The type of this value should be "stringorinteger"');
+				}
+				return $params;
+
+				break;
 			default:
 				throw new SmartWFM_Excaption_Params('Unknown parameter type: "' . $this->type . '"');
 
