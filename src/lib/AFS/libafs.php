@@ -10,17 +10,17 @@
 # WITHOUT ANY WARRANTY. See GPLv3 for more details.                           #
 ###############################################################################
 
-if( !defined( 'AFS_LIST' ) ) 
+if( !defined( 'AFS_LIST' ) )
 	define( 'AFS_LIST', 1 );
-if( !defined( 'AFS_CREATE' ) ) 
+if( !defined( 'AFS_CREATE' ) )
 	define( 'AFS_CREATE', 2 );
-if( !defined( 'AFS_DELETE' ) ) 
+if( !defined( 'AFS_DELETE' ) )
 	define( 'AFS_DELETE', 3 );
-if( !defined( 'AFS_READ' ) ) 
+if( !defined( 'AFS_READ' ) )
 	define( 'AFS_READ', 4 );
-if( !defined( 'AFS_ADMINISTER' ) ) 
+if( !defined( 'AFS_ADMINISTER' ) )
 	define( 'AFS_ADMINISTER', 5 );
-if( !defined( 'AFS_INSERT' ) ) 
+if( !defined( 'AFS_INSERT' ) )
 	define( 'AFS_INSERT', 6 );
 
 class afs {
@@ -34,7 +34,7 @@ class afs {
 
 	protected $dir;
 	protected $username;
-	
+
 	protected $rights = array();
 	protected $userrights = array(
 		'r' => false,			// read
@@ -50,16 +50,16 @@ class afs {
 		'system:authuser',
 	);
 	protected $quota;
-	
+
 	/**
 	  * constructor
 	  * @param dir
 	  */
-	public function afs( $dir ) {		
+	public function afs( $dir ) {
 		$this->dir = $dir;
 		$this->username = $_SERVER["REMOTE_USER"];			// TODO ev. escapen
 	}
-	
+
 	/**
 	  * reads all rights the user has
 	  */
@@ -78,7 +78,7 @@ class afs {
 			}
 		}
 	}
-	
+
 	/**
 	  * retrieves groupmemberships of user
 	  */
@@ -90,8 +90,8 @@ class afs {
 				$this->groupmember[] = trim( $output[$i] );
 			}
 		}
-	}	
-	
+	}
+
 	/**
 	  * check whether kind of command is allowed
 	  * @param cmd constant of kind of command
@@ -119,8 +119,8 @@ class afs {
 			default:
 				return false;
 		}
-	}	
-	
+	}
+
 	/**
 	 * read quota
 	 */
@@ -138,8 +138,8 @@ class afs {
 				'percent_partition' => $tmp[4]
 			);
 		}
-	}	
-	
+	}
+
 	/**
 	 * @return
 	 *   Array
@@ -152,7 +152,7 @@ class afs {
 		$this->listQuota();
 		return $this->quota;
 	}
-	
+
 	/**
 	 * @return
 	 *   Array:
@@ -165,7 +165,7 @@ class afs {
 		}
 		return $this->rights;
 	}
-	
+
 	/**
 	  * set acl
 	  * @param acl
@@ -184,7 +184,7 @@ class afs {
 			}
 			if( !$this->isAclString( $rights ) ) {
 				return -1;
-			}	
+			}
 			if( !$this->isUserString( $user ) ) {
 				return -2;
 			}
@@ -194,32 +194,32 @@ class afs {
 				$acl[$user] = $rights;
 			}
 			if( strpos( $user, ':' ) !== false ) {
-				if( !$this->groupExists( $user ) && $rights != 'none' ) {					
+				if( !$this->groupExists( $user ) && $rights != 'none' ) {
 					if( $this->createGroup( $user ) != true ) {
-						return -3;					
+						return -3;
 					}
 				}
 			}
-		}	
+		}
 		$cmd = '';
 		foreach( $acl as $user => $rights ) {
-			$cmd .= ' -acl ' . $user . ' ' . $rights;
+			$cmd .= ' -acl ' . escapeshellarg( $user ) . ' ' . escapeshellarg( $rights );
 		}
-		$cmd .= ' -clear';				
-		
+		$cmd .= ' -clear';
+
 		if( $recursively ){
 			$cmd = 'find ' . escapeshellarg( $this->dir ) . ' -type d -exec ' . $this->cmd['fs'] . ' setacl {} ' . $cmd . ' \;';
 		}else{
 			$cmd = $this->cmd['fs'] . ' setacl -dir ' . escapeshellarg( $this->dir ) . $cmd;
 		}
-		
+
 		exec( $cmd, $output, $ret );
 		if( !$ret ) {
-			return true; 
+			return true;
 		}
 		return -4;
 	}
-	
+
 	/**
 	  * check string whether it is a correct acl argument
 	  * @param rights string to be checked
@@ -235,17 +235,17 @@ class afs {
 		$tmp = preg_match('![^rlidwka]+!', $rights);
 		return empty( $tmp );
 	}
-	
+
 	/**
 	  * check string whether it is a correct username
 	  * @param username
 	  * @return boolean
 	  */
 	protected function isUserString( $username ) {
-		$tmp = preg_match('![^a-zA-Z0-9-:]+!', $username);
+		$tmp = preg_match('![^a-zA-Z0-9-_.:]+!', $username);
 		return empty( $tmp );
 	}
-	
+
 	/**
 	  * check string whether it is a existing user
 	  * @param username
@@ -256,7 +256,7 @@ class afs {
 		exec( $cmd, $output, $ret );
 		return !empty( $output );
 	}
-	
+
 	/**
 	  * check whether group exists
 	  * @param groupname
@@ -266,11 +266,11 @@ class afs {
 		$cmd = $this->cmd['pts'] . ' examine ' . escapeshellarg( $groupname );
 		exec( $cmd, $output, $ret );
 		if( !$ret ) {
-			return true; 
+			return true;
 		}
 		return false;
 	}
-	
+
 	/**
 	  * create group if allowed
 	  * @param groupname
@@ -282,12 +282,12 @@ class afs {
 		}
 		$cmd = $this->cmd['pts'] . ' creategroup ' . escapeshellarg( $groupname );
 		exec( $cmd, $output, $ret );
-		if( !$ret ) {			
-			return true; 
+		if( !$ret ) {
+			return true;
 		}
 		return false;
 	}
-	
+
 	/**
 	  * retrieves groups the user owns
 	  * @return array groupnames
@@ -301,11 +301,11 @@ class afs {
 			foreach( $output as $group ) {
 				$groups[] = trim( $group );
 			}
-			return $groups; 
+			return $groups;
 		}
 		return false;
-	}	
-	
+	}
+
 	/**
 	  * create group
 	  * @param groupname
@@ -321,7 +321,7 @@ class afs {
 			return -2;
 		}
 	}
-	
+
 	/**
 	  * delete group
 	  * @param groupname
@@ -334,15 +334,15 @@ class afs {
 			}
 			$cmd = $this->cmd['pts'] . ' delete ' . escapeshellarg( $groupname );
 			exec( $cmd, $output, $ret );
-			if( !$ret ) {			
-				return true; 
+			if( !$ret ) {
+				return true;
 			}
 			return false;
 		} else {
 			return -2;
 		}
 	}
-	
+
 	/**
 	  * retrieves members of group
 	  * @param groupname
@@ -357,11 +357,11 @@ class afs {
 			foreach( $output as $group ) {
 				$members[] = trim( $group );
 			}
-			return $members; 
+			return $members;
 		}
 		return false;
-	}	
-	
+	}
+
 	/**
 	  * checks if user is owner of group
 	  * @param groupname
@@ -373,40 +373,40 @@ class afs {
 			return false;
 		}
 		return true;
-	}	
-	
+	}
+
 	/**
 	  * add user to group
 	  * @param groupname
 	  * @param user
 	  * @return boolean or error code
 	  */
-	public function addGroupMembers( $groupname, $user ) {	
-		$user = preg_replace( '![^a-zA-Z0-9-:]+!', ' ', $user );						
-		
-		$cmd = $this->cmd['pts'] . ' adduser -user ' . $user . ' -group ' . escapeshellarg( $groupname );
+	public function addGroupMembers( $groupname, $user ) {
+		$user = preg_replace( '![^a-zA-Z0-9-_.:]+!', ' ', $user );
+
+		$cmd = $this->cmd['pts'] . ' adduser -user ' . escapeshellarg( $user ) . ' -group ' . escapeshellarg( $groupname );
 		exec( $cmd, $output, $ret );
 		if( !$ret ) {
-			return true; 
+			return true;
 		}
 		return false;
-	}	
-	
+	}
+
 	/**
 	  * remove user from group
 	  * @param groupname
 	  * @param user
 	  * @return boolean or error code
 	  */
-	public function removeGroupMembers( $groupname, $user ) {	
-		$user = preg_replace( '![^a-zA-Z0-9-:]+!', ' ', $user );						
-		
-		$cmd = $this->cmd['pts'] . ' removeuser -user ' . $user . ' -group ' . escapeshellarg( $groupname );
+	public function removeGroupMembers( $groupname, $user ) {
+		$user = preg_replace( '![^a-zA-Z0-9-_.:]+!', ' ', $user );
+
+		$cmd = $this->cmd['pts'] . ' removeuser -user ' . escapeshellarg( $user ) . ' -group ' . escapeshellarg( $groupname );
 		exec( $cmd, $output, $ret );
 		if( !$ret ) {
-			return true; 
+			return true;
 		}
 		return false;
-	}		
+	}
 }
 ?>
