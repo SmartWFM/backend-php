@@ -68,11 +68,16 @@ class MimeType {
 	static function get($filename) {
 		$file_ext = substr(strrchr($filename, '.' ), 1);
 		$mode = SmartWFM_Registry::get('mimetype_detection_mode', 'internal');
-		if(!function_exists('mime_content_type') && $mode == 'internal') {
-			$mode = 'file';
-		}
-		if($mode == 'internal') {
-			return @mime_content_type($filename);
+		if(!function_exists('finfo_open') && !function_exists('finfo_file') && $mode == 'internal') {
+			if(!function_exists('mime_content_type')) {
+				$mode = 'file';
+			} else {
+				/* DEPRECATED */
+				return @mime_content_type($filename);
+			}
+		} elseif ($mode == 'internal') {
+			/* only PHP >= 5.3.0 */
+			return finfo_file(finfo_open(FILEINFO_MIME_TYPE), $filename);
 		}
 		if($mode == 'cmd_file') {
 			exec('file --mime-type '. $filename, $output);
