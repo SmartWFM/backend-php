@@ -303,7 +303,7 @@ class BaseArchiveActions_Extract extends SmartWFM_Command {
 			'tbz2' => 'j'
 		);
 		foreach($tar as $e => $c) {
-			if(substr($archivePath, -1*strlen($e)) == $c) {
+			if(substr($archivePath, -1*strlen($e)) == $e) {
 				$cmd = 'tar -x'.$c.'f '.escapeshellarg($archivePath).
 				' -C '.escapeshellarg($extractPath);
 				foreach($params['files'] as $f){
