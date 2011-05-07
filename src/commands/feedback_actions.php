@@ -1,7 +1,7 @@
 <?php
 ###############################################################################
 # This file is a part of the SmartWFM PHP-Backend                             #
-# Copyright (C)      2011 Morris Jobke <kabum@users.sourceforge.net>          #@needle@
+# Copyright (C)      2011 Morris Jobke <kabum@users.sourceforge.net>          #
 #                                                                             #
 # SmartWFM PHP-Backend is free software; you can redestribute it and/or modify#
 # it under terms of GNU General Public License by Free Software Foundation.   #
@@ -33,7 +33,7 @@ class FeedbackActions_Send extends SmartWFM_Command {
 		if(!mail(
 				'mjob@hrz.tu-chemnitz.de'/* . ', webmaster@tu-chemnitz.de'*/,
 				'[SWFM-Feedback] ' . $params['subject'],
-				nl2br($params['text']),
+				$params['text'],
 				'From: '.$user.'@hrz.tu-chemnitz.de'
 			))
 			throw new SmartWFM_Exception('Feedback couldn\'t be send.', -1);
