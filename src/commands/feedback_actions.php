@@ -33,7 +33,7 @@ class FeedbackActions_Send extends SmartWFM_Command {
 		if(!mail(
 				'mjob@hrz.tu-chemnitz.de'/* . ', webmaster@tu-chemnitz.de'*/,
 				'[SWFM-Feedback] ' . $params['subject'],
-				$params['text'],
+				str_replace('\\n', "\n", $params['text']),
 				'From: '.$user.'@hrz.tu-chemnitz.de'
 			))
 			throw new SmartWFM_Exception('Feedback couldn\'t be send.', -1);
