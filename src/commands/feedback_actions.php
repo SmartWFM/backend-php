@@ -27,14 +27,14 @@ class FeedbackActions_Send extends SmartWFM_Command {
 
 		// HEADER
 		$header = 	'MIME-Version: 1.0' . "\r\n";
-		$header = 	'Content-type: text/plain; charset=UTF-8' . "\r\n";
-		$header = 	'From: '.$user.'@hrz.tu-chemnitz.de';
+		$header .= 	'Content-type: text/plain; charset=UTF-8' . "\r\n";
+		$header .= 	'From: '.$user.'@hrz.tu-chemnitz.de';
 				
 		if(!mail(
-				'mjob@hrz.tu-chemnitz.de'/* . ', webmaster@tu-chemnitz.de'*/,
+				'mjob@hrz.tu-chemnitz.de' . ', webmaster@tu-chemnitz.de',
 				'[SWFM-Feedback] ' . $params['subject'],
 				str_replace('\\n', "\n", $params['text']),
-				'From: '.$user.'@hrz.tu-chemnitz.de'
+				$header
 			))
 			throw new SmartWFM_Exception('Feedback couldn\'t be send.', -1);
 
