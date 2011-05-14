@@ -65,45 +65,56 @@ class Path {
 
 class MimeType {
 	protected static $mime_types = NULL;
+	protected static $unknown_type = false; // 'application/octet-stream'; // unknown filetype according to http://www.rfc-editor.org/rfc/rfc2046.txt section 4.5.1
 	static function get($filename) {
-		$file_ext = substr(strrchr($filename, '.' ), 1);
 		$mode = SmartWFM_Registry::get('mimetype_detection_mode', 'internal');
-		if(!function_exists('finfo_open') && !function_exists('finfo_file') && $mode == 'internal') {
-			if(!function_exists('mime_content_type')) {
-				$mode = 'file';
-			} else {
-				/* DEPRECATED */
-				return @mime_content_type($filename);
-			}
-		} elseif ($mode == 'internal') {
-			/* only PHP >= 5.3.0 */
-			return finfo_file(finfo_open(FILEINFO_MIME_TYPE), $filename);
-		}
-		if($mode == 'cmd_file') {
-			exec('file --mime-type '. $filename, $output);
-			foreach($output as $line) {
-				if(preg_match('/^.*:\s+([\w-.\/]+)\s*/', $line, $matches)) {
-					return $matches[1];
-				}
-			}
-		} else {
 
-			if(self::$mime_types == NULL) {
-				self::$mime_types = array();
-				$lines = file('lib/SmartWFM/mime.types');
-				foreach($lines as $line) {
-					if(preg_match('/^([\w-.\/]+)\s+(\w(\s*\w+)+)/', $line, $matches)) {
-						$exts = preg_split('/ +/', $matches[2]);
-						foreach($exts as $ext) {
-							self::$mime_types[$ext] = $matches[1];
+		switch($mode) {
+			case 'internal':
+				if(function_exists('finfo_open') && function_exists('finfo_file')) {
+					/* only PHP >= 5.3.0 */
+					return finfo_file(finfo_open(FILEINFO_MIME_TYPE), $filename);
+				} elseif (function_exists('mime_content_type')) {
+					/* DEPRECATED */
+					return @mime_content_type($filename);
+				} /* else $mode = 'file' ( here isn't any break-statement ;) ) */
+			case 'file':
+				if(self::$mime_types == NULL) {
+					/* initially create array from mime.types and save this in static variable */
+					self::$mime_types = array();
+					$lines = file('lib/SmartWFM/mime.types');
+					foreach($lines as $line) {
+						/* parse each line */
+						if(preg_match('/^([\w-.\/]+)\s+(\w(\s*\w+)+)/', $line, $matches)) {
+							$exts = preg_split('/ +/', $matches[2]);
+							foreach($exts as $ext) {
+								/* create for each extension - mimetype pair an entry */
+								self::$mime_types[$ext] = $matches[1];
+							}
 						}
 					}
 				}
-			}
-			if(!empty($file_ext) && array_key_exists($file_ext, self::$mime_types)) {
-				return self::$mime_types[$file_ext];
-			}
-			return False;
+				/* extract file-extension */
+				$file_ext = substr(strrchr($filename, '.' ), 1);
+				if(!empty($file_ext) && array_key_exists($file_ext, self::$mime_types)) {
+					/* extension found in array */
+					return self::$mime_types[$file_ext];
+				}
+				return self::$unknown_type;
+			case 'cmd_file':
+				/* use -i option to support older versions of file */
+				exec('file -i '. escapeshellarg($filename), $output, $return_var);
+				if($return_var == 0) {
+					foreach($output as $line) {
+						if(preg_match('/^.*:\s+([\w-.\/]+)[;]{0,1}\s*/', $line, $matches)) {
+							return $matches[1];
+						}
+					}
+				}
+				return self::$unknown_type;
+			default:
+				return self::$unknown_type;
+				break;
 		}
 	}
 }
