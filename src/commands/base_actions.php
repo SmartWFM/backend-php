@@ -123,7 +123,7 @@ class BaseActions_DirDelete extends SmartWFM_Command {
 		}
 
 		if(!@file_exists($path)) {
-			throw new SmartWFM_Exception('Folder doesn\'t exist.', -1);
+			throw new SmartWFM_Exception('Folder doesn\'t exists.', -1);
 		}
 
 		if(!@is_dir($path)) {
