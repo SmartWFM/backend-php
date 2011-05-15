@@ -68,16 +68,32 @@ class MimeType {
 	protected static $unknown_type = false; // 'application/octet-stream'; // unknown filetype according to http://www.rfc-editor.org/rfc/rfc2046.txt section 4.5.1
 	static function get($filename) {
 		$mode = SmartWFM_Registry::get('mimetype_detection_mode', 'internal');
-
+		$mode = 'internal';
 		switch($mode) {
 			case 'internal':
+				$mt = NULL;
 				if(function_exists('finfo_open') && function_exists('finfo_file')) {
 					/* only PHP >= 5.3.0 */
-					return finfo_file(finfo_open(FILEINFO_MIME_TYPE), $filename);
+					$mt = finfo_file(finfo_open(FILEINFO_MIME_TYPE), $filename);
 				} elseif (function_exists('mime_content_type')) {
 					/* DEPRECATED */
-					return @mime_content_type($filename);
-				} /* else $mode = 'file' ( here isn't any break-statement ;) ) */
+					$mt = @mime_content_type($filename);
+				}
+				if( $mt && $mt != "unknown" ) {
+					return $mt;
+				}
+				/* else $mode = 'cmd_file' ( here isn't any break-statement ;) ) */
+			case 'cmd_file':
+				/* use -i option to support older versions of file */
+				exec('file -i '. escapeshellarg($filename), $output, $return_var);
+				if($return_var == 0) {
+					foreach($output as $line) {
+						if(preg_match('/^.*:\s+([\w-.\/]+)[;]{0,1}\s*/', $line, $matches)) {
+							return $matches[1];
+						}
+					}
+				}
+				// return self::$unknown_type; /*(don't return unknown and check with magic file) */
 			case 'file':
 				if(self::$mime_types == NULL) {
 					/* initially create array from mime.types and save this in static variable */
@@ -100,18 +116,7 @@ class MimeType {
 					/* extension found in array */
 					return self::$mime_types[$file_ext];
 				}
-				return self::$unknown_type;
-			case 'cmd_file':
-				/* use -i option to support older versions of file */
-				exec('file -i '. escapeshellarg($filename), $output, $return_var);
-				if($return_var == 0) {
-					foreach($output as $line) {
-						if(preg_match('/^.*:\s+([\w-.\/]+)[;]{0,1}\s*/', $line, $matches)) {
-							return $matches[1];
-						}
-					}
-				}
-				return self::$unknown_type;
+				// return self::$unknown_type; /* see default rule */
 			default:
 				return self::$unknown_type;
 				break;
