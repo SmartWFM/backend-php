@@ -188,25 +188,14 @@ class BaseArchiveActions_List extends SmartWFM_Command {
 			}
 		}
 
-		$tar = array(
-			'.tar.gz' => 'z',
-			'tar.bz2' => 'j'
-		);
-		$tmp = substr($path,-7);
-		if(array_key_exists($tmp, $tar)){
-			$cmd = 'tar -t'.$tar[$tmp].'f '.escapeshellarg($path);
-			exec( $cmd, $output, $ret );
-			if(!$ret){
-				$response = new SmartWFM_Response();
-				$response->data = Archives::fileNamesToTreeStruct($output);
-				return $response;
-			}else{
-				throw new SmartWFM_Exception('Couldn\'t open archive.', -3);
-			}
-		}
-
+		/* archive mimetypes:
+			application/x-zip		zip
+			application/x-gzip		tar.gz, tgz
+			application/x-bzip2		tar.bz2
+		*/
+		$tarOption = NULL;
 		switch(MIMETYPE::get($path)) {
-			case 'application/zip':
+			case 'application/x-zip':
 				$a = new ZipArchive;
 				if( $a->open($path) ) {
 					$files = array();
@@ -219,6 +208,21 @@ class BaseArchiveActions_List extends SmartWFM_Command {
 				$response = new SmartWFM_Response();
 				$response->data = Archives::fileNamesToTreeStruct($files);
 				return $response;
+				break;
+			case 'application/x-gzip':
+				$tarOption = 'z';
+			case 'application/x-bzip2':
+				if($tarOption == NULL)
+					$tarOption = 'j';
+				$cmd = 'tar -t'.$tarOption.'f '.escapeshellarg($path);
+				exec( $cmd, $output, $ret );
+				if(!$ret){
+					$response = new SmartWFM_Response();
+					$response->data = Archives::fileNamesToTreeStruct($output);
+					return $response;
+				}else{
+					throw new SmartWFM_Exception('Couldn\'t open archive.', -3);
+				}
 				break;
 			default:
 				throw new SmartWFM_Exception('Unreadable archive type.', -8);
@@ -295,33 +299,14 @@ class BaseArchiveActions_Extract extends SmartWFM_Command {
 			$params['files'][$k] = ltrim($f, './');
 		}
 
-		$tar = array(
-			'tar.gz' => 'z',
-			'tgz' => 'z',
-			'tar.bz2' => 'j',
-			'tbz' => 'j',
-			'tbz2' => 'j'
-		);
-		foreach($tar as $e => $c) {
-			if(substr($archivePath, -1*strlen($e)) == $e) {
-				$cmd = 'tar -x'.$c.'f '.escapeshellarg($archivePath).
-				' -C '.escapeshellarg($extractPath);
-				foreach($params['files'] as $f){
-					$cmd .= ' '.escapeshellarg($f);
-				}
-				exec( $cmd, $output, $ret );
-				if(!$ret){
-					$response = new SmartWFM_Response();
-					$response->data = true;
-					return $response;
-				}else{
-					throw new SmartWFM_Exception('Couldn\'t open and extract archive.', -4);
-				}
-			}
-		}
-
+		/* archive mimetypes:
+			application/x-zip		zip
+			application/x-gzip		tar.gz, tgz
+			application/x-bzip2		tar.bz2
+		*/
+		$tarOption = NULL;
 		switch(MIMETYPE::get($archivePath)) {
-			case 'application/zip':
+			case 'application/x-zip':
 				$a = new ZipArchive;
 				if( $a->open($archivePath) ) {
 					if( $params['files'] ){
@@ -359,6 +344,24 @@ class BaseArchiveActions_Extract extends SmartWFM_Command {
 				$response->data = True;
 				return $response;
 				break;
+			case 'application/x-gzip':
+				$tarOption = 'z';
+			case 'application/x-bzip2':
+				if($tarOption == NULL)
+					$tarOption = 'j';
+				$cmd = 'tar -x'.$tarOption.'f '.escapeshellarg($archivePath).
+				' -C '.escapeshellarg($extractPath);
+				foreach($params['files'] as $f){
+					$cmd .= ' '.escapeshellarg($f);
+				}
+				exec( $cmd, $output, $ret );
+				if(!$ret){
+					$response = new SmartWFM_Response();
+					$response->data = true;
+					return $response;
+				}else{
+					throw new SmartWFM_Exception('Couldn\'t open and extract archive.', -4);
+				}
 			default:
 				throw new SmartWFM_Exception('Unreadable archive type.', -8);
 		}
