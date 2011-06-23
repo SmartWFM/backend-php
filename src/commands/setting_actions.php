@@ -30,9 +30,15 @@ class SettingActions_Load extends SmartWFM_Command {
 					if(array_key_exists($key, $data)) {
 						if($value == 'bool') {
 							$response->data[$key] = (boolean) $data[$key];
+							break;
 						}
 						if($value == 'select') {
 							$response->data[$key] = (integer) $data[$key];
+							break;
+						}
+						if($value == 'string-select') {
+							$response->data[$key] = (string) $data[$key];
+							break;
 						}
 					}
 				}
