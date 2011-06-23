@@ -68,8 +68,31 @@ class MimeType {
 	protected static $unknown_type = false; // 'application/octet-stream'; // unknown filetype according to http://www.rfc-editor.org/rfc/rfc2046.txt section 4.5.1
 	static function get($filename) {
 		$mode = SmartWFM_Registry::get('mimetype_detection_mode', 'internal');
-		$mode = 'internal';
+		$mode = 'file';
 		switch($mode) {
+			case 'file':
+				if(self::$mime_types == NULL) {
+					/* initially create array from mime.types and save this in static variable */
+					self::$mime_types = array();
+					$lines = file('lib/SmartWFM/mime.types');
+					foreach($lines as $line) {
+						/* parse each line */
+						if(preg_match('/^([\w-.\/]+)\s+(\w(\s*\w+)+)/', $line, $matches)) {
+							$exts = preg_split('/ +/', $matches[2]);
+							foreach($exts as $ext) {
+								/* create for each extension - mimetype pair an entry */
+								self::$mime_types[$ext] = $matches[1];
+							}
+						}
+					}
+				}
+				/* extract file-extension */
+				$file_ext = substr(strrchr($filename, '.' ), 1);
+				if(!empty($file_ext) && array_key_exists($file_ext, self::$mime_types)) {
+					/* extension found in array */
+					return self::$mime_types[$file_ext];
+				}
+				// return self::$unknown_type; /* next step */
 			case 'internal':
 				$mt = NULL;
 				if(function_exists('finfo_open') && function_exists('finfo_file')) {
@@ -93,30 +116,7 @@ class MimeType {
 						}
 					}
 				}
-				// return self::$unknown_type; /*(don't return unknown and check with magic file) */
-			case 'file':
-				if(self::$mime_types == NULL) {
-					/* initially create array from mime.types and save this in static variable */
-					self::$mime_types = array();
-					$lines = file('lib/SmartWFM/mime.types');
-					foreach($lines as $line) {
-						/* parse each line */
-						if(preg_match('/^([\w-.\/]+)\s+(\w(\s*\w+)+)/', $line, $matches)) {
-							$exts = preg_split('/ +/', $matches[2]);
-							foreach($exts as $ext) {
-								/* create for each extension - mimetype pair an entry */
-								self::$mime_types[$ext] = $matches[1];
-							}
-						}
-					}
-				}
-				/* extract file-extension */
-				$file_ext = substr(strrchr($filename, '.' ), 1);
-				if(!empty($file_ext) && array_key_exists($file_ext, self::$mime_types)) {
-					/* extension found in array */
-					return self::$mime_types[$file_ext];
-				}
-				// return self::$unknown_type; /* see default rule */
+				// return self::$unknown_type;
 			default:
 				return self::$unknown_type;
 				break;
