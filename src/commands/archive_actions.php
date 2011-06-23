@@ -195,6 +195,7 @@ class BaseArchiveActions_List extends SmartWFM_Command {
 		*/
 		$tarOption = NULL;
 		switch(MIMETYPE::get($path)) {
+			case 'application/zip':
 			case 'application/x-zip':
 				$a = new ZipArchive;
 				if( $a->open($path) ) {
@@ -306,6 +307,7 @@ class BaseArchiveActions_Extract extends SmartWFM_Command {
 		*/
 		$tarOption = NULL;
 		switch(MIMETYPE::get($archivePath)) {
+			case 'application/zip':
 			case 'application/x-zip':
 				$a = new ZipArchive;
 				if( $a->open($archivePath) ) {
