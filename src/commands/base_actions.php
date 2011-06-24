@@ -424,86 +424,90 @@ class BaseActions_List extends SmartWFM_Command {
 			throw new SmartWFM_Exception( 'Dir doesn\'t exists.', -1 );
 		}
 
-		$d = dir($path);
+		$d = @dir($path);
 
-		$data = array();
-		while (false !== ($name = $d->read())) {
-			if($name != '.' && $name != '..') {
-				if( substr( $name, 0, 1 ) != '.' || $showHidden ) {
-					$filename = Path::join($path, $name);
-					if(is_file($filename)){
-						$size = @filesize($filename);
-						$mime_type = MimeType::get($filename);
-						if($size === False) {
-							$size = 0;
+		if($d) {
+			$data = array();
+			while (false !== ($name = $d->read())) {
+				if($name != '.' && $name != '..') {
+					if( substr( $name, 0, 1 ) != '.' || $showHidden ) {
+						$filename = Path::join($path, $name);
+						if(is_file($filename)){
+							$size = @filesize($filename);
+							$mime_type = MimeType::get($filename);
+							if($size === False) {
+								$size = 0;
+							}
+							if($mime_type === False) {
+								$mime_type = 'unknown';
+							}
+							$item = array(
+								'type' => 'file',
+								'name' => $name,
+								'path' => $req_path,
+								'size' => $size,
+								'mime-type' => $mime_type,
+								'isDir' => false,
+								'atime' => NULL,
+								'ctime' => NULL,
+								'mtime' => NULL,
+								'perms' => NULL,
+							);
+							if($time = @fileatime($filename)) {
+								$item['atime'] = $time;
+							}
+							if($time = @filectime($filename)) {
+								$item['ctime'] = $time;
+							}
+							if($time = @filemtime($filename)) {
+								$item['mtime'] = $time;
+							}
+							if($perms = @fileperms($filename)) {
+								$item['perms'] = sprintf('%o', $perms);
+							}
+							array_push(
+								$data,
+								$item
+							);
+						} else {
+							$item = array(
+								'type' => 'file',
+								'name' => $name,
+								'path' => $req_path,
+								'size' => 0,
+								'mime-type' => '',
+								'isDir' => true,
+								'atime' => NULL,
+								'ctime' => NULL,
+								'mtime' => NULL,
+								'perms' => NULL,
+							);
+							if($time = @fileatime($filename)) {
+								$item['atime'] = $time;
+							}
+							if($time = @filectime($filename)) {
+								$item['ctime'] = $time;
+							}
+							if($time = @filemtime($filename)) {
+								$item['mtime'] = $time;
+							}
+							if($perms = @fileperms($filename)) {
+								$item['perms'] = sprintf('%o', $perms);
+							}
+							array_push(
+								$data,
+								$item
+							);
 						}
-						if($mime_type === False) {
-							$mime_type = 'unknown';
-						}
-						$item = array(
-							'type' => 'file',
-							'name' => $name,
-							'path' => $req_path,
-							'size' => $size,
-							'mime-type' => $mime_type,
-							'isDir' => false,
-							'atime' => NULL,
-							'ctime' => NULL,
-							'mtime' => NULL,
-							'perms' => NULL,
-						);
-						if($time = @fileatime($filename)) {
-							$item['atime'] = $time;
-						}
-						if($time = @filectime($filename)) {
-							$item['ctime'] = $time;
-						}
-						if($time = @filemtime($filename)) {
-							$item['mtime'] = $time;
-						}
-						if($perms = @fileperms($filename)) {
-							$item['perms'] = sprintf('%o', $perms);
-						}
-						array_push(
-							$data,
-							$item
-						);
-					} else {
-						$item = array(
-							'type' => 'file',
-							'name' => $name,
-							'path' => $req_path,
-							'size' => 0,
-							'mime-type' => '',
-							'isDir' => true,
-							'atime' => NULL,
-							'ctime' => NULL,
-							'mtime' => NULL,
-							'perms' => NULL,
-						);
-						if($time = @fileatime($filename)) {
-							$item['atime'] = $time;
-						}
-						if($time = @filectime($filename)) {
-							$item['ctime'] = $time;
-						}
-						if($time = @filemtime($filename)) {
-							$item['mtime'] = $time;
-						}
-						if($perms = @fileperms($filename)) {
-							$item['perms'] = sprintf('%o', $perms);
-						}
-						array_push(
-							$data,
-							$item
-						);
 					}
 				}
 			}
+			$response = new SmartWFM_Response();
+			$response->data = $data;
+			return $response;
 		}
-		$response = new SmartWFM_Response();
-		$response->data = $data;
-		return $response;
+		throw new SmartWFM_Exception( 'Can\'t open dir.', -3 );
+
 	}
 }
 
