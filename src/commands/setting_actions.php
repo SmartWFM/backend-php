@@ -24,21 +24,20 @@ class SettingActions_Load extends SmartWFM_Command {
 
 		if($filename != NULL && @file_exists($filename) && !@is_dir($filename)) {
 			$data = @parse_ini_file($filename);
-
 			if($data !== False) {
 				foreach($params as $key => $value) {
 					if(array_key_exists($key, $data)) {
 						if($value == 'bool') {
 							$response->data[$key] = (boolean) $data[$key];
-							break;
+							continue;
 						}
 						if($value == 'select') {
 							$response->data[$key] = (integer) $data[$key];
-							break;
+							continue;
 						}
 						if($value == 'string-select') {
 							$response->data[$key] = (string) $data[$key];
-							break;
+							continue;
 						}
 					}
 				}
