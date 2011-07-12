@@ -55,24 +55,41 @@ class FileInfoActions_FileInfo extends SmartWFM_Command {
 		$file = array();
 
 		// getting infos:
+		$dateTimeFormat = 'Y-m-d H:i:s';
+		// file name
+		array_push($file, array('filename', basename($path)));
+		array_push($file, array('full path', $path));
+
+		// file size
+		$size = filesize($path);
+		$units = array('B', 'KB', 'MB', 'GB', 'TB');
+		for($i = 0; $size >= 1024 && $i < 4; $i++) {
+			$size /= 1024;
+		}
+		$size = round($size, 2).' '.$units[$i];
+		array_push($file, array('file size', $size));
+
+		// permissions
+		$perms = fileperms($path);
+		//array_push($file, array('file permissions', $perms));
+		array_push($file, array('file permissions', FileInfo::getPermissionString($perms)));
+
 		// user info
 		$owner_id = fileowner($path);
 		$owner_array = posix_getpwuid($owner_id);
 		array_push($file, array('owner id', $owner_id));
 		array_push($file, array('owner name', $owner_array['name']));
+
 		// group info
 		$group_id = filegroup($path);
 		$group_array = posix_getgrgid($group_id);
 		array_push($file, array('group id', $group_id));
 		array_push($file, array('group name', $group_array['name']));
-		// permissions
-		$perms = fileperms($path);
-		array_push($file, array('file permissions', $perms));
-		array_push($file, array('file permissions string', FileInfo::getPermissionString($perms)));
+
 		// time stamps
-		array_push($file, array('access time', fileatime($path)));
-		array_push($file, array('change time', filectime($path)));
-		array_push($file, array('modification time', filemtime($path)));
+		array_push($file, array('access time', date($dateTimeFormat, fileatime($path))));
+		array_push($file, array('change time', date($dateTimeFormat, filectime($path))));
+		array_push($file, array('modification time', date($dateTimeFormat, filemtime($path))));
 
 		$response = new SmartWFM_Response();
 		$response->data = $file;
