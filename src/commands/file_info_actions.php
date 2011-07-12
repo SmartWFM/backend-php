@@ -34,11 +34,11 @@ class FileInfoActions_FileInfo extends SmartWFM_Command {
 		);
 
 		if(!file_exists($path)) {
-			throw new SmartWFM_Exception( 'File doesn\'t exists.', -1 );
+			throw new SmartWFM_Exception('File doesn\'t exists.', -1 );
 		}
 
 		if(is_dir($path)) {
-			throw new SmartWFM_Exception( 'Isn\'t a file.', -2 );
+			throw new SmartWFM_Exception('Given path isn\'t a file.', -2 );
 		}
 
 		if($fsType == 'afs') {
