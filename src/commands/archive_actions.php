@@ -211,6 +211,7 @@ class BaseArchiveActions_List extends SmartWFM_Command {
 				return $response;
 				break;
 			case 'application/x-gzip':
+			case 'application/x-gtar':
 				$tarOption = 'z';
 			case 'application/x-bzip2':
 				if($tarOption == NULL)
@@ -347,6 +348,7 @@ class BaseArchiveActions_Extract extends SmartWFM_Command {
 				return $response;
 				break;
 			case 'application/x-gzip':
+			case 'application/x-gtar':
 				$tarOption = 'z';
 			case 'application/x-bzip2':
 				if($tarOption == NULL)
