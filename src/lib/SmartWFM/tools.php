@@ -61,6 +61,14 @@ class Path {
 		}
 		return preg_match('/^'.preg_quote($base, '/').'/', $path);
 	}
+	static function getBasePath($path) {
+		/**
+		 * trims  trailing slashes
+		 * remove last element
+		 * concatenate all remaining
+		 **/
+		return implode('/', explode('/', '/' . trim($path, '/'), -1));
+	}
 }
 
 class MimeType {
