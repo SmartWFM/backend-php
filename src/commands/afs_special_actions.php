@@ -68,11 +68,13 @@ class AFSSpecialActions_GetACL extends SmartWFM_Command {
 			throw new SmartWFM_Exception( 'Dir doesn\'t exists.', -1 );
 		}
 
-		$afs = new afs( $path );
+		$afs_base = new afs ( Path::getBasePath($path) );
 
-		if( !$afs->allowed( AFS_ADMINISTER ) ) {
+		if( !$afs_base->allowed( AFS_ADMINISTER ) ) {
 			throw new SmartWFM_Exception( 'Permission denied.', -2 );
 		}
+
+		$afs = new afs( $path );
 
 		$response = new SmartWFM_Response();
 		$response->data = $afs->getAcl();
@@ -124,11 +126,13 @@ class AFSSpecialActions_SetACL extends SmartWFM_Command {
 			throw new SmartWFM_Exception( 'Dir doesn\'t exists.', -1 );
 		}
 
-		$afs = new afs( $path );
+		$afs_base = new afs ( Path::getBasePath($path) );
 
-		if( !$afs->allowed( AFS_ADMINISTER ) ) {
+		if( !$afs_base->allowed( AFS_ADMINISTER ) ) {
 			throw new SmartWFM_Exception( 'Permission denied.', -2 );
 		}
+
+		$afs = new afs( $path );
 
 		$res = $afs->setAcl( $params['acl'], $params['subdirs']  );
 		if( $res !== true ){
