@@ -13,10 +13,6 @@
 
 class SettingActions_Load extends SmartWFM_Command {
 	function process($params) {
-		$fs_type = SmartWFM_Registry::get('filesystem_type');
-
-		$BASE_PATH = SmartWFM_Registry::get('basepath','/');
-
 		$filename = SmartWFM_Registry::get('setting_filename', NULL);
 
 		$response = new SmartWFM_Response();
@@ -52,10 +48,6 @@ SmartWFM_CommandManager::register('setting.load', new SettingActions_Load());
 
 class SettingActions_Store extends SmartWFM_Command {
 	function process($params) {
-		$fs_type = SmartWFM_Registry::get('filesystem_type');
-
-		$BASE_PATH = SmartWFM_Registry::get('basepath','/');
-
 		$filename = SmartWFM_Registry::get('setting_filename', NULL);
 
 		$fp = fopen($filename, 'w');
