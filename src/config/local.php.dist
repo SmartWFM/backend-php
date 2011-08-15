@@ -26,4 +26,10 @@
 	   E.g.: SmartWFM_Registry::set('setting_filename', '/home/'.$_SERVER['PHP_AUTH_USER'].'/.smartwfm.ini');
 	*/
 	SmartWFM_Registry::set('setting_filename', '/tmp/.smartwfm.ini');
+
+	/* Use this file to store the bookmarks.
+	   For multiuser support you have to modify the filename dynamically.
+	   E.g.: SmartWFM_Registry::set('bookmarks_filename', '/home/'.$_SERVER['PHP_AUTH_USER'].'/.smartwfm_bookmarks.ini');
+	*/
+	SmartWFM_Registry::set('bookmarks_filename', '/tmp/.smartwfm_bookmarks.ini');
 ?>
