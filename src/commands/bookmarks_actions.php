@@ -24,7 +24,8 @@ class BookmarksActions_Load extends SmartWFM_Command {
 		if($filename != NULL && @file_exists($filename) && !@is_dir($filename)) {
 			$data = @parse_ini_file($filename);
 			if($data !== False) {
-				$response->data = $data;
+				foreach($data as $value)
+					$response->data[] = $value;
 			}
 		}
 		return $response;
@@ -32,3 +33,31 @@ class BookmarksActions_Load extends SmartWFM_Command {
 }
 
 SmartWFM_CommandManager::register('bookmarks.load', new BookmarksActions_Load());
+
+class BookmarksActions_Save extends SmartWFM_Command {
+	function process($params) {
+		$filename = SmartWFM_Registry::get('bookmarks_filename', NULL);
+
+		$fp = fopen($filename, 'w');
+
+		if($fp === False) {
+			throw new SmartWFM_Exception('Can\'t save bookmarks.', -1);
+		} else {
+			$response = new SmartWFM_Response();
+			fwrite($fp, "[SmartWFM Bookmarks]\r\n");
+
+			$i = 0;
+			foreach($params as $value) {
+				fwrite($fp, 'file' . $i . '[] = ' . escapeshellarg($value[0]) . "\r\n");
+				fwrite($fp, 'file' . $i . '[] = ' . escapeshellarg($value[1]) . "\r\n");
+				$i++;
+			}
+
+			$response->data = true;
+		}
+
+		return $response;
+	}
+}
+
+SmartWFM_CommandManager::register('bookmarks.save', new BookmarksActions_Save());
