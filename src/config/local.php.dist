@@ -1,10 +1,16 @@
 <?php
 	/* Set basepath of the file manager
+
+	   USED BY: core, afs_special_actions, archive_actions, base_actions,
+	   base_direct_actions, file_info_actions, new_file, search_actions
 	*/
 	SmartWFM_Registry::set('basepath', '/var/www');
 
 	/* Specify the commands to be loaded
-	   possible values are all filenames in the commands directory without their extension
+	   (possible values are all filenames in the commands directory without
+	   their extension)
+
+	   USED BY: core
 	*/
 	SmartWFM_Registry::set('commands', array('archive_actions', 'base_actions',
 		'base_direct_commands', 'bookmarks_actions', 'feedback_actions',
@@ -12,6 +18,8 @@
 
 	/* Specify in which subdirectory the commands are located
 			(standard value should be correct)
+
+	   USED BY: core
 	*/
 	SmartWFM_Registry::set('commands_path', 'commands');
 
@@ -19,6 +27,9 @@
 	   - use one of the following options:
 			* local - uses standard php filesystem functions
 			* afs - like local just with additional support for afs-acl's
+
+	   USED BY: archive_actions, base_actions, base_direct_actions,
+	   file_info_actions, new_file, search_actions
 	*/
 	SmartWFM_Registry::set('filesystem_type', 'local');
 
@@ -29,6 +40,8 @@
 	   - Set config options:
 	     - XSendFile On
 	     - XSendFileAllowAbove On
+
+	   USED BY: base_direct_actions
 	*/
 	SmartWFM_Registry::set('use_x_sendfile', False);
 
@@ -36,12 +49,17 @@
 	   For multiuser support you have to modify the filename dynamically.
 	   E.g.: SmartWFM_Registry::set('setting_filename',
 			'/home/'.$_SERVER['PHP_AUTH_USER'].'/.smartwfm.ini');
+
+	   USED BY: setting_actions
 	*/
 	SmartWFM_Registry::set('setting_filename', '/tmp/.smartwfm.ini');
 
 	/* Use this file to store the bookmarks.
 	   For multiuser support you have to modify the filename dynamically.
-	   E.g.: SmartWFM_Registry::set('bookmarks_filename', '/home/'.$_SERVER['PHP_AUTH_USER'].'/.smartwfm_bookmarks.ini');
+	   E.g.: SmartWFM_Registry::set('bookmarks_filename',
+			'/home/'.$_SERVER['PHP_AUTH_USER'].'/.smartwfm_bookmarks.ini');
+
+	   USED BY: bookmarks_actions
 	*/
 	SmartWFM_Registry::set('bookmarks_filename', '/tmp/.smartwfm_bookmarks.ini');
 ?>
