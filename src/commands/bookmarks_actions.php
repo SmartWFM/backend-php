@@ -12,10 +12,6 @@
 
 class BookmarksActions_Load extends SmartWFM_Command {
 	function process($params) {
-		$fs_type = SmartWFM_Registry::get('filesystem_type');
-
-		$BASE_PATH = SmartWFM_Registry::get('basepath','/');
-
 		$filename = SmartWFM_Registry::get('bookmarks_filename', NULL);
 
 		$response = new SmartWFM_Response();
