@@ -23,15 +23,13 @@ class FeedbackActions_Send extends SmartWFM_Command {
 		
 		$params = $paramTest->validate($params);
 
-		$user = 'mjob'/*$_SERVER['PHP_AUTH_USER']*/;
-
 		// HEADER
 		$header = 	'MIME-Version: 1.0' . "\r\n";
 		$header .= 	'Content-type: text/plain; charset=UTF-8' . "\r\n";
-		$header .= 	'From: '.$user.'@hrz.tu-chemnitz.de';
+		$header .= 	'From: ' . SmartWFM_Registry::get('feedback_sender', 'nobody@example.com');
 				
 		if(!mail(
-				'mjob@hrz.tu-chemnitz.de' . ', webmaster@tu-chemnitz.de',
+				SmartWFM_Registry::get('feedback_receiver', 'nobody@example.com'),
 				'[SWFM-Feedback] ' . $params['subject'],
 				str_replace('\\n', "\n", $params['text']),
 				$header

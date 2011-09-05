@@ -62,4 +62,16 @@
 	   USED BY: bookmarks_actions
 	*/
 	SmartWFM_Registry::set('bookmarks_filename', '/tmp/.smartwfm_bookmarks.ini');
+
+	/* Specify e-mail address(es) which should receive feedback messages
+
+	   USED BY: feedback_actions
+	*/
+	SmartWFM_Registry::set('feedback_receiver', 'webmaster@example.com, admin@example.com');
+
+	/* Specify e-mail address which is the sender of the feedback messages
+
+	   USED BY: feedback_actions
+	*/
+	SmartWFM_Registry::set('feedback_sender', 'user@example.com');
 ?>
