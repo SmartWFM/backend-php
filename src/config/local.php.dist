@@ -1,7 +1,25 @@
 <?php
+	/* Set basepath of the file manager
+	*/
 	SmartWFM_Registry::set('basepath', '/var/www');
-	SmartWFM_Registry::set('commands', array('base_actions', 'base_direct_commands', 'archive_actions', 'search_actions'));
+
+	/* Specify the commands to be loaded
+	   possible values are all filenames in the commands directory without their extension
+	*/
+	SmartWFM_Registry::set('commands', array('archive_actions', 'base_actions',
+		'base_direct_commands', 'bookmarks_actions', 'feedback_actions',
+		'file_info_actions', 'search_actions', 'setting_actions'));
+
+	/* Specify in which subdirectory the commands are located
+			(standard value should be correct)
+	*/
 	SmartWFM_Registry::set('commands_path', 'commands');
+
+	/* Set filesystem type
+	   - use one of the following options:
+			* local - uses standard php filesystem functions
+			* afs - like local just with additional support for afs-acl's
+	*/
 	SmartWFM_Registry::set('filesystem_type', 'local');
 
 	/* Set to True to use the X-Sendfile header
@@ -16,7 +34,8 @@
 
 	/* Use this file to store the settings.
 	   For multiuser support you have to modify the filename dynamically.
-	   E.g.: SmartWFM_Registry::set('setting_filename', '/home/'.$_SERVER['PHP_AUTH_USER'].'/.smartwfm.ini');
+	   E.g.: SmartWFM_Registry::set('setting_filename',
+			'/home/'.$_SERVER['PHP_AUTH_USER'].'/.smartwfm.ini');
 	*/
 	SmartWFM_Registry::set('setting_filename', '/tmp/.smartwfm.ini');
 
