@@ -2,13 +2,6 @@
 	SmartWFM_Registry::set('basepath', '/var/www');
 	SmartWFM_Registry::set('commands', array('base_actions', 'base_direct_commands', 'archive_actions', 'search_actions'));
 	SmartWFM_Registry::set('commands_path', 'commands');
-	/* How to detect the mime type
-	   Modes:
-	     internal: use the internal php function to detect the mime type
-	     cmd_file: call the file command to detect the mime type
-	     file: use an internal file to detect the mime type
-	*/
-	SmartWFM_Registry::set('mimetype_detection_mode', 'internal');
 	SmartWFM_Registry::set('filesystem_type', 'local');
 
 	/* Set to True to use the X-Sendfile header
