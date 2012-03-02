@@ -233,7 +233,9 @@ class SmartWFM {
 			}
 		}
 		elseif(array_key_exists('data', $_REQUEST)) {
-			$data = json_decode(stripslashes($_REQUEST['data']));
+			// $data = json_decode(stripslashes($_REQUEST['data'])); // old method -> new one: next 2 lines
+			$data = json_decode($_REQUEST['data']);
+			$data = Helper::stripslashesObjectRecursive($data);
 			if(array_key_exists('method', $data)) {
 				$command = SmartWFM_CommandManager::get($data->method);
 				$d = NULL;
