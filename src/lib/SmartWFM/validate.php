@@ -42,7 +42,7 @@ class SmartWFM_Param {
 					$keys = get_object_vars($params);
 					foreach($this->items as $key => $value) {
 						if(!array_key_exists($key, $keys)) {
-							throw new SmartWFM_Excaption_Params();
+							throw new SmartWFM_Excaption_Params('A required paramter is missing.');
 						} else {
 							$tmp_array[$key] = $value->validate($params->$key);
 						}
