@@ -191,12 +191,13 @@ class BaseActions_DirList extends SmartWFM_Command {
 		$d = dir($path);
 		while (false !== ($name = $d->read())) {
 			if($name != '.' && $name != '..') {
-				if(@is_dir(Path::join($path, $name)) && (substr($name, 0, 1) != '.' || $showHidden)){
+				$currentPath = Path::join($path, $name);
+				if(@is_dir($currentPath) && (substr($name, 0, 1) != '.' || $showHidden)){
 					$hasSubDirs = '0';
-					if($d2 = @dir(Path::join($path, $name))) {
+					if($d2 = @dir($currentPath)) {
 						while (false !== ($name2 = $d2->read())) {
 							if($name2 != '.' && $name2 != '..')
-								if(@is_dir(Path::join($path, $name, $name2)) && (substr($name, 0, 1) != '.' || $showHidden)) {
+								if(@is_dir(Path::join($currentPath, $name2)) && (substr($name, 0, 1) != '.' || $showHidden)) {
 									$hasSubDirs = '1';
 									break;
 								}
@@ -206,7 +207,7 @@ class BaseActions_DirList extends SmartWFM_Command {
 						$data,
 						array(
 							'name' => $name,
-							'path' => $params['path'],
+							'path' => Path::join($params['path'], $name),
 							'hasSubDirs' => $hasSubDirs
 						)
 					);
