@@ -142,7 +142,7 @@ class MimeType {
 class Helper {
 	public static function stripslashesObjectRecursive($object) {
 		if(is_array($object)) {
-			return array_map(array('Helper', 'stripslashesRecursive'), $object);
+			return array_map(array('Helper', 'stripslashesObjectRecursive'), $object);
 		} elseif (is_object($object)) {
 			$a = new stdClass();
 			foreach ($object as $key => $value) {
