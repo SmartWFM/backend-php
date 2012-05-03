@@ -699,4 +699,58 @@ class BaseActions_Rename extends SmartWFM_Command {
 
 SmartWFM_CommandManager::register('file.rename', new BaseActions_Rename());
 
+class BaseActions_DirListFake extends SmartWFM_Command {
+	function process($params) {
+		$fs_type = SmartWFM_Registry::get('filesystem_type');
+
+		$BASE_PATH = SmartWFM_Registry::get('basepath','/');
+
+		$param_test = new SmartWFM_Param(
+			$type = 'object',
+			$items = array(
+				'path' => new SmartWFM_Param( 'string' ),
+				'name' => new SmartWFM_Param( 'string' )
+			)
+		);
+
+		$params = $param_test->validate($params);
+
+		$path = Path::join(
+			$BASE_PATH,
+			$params['path']
+		);
+
+		if(Path::validate($BASE_PATH, $path) != true) {
+			throw new SmartWFM_Exception('Wrong directory name.', -2);
+		}
+
+		if(!@file_exists($path) || !@is_dir($path)) {
+			throw new SmartWFM_Exception('Folder doesn\'t exist.', -1);
+		}
+
+		if($fs_type == 'afs') {
+			$afs = new afs($path);
+
+			if(!$afs->allowed(AFS_LIST)) {
+				throw new SmartWFM_Exception('Permission denied.', -9);
+			}
+		}
+
+		$data = array();
+		array_push(
+			$data,
+			array(
+				'name' => $params['name'],
+				'path' => Path::join($params['path'], $params['name']),
+				'hasSubDirs' => '1'
+			)
+		);
+		$response = new SmartWFM_Response();
+		$response->data = $data;
+		return $response;
+	}
+}
+
+SmartWFM_CommandManager::register('dir.list.fake', new BaseActions_DirListFake());
+
 ?>
