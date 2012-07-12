@@ -53,6 +53,26 @@ class BaseArchiveActions_Create extends SmartWFM_Command {
 			$params['archiveName']
 		);
 
+		switch($params['archiveType']) {
+			case 'zip':
+				if(strlen($path) >= 4 && substr($path, -4) != '.zip') {
+					$path .= '.zip';
+				}
+				break;
+			case 'tarbz2':
+				if(strlen($path) >= 8 && substr($path, -8) != '.tar.bz2') {
+					$path .= '.tar.bz2';
+				}
+				break;
+			case 'targz':
+				if(strlen($path) >= 7 && substr($path, -7) != '.tar.gz') {
+					$path .= '.tar.gz';
+				}
+				break;
+			default:
+				break;
+		}
+
 		if(Path::validate($BASE_PATH, $path) != true) {
 			throw new SmartWFM_Exception('Wrong directory name.', -1);
 		}
