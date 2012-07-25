@@ -56,7 +56,7 @@ class BaseDirectCommand_Download extends SmartWFM_Command {
 			$filename = basename($file);
 
 			if($mime == 'directory') {
-				$archiveName = SmartWFM_Registry::get('temp_folder').'/'.basename($file).'.'.sha1($file).'.zip';
+				$archiveName = SmartWFM_Registry::get('temp_folder').'/SmartWFM.'.basename($file).'.'.sha1($file).'.zip';
 
 				// getting items inside folder
 				$files = array();
@@ -80,6 +80,8 @@ class BaseDirectCommand_Download extends SmartWFM_Command {
 					print('Error creating archive file [-3]');
 					return;
 				}
+				// file restrictions
+				chmod($archiveName, 0600);
 				$mime = @MimeType::get($archiveName);
 				$filename = basename($file).'.zip';
 				$file = $archiveName;
