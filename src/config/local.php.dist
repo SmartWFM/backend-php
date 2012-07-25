@@ -45,6 +45,12 @@
 	*/
 	SmartWFM_Registry::set('use_x_sendfile', False);
 
+	/* Specify temporary folder to create archives for folder download
+
+	   USED BY: base_direct_actions
+	*/
+	SmartWFM_Registry::set('temp_folder', '/tmp');
+
 	/* Use this file to store the settings.
 	   For multiuser support you have to modify the filename dynamically.
 	   E.g.: SmartWFM_Registry::set('setting_filename',

@@ -15,6 +15,8 @@ if(SmartWFM_Registry::get('filesystem_type') == 'afs') {
 	require_once('lib/AFS/libafs.php');
 }
 
+require_once('lib/archives/archives.php');
+
 class BaseDirectCommand_Download extends SmartWFM_Command {
 	function process($params) {
 		$fs_type = SmartWFM_Registry::get('filesystem_type');
@@ -51,6 +53,37 @@ class BaseDirectCommand_Download extends SmartWFM_Command {
 
 		if (file_exists($file)) {
 			$mime = @MimeType::get($file);
+			$filename = basename($file);
+
+			if($mime == 'directory') {
+				$archiveName = SmartWFM_Registry::get('temp_folder').'/'.basename($file).'.'.sha1($file).'.zip';
+
+				// getting items inside folder
+				$files = array();
+				foreach(Archives::getFiles($file) as $e) {
+					$files[] = $e;
+				}
+
+				$a = new ZipArchive;
+				if( $a->open($archiveName, ZipArchive::OVERWRITE) ) {
+					foreach($files as $f) {
+						if( !$a->addFile($f, str_replace($path.'/','',$f)) ) {
+							print('Error creating archive file [-1]');
+							return;
+						}
+					}
+					if(!$a->close()) {
+						print('Error creating archive file [-2]');
+						return;
+					}
+				} else {
+					print('Error creating archive file [-3]');
+					return;
+				}
+				$mime = @MimeType::get($archiveName);
+				$filename = basename($file).'.zip';
+				$file = $archiveName;
+			}
 
 			$fp = fopen($file, 'r');
 			if($fp === False) {
@@ -59,7 +92,7 @@ class BaseDirectCommand_Download extends SmartWFM_Command {
 			}
 
 			header('Content-Type: ' . $mime);
-			header('Content-Disposition: attachment; filename='.basename($file));
+			header('Content-Disposition: attachment; filename='.$filename);
 			header('Content-Transfer-Encoding: binary');
 			header('Expires: 0');
 			header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
