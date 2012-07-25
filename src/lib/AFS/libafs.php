@@ -383,8 +383,17 @@ class afs {
 	  */
 	public function addGroupMembers( $groupname, $user ) {
 		$user = preg_replace( '![^a-zA-Z0-9-_.:]+!', ' ', $user );
+		$user = preg_replace( '! [-]+!', ' ', $user ); // remove injections, i.e. "-help"
+		$users = '';
+		// escape each whitespace separated user individually
+		foreach(explode(' ', $user) as $u) {
+			if ($u != '') { // check if non-empty entry
+				// implode them again
+				$users .= escapeshellarg($u) . ' ';
+			}
+		}
 
-		$cmd = $this->cmd['pts'] . ' adduser -user ' . escapeshellarg( $user ) . ' -group ' . escapeshellarg( $groupname );
+		$cmd = $this->cmd['pts'] . ' adduser -user ' . $users . ' -group ' . escapeshellarg( $groupname );
 		exec( $cmd, $output, $ret );
 		if( !$ret ) {
 			return true;
