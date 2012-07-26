@@ -54,6 +54,7 @@ class BaseDirectCommand_Download extends SmartWFM_Command {
 		if (file_exists($file)) {
 			$mime = @MimeType::get($file);
 			$filename = basename($file);
+			$deleteFileAfterSend = false;
 
 			if($mime == 'directory') {
 				$archiveName = SmartWFM_Registry::get('temp_folder').'/SmartWFM.'.basename($file).'.'.sha1($file).'.zip';
@@ -85,6 +86,7 @@ class BaseDirectCommand_Download extends SmartWFM_Command {
 				$mime = @MimeType::get($archiveName);
 				$filename = basename($file).'.zip';
 				$file = $archiveName;
+				$deleteFileAfterSend = true;
 			}
 
 			$fp = fopen($file, 'r');
@@ -108,6 +110,10 @@ class BaseDirectCommand_Download extends SmartWFM_Command {
 
 				while(($content = fread($fp, 4096)) != '') {
 					print($content);
+				}
+				fclose($fp);
+				if($deleteFileAfterSend) {
+					unlink($file);
 				}
 			}
 			exit();
