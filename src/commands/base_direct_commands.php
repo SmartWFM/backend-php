@@ -101,7 +101,7 @@ class BaseDirectCommand_Download extends SmartWFM_Command {
 			header('Expires: 0');
 			header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
 			header('Pragma: public');
-			if(SmartWFM_Registry::get('use_x_sendfile') === True) {
+			if(SmartWFM_Registry::get('use_x_sendfile') === True && !$deleteFileAfterSend) {
 				header('X-Sendfile: ' . $file);
 			} else {
 				header('Content-Length: ' . filesize($file));
