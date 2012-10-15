@@ -154,11 +154,14 @@ class BaseActions_DirList extends SmartWFM_Command {
 
 		$BASE_PATH = SmartWFM_Registry::get('basepath','/');
 
+		$FOLDER_EXCLUDE_REGEX = SmartWFM_Registry::get('folder_exclude_regex','/');
+
 		$param_test = new SmartWFM_Param(
 			$type = 'object',
 			$items = array(
 				'path' => new SmartWFM_Param( 'string' ),
-				'showHidden' => new SmartWFM_Param( 'boolean' )
+				'showHidden' => new SmartWFM_Param( 'boolean' ),
+				'currentPath' => new SmartWFM_Param( 'string' )
 			)
 		);
 
@@ -188,29 +191,46 @@ class BaseActions_DirList extends SmartWFM_Command {
 		}
 
 		$data = array();
-		$d = dir($path);
-		while (false !== ($name = $d->read())) {
-			if($name != '.' && $name != '..') {
-				$currentPath = Path::join($path, $name);
-				if(@is_dir($currentPath) && (substr($name, 0, 1) != '.' || $showHidden)){
-					$hasSubDirs = '0';
-					if($d2 = @dir($currentPath)) {
-						while (false !== ($name2 = $d2->read())) {
-							if($name2 != '.' && $name2 != '..')
-								if(@is_dir(Path::join($currentPath, $name2)) && (substr($name, 0, 1) != '.' || $showHidden)) {
-									$hasSubDirs = '1';
-									break;
-								}
+
+		if(preg_match($FOLDER_EXCLUDE_REGEX, $params['path'])) {
+			if(substr($params['currentPath'], 0, strlen($params['path'])) == $params['path']) {
+				$tmpPath = substr($params['currentPath'], strlen($params['path']) + 1);
+				$tmpPath = substr($tmpPath, 0, strpos($tmpPath, '/'));
+				array_push($data,array(
+					'name' => $tmpPath,
+					'path' => $params['path'],
+					'hasSubDirs' => '1'
+				));
+			} else {
+				// todo
+				// what shall we do with the drunken sailor ...
+				// http://youtu.be/qGyPuey-1Jw
+			}
+		} else {
+			$d = dir($path);
+			while (false !== ($name = $d->read())) {
+				if($name != '.' && $name != '..') {
+					$currentPath = Path::join($path, $name);
+					if(@is_dir($currentPath) && (substr($name, 0, 1) != '.' || $showHidden)){
+						$hasSubDirs = '0';
+						if($d2 = @dir($currentPath)) {
+							while (false !== ($name2 = $d2->read())) {
+								if($name2 != '.' && $name2 != '..')
+									if(@is_dir(Path::join($currentPath, $name2)) && (substr($name, 0, 1) != '.' || $showHidden)) {
+										$hasSubDirs = '1';
+										break;
+									}
+							}
 						}
+						array_push(
+							$data,
+							array(
+								'name' => $name,
+								'path' => Path::join($params['path'], $name),
+								'hasSubDirs' => $hasSubDirs
+							)
+						);
 					}
-					array_push(
-						$data,
-						array(
-							'name' => $name,
-							'path' => Path::join($params['path'], $name),
-							'hasSubDirs' => $hasSubDirs
-						)
-					);
 				}
 			}
 		}
