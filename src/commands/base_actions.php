@@ -195,10 +195,15 @@ class BaseActions_DirList extends SmartWFM_Command {
 		if(preg_match($FOLDER_EXCLUDE_REGEX, $params['path'])) {
 			if(substr($params['currentPath'], 0, strlen($params['path'])) == $params['path']) {
 				$tmpPath = substr($params['currentPath'], strlen($params['path']) + 1);
-				$tmpPath = substr($tmpPath, 0, strpos($tmpPath, '/'));
+				$pos = strpos($tmpPath, '/');
+				if($pos !== false) {
+					// if there is a '/' in the string - cut till first '/'
+					// else the whole string is returned as name
+					$tmpPath = substr($tmpPath, 0, $pos);
+				}
 				array_push($data,array(
 					'name' => $tmpPath,
-					'path' => $params['path'],
+					'path' => $params['path'].'/'.$tmpPath,
 					'hasSubDirs' => '1'
 				));
 			} else {
