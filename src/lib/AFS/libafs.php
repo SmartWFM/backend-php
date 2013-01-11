@@ -134,7 +134,7 @@ class afs {
 			$this->quota = array(
 				'total' => $tmp[1],
 				'used' => $tmp[2],
-				'percent_used' => $tmp[3],
+				'percent_used' => sprintf('%.1f %%', round(intval($tmp[2])/intval($tmp[1])*100, 1)),
 				'percent_partition' => $tmp[4]
 			);
 		}
