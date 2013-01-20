@@ -23,6 +23,11 @@ class BookmarksActions_Load extends SmartWFM_Command {
 				foreach($data as $value)
 					$response->data[] = $value;
 			}
+		} else {
+			// add initial default bookmarks
+			$defaults = SmartWFM_Registry::get('default_bookmarks', []);
+			foreach($defaults as $bookmark)
+				$response->data[] = $bookmark;
 		}
 		return $response;
 	}
