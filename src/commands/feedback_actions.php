@@ -20,14 +20,14 @@ class FeedbackActions_Send extends SmartWFM_Command {
 				'text' => new SmartWFM_Param('string')
 			)
 		);
-		
+
 		$params = $paramTest->validate($params);
 
 		// HEADER
 		$header = 	'MIME-Version: 1.0' . "\r\n";
 		$header .= 	'Content-type: text/plain; charset=UTF-8' . "\r\n";
 		$header .= 	'From: ' . SmartWFM_Registry::get('feedback_sender', 'nobody@example.com');
-				
+
 		if(!mail(
 				SmartWFM_Registry::get('feedback_receiver', 'nobody@example.com'),
 				'[SWFM-Feedback] ' . $params['subject'],
