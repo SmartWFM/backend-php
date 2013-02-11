@@ -11,12 +11,6 @@
 # WITHOUT ANY WARRANTY. See GPLv3 for more details.                           #
 ###############################################################################
 
-// run install if local.php doesn't exist
-if(file_exists('install') && !file_exists('config/local.php')) {
-	header('Location: install');
-	exit(0);
-}
-
 /**
  * source: http://trac.phtagr.org/attachment/ticket/83/patch-broken-escapeshellarg.diff
  *

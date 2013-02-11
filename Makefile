@@ -1,9 +1,8 @@
 .PHONY: apidoc archive
 
-BIN_PATH=/usr/bin/
-ARCHIVE_VERSION=HEAD
-ARCHIVE_PREFIX=SmartWFM-backend-php-${ARCHIVE_VERSION}
-ARCHIVE_NAME=SmartWFM-backend-php-${ARCHIVE_VERSION}
+ARCHIVE_VERSION=master
+ARCHIVE_PREFIX=backend-php-${ARCHIVE_VERSION}
+ARCHIVE_NAME=backend-php-${ARCHIVE_VERSION}
 ARCHIVE_PATH=./dist/
 
 apidoc:
@@ -11,9 +10,9 @@ apidoc:
 
 archive:
 	mkdir -p ${ARCHIVE_PATH}
-	git archive --format=tar --prefix=${ARCHIVE_PREFIX}/ ${ARCHIVE_VERSION} | gzip -9 > ${ARCHIVE_PATH}${ARCHIVE_NAME}.tar.gz
-	git archive --format=tar --prefix=${ARCHIVE_PREFIX}/ ${ARCHIVE_VERSION} | bzip2 -9 > ${ARCHIVE_PATH}${ARCHIVE_NAME}.tar.bz2
-	git archive --format=zip --prefix=${ARCHIVE_PREFIX}/ ${ARCHIVE_VERSION}  > ${ARCHIVE_PATH}${ARCHIVE_NAME}.zip
+	git archive --prefix=${ARCHIVE_PREFIX}/ ${ARCHIVE_VERSION} -o ${ARCHIVE_PATH}${ARCHIVE_NAME}.tar.gz
+	git archive --prefix=${ARCHIVE_PREFIX}/ ${ARCHIVE_VERSION} -o ${ARCHIVE_PATH}${ARCHIVE_NAME}.tar.bz2
+	git archive --prefix=${ARCHIVE_PREFIX}/ ${ARCHIVE_VERSION} -o ${ARCHIVE_PATH}${ARCHIVE_NAME}.zip
 
 clean:
 	rm -rf doc/apidoc
