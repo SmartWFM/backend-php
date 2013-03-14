@@ -447,7 +447,7 @@ class BaseActions_List extends SmartWFM_Command {
 		}
 
 		if(!@is_dir($path)) {
-			throw new SmartWFM_Exception( 'Dir doesn\'t exists.', -1 );
+			throw new SmartWFM_Exception( 'Directory doesn\'t exists', -1 );
 		}
 
 		$d = @dir($path);

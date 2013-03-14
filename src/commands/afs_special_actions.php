@@ -30,7 +30,7 @@ class AFSSpecialActions_GetQuota extends SmartWFM_Command {
 		);
 
 		if( !is_dir( $path ) ) {
-			throw new SmartWFM_Exception( 'Dir doesn\'t exists.', -1 );
+			throw new SmartWFM_Exception( 'Directory doesn\'t exists.', -1 );
 		}
 
 		$afs = new afs( $path );
@@ -65,7 +65,7 @@ class AFSSpecialActions_GetACL extends SmartWFM_Command {
 		);
 
 		if( !is_dir( $path ) ) {
-			throw new SmartWFM_Exception( 'Dir doesn\'t exists.', -1 );
+			throw new SmartWFM_Exception( 'Directory doesn\'t exists.', -1 );
 		}
 
 		$afs = new afs( dirname($path) ); // check parent dir for access permission
@@ -123,7 +123,7 @@ class AFSSpecialActions_SetACL extends SmartWFM_Command {
 		);
 
 		if( !is_dir( $path ) ) {
-			throw new SmartWFM_Exception( 'Dir doesn\'t exists.', -1 );
+			throw new SmartWFM_Exception( 'Directory doesn\'t exists.', -1 );
 		}
 
 		$afs = new afs( dirname($path) ); // check parent dir for access permission
