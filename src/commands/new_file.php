@@ -168,7 +168,7 @@ class NewFile_Save extends SmartWFM_Command {
 			throw new SmartWFM_Exception('Couldn\'t open the file', -1);
 		}
 
-		if(!fwrite($handle, $params['content'])) {
+		if(fwrite($handle, $params['content']) === false) {
 			throw new SmartWFM_Exception('Couldn\'t write to file', -2);
 		}
 
