@@ -155,12 +155,12 @@ class BaseDirectCommand_Upload extends SmartWFM_Command {
 
 			if(!$afs->allowed(AFS_INSERT)) {
 				$response['success'] = false;
-				$response['msg'] = 'Permission denied';
+				$response['msg'] = 'Permission denied.';
 			}
 		} else if($response['success'] && $fs_type == 'local') {
 			if(!is_writable($path)) {
 				$response['success'] = false;
-				$response['msg'] = 'Permission denied';
+				$response['msg'] = 'Permission denied.';
 			}
 		}
 

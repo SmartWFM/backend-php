@@ -59,9 +59,9 @@ class search {
 			return $results;
 		} else {
 			if(count($output) and isset($output[0])){
-				if(strpos($output[0], 'Permission denied'))
+				if(strpos($output[0], 'Permission denied.'))
 					return ERROR_PERMISSION_DENIED;
-				if(strpos($output[0], 'No such file or directory'))
+				if(strpos($output[0], 'No such file or directory.'))
 					return ERROR_NO_SUCH_FILE_OR_DIRECTORY;
 			}
 		}
