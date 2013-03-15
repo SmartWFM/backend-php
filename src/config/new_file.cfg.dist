@@ -1,8 +1,13 @@
 [basic_html]
 
 filename = basic_html.tpl
-extension = html, htm
+extension = html
 title = Basic HTML
 de.title = HTML Grundgerüst
 
+[advanced_html]
 
+filename = advanced_html.tpl
+extension = html
+title = Advanced HTML
+de.title = Erweitertes HTML Grundgerüst

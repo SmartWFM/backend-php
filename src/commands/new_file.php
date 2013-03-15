@@ -2,6 +2,7 @@
 ###############################################################################
 # This file is a part of the SmartWFM PHP-Backend                             #
 # Copyright (C) 2010 Philipp Seidel <phibo@oss.dinotools.de>                  #
+#               2013 Morris Jobke <morris.jobke@gmail.com>                    #
 #                                                                             #
 # SmartWFM PHP-Backend is free software; you can redestribute it and/or modify#
 # it under terms of GNU General Public License by Free Software Foundation.   #
@@ -16,8 +17,6 @@ if(SmartWFM_Registry::get('filesystem_type') == 'afs') {
 
 class NewFile_List extends SmartWFM_Command {
 	function process($params) {
-		$fs_type = SmartWFM_Registry::get('filesystem_type');
-
 		// check params
 		$param_test = new SmartWFM_Param(
 			$type = 'object',
@@ -28,21 +27,27 @@ class NewFile_List extends SmartWFM_Command {
 
 		$params = $param_test->validate($params);
 
-		$response = new SmartWFM_Response();
 		$ini = parse_ini_file('config/new_file.cfg', True);
-		$response->data = array();
+		$data = array();
 		foreach($ini as $key => $value) {
-			$tmp = array();
-			$tmp['id'] = $key;
+
 			if (array_key_exists($params['lang'] . '.title', $value)) {
-				$tmp['title'] = $value[$params['lang'] . '.title'];
+				$title = $value[$params['lang'] . '.title'];
 			} elseif (array_key_exists('title', $value)) {
-				$tmp['title'] = $value['title'];
+				$title = $value['title'];
 			} else {
 				throw new SmartWFM_Exception('Error', -1);
 			}
-			array_push($response->data, $tmp);
+			array_push(
+				$data,
+				array(
+					'id' 	=> $key,
+					'title' => $title
+				)
+			);
 		}
+		$response = new SmartWFM_Response();
+		$response->data = $data;
 		return $response;
 	}
 }
@@ -73,9 +78,14 @@ class NewFile_Create extends SmartWFM_Command {
 			$params['path']
 		);
 
+		$ini = parse_ini_file('config/new_file.cfg', True);
+		if(!array_key_exists($params['id'], $ini)) {
+			throw new SmartWFM_Exception('Id not found', -1);
+		}
+
 		$filename = Path::join(
 			$root_path,
-			$params['name']
+			$params['name'] . '.' . $ini[$params['id']]['extension']
 		);
 
 		// validate path
@@ -94,15 +104,15 @@ class NewFile_Create extends SmartWFM_Command {
 				throw new SmartWFM_Exception('Permission denied', -9);
 			}
 		}
-		// ToDo: check if file exists
 
-		$ini = parse_ini_file('config/new_file.cfg', True);
-		if(!array_key_exists($params['id'], $ini)) {
-			throw new SmartWFM_Exception('Id not found');
+		if(file_exists($filename)) {
+			throw new SmartWFM_Exception('File already exists', -2);
 		}
 
-		// ToDo: Check path
 		$tpl_filename = 'config/new_file/' . $ini[$params['id']]['filename'];
+		if(!is_file($tpl_filename)) {
+			throw new SmartWFM_Exception('Template file doesn\'t exists', -3);
+		}
 
 		if(@copy($tpl_filename, $filename) === False) {
 			throw new SmartWFM_Exception('Error');
