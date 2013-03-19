@@ -89,7 +89,9 @@ class NewFile_Create extends SmartWFM_Command {
 		);
 
 		// validate path
-		if(Path::validate($base_path, $root_path) != true || Path::validate($base_path, $filename) != true) {
+		if(Path::validate($base_path, $root_path) != true ||
+			Path::validate($base_path, $filename) != true ||
+			strpos($params['name'], '/') !== False ) {
 			throw new SmartWFM_Exception('Wrong filename');
 		}
 
@@ -119,7 +121,10 @@ class NewFile_Create extends SmartWFM_Command {
 		}
 
 		$response = new SmartWFM_Response();
-		$response->data = True;
+		$response->data = array(
+			'name' => $filename,
+			'mime-type' => MimeType::get($filename)
+		);
 		return $response;
 	}
 }

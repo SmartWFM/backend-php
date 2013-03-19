@@ -1,3 +1,10 @@
+[empty_file]
+
+filename = empty_file.tpl
+extension = txt
+title = Empty file
+de.title = Leere Datei
+
 [basic_html]
 
 filename = basic_html.tpl
