@@ -65,6 +65,11 @@ class BaseDirectCommand_Download extends SmartWFM_Command {
 					$files[] = $e;
 				}
 
+				if(count($files) === 0) {
+					print('No files inside the folder(s) [-4]');
+					return;
+				}
+
 				$a = new ZipArchive;
 				if( $a->open($archiveName, ZipArchive::OVERWRITE) ) {
 					foreach($files as $f) {
