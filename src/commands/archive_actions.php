@@ -14,7 +14,8 @@ if(SmartWFM_Registry::get('filesystem_type') == 'afs') {
 	require_once('lib/AFS/libafs.php');
 }
 
-require_once('lib/archives/archives.php');
+require_once('lib/archives/archive.php');
+require_once('lib/archives/archiveHelpers.php');
 
 /*
 	create an archive
@@ -92,54 +93,20 @@ class BaseArchiveActions_Create extends SmartWFM_Command {
 			throw new SmartWFM_Exception('A file with the given name already exists.', -2);
 		}
 
-		$files = array();
-
-		foreach($params['files'] as $p) {
-			$tmpPath = Path::join(
-				$rootPath,
-				$p
-			);
-			if(Path::validate($BASE_PATH, $tmpPath) != true) {
-				throw new SmartWFM_Exception('Wrong directory name.', -3);
-			}
-
-			if(!@file_exists($tmpPath)) {
-				throw new SmartWFM_Exception('A file with the given name doesn\'t exists.', -4);
-			}
-
-			if(@is_dir($tmpPath)) {
-				foreach(Archives::getFiles($tmpPath) as $e) {
-					$files[] = $e;
-				}
-			} else {
-				$files[] = $tmpPath;
-			}
-		}
-
 		switch($params['archiveType']) {
 			case 'zip':
-				$a = new ZipArchive;
-				if( $a->open($path, ZipArchive::CREATE) ) {
-					foreach($files as $f) {
-						if($params['fullPath']){
-							if( !$a->addFile($f) ) {
-								throw new SmartWFM_Exception('Couldn\'t add file to archive.', -5);
-							}
-						} else {
-							if( !$a->addFile($f, str_replace($rootPath.'/','',$f)) ) {
-								throw new SmartWFM_Exception('Couldn\'t add file to archive.', -5);
-							}
-						}
-					}
-					if(!$a->close()) {
-						throw new SmartWFM_Exception('Couldn\'t create archive.', -6);
-					}
-					$response = new SmartWFM_Response();
-					$response->data = true;
-					return $response;
-				} else {
-					throw new SmartWFM_Exception('Couldn\'t create archive.', -7);
+				$a = new Archive($path, $rootPath);
+				$a->setUseAbsolutePaths($params['fullPath']);
+				foreach($params['files'] as $p) {
+					$a->addFolderOrFile(Path::join(
+						$rootPath,
+						$p
+					));
 				}
+				$a->close();
+				$response = new SmartWFM_Response();
+				$response->data = true;
+				return $response;
 				break;
 			case 'tarbz2':
 				$AT = 'j';
@@ -152,12 +119,26 @@ class BaseArchiveActions_Create extends SmartWFM_Command {
 					$path = substr($path, strlen($rootPath)+1);
 				}
 				$cmd .= 'tar -c'.$AT.'f '.escapeshellarg($path);
-				foreach($files as $f) {
-					if(!$params['fullPath']){
-						$f = substr($f, strlen($rootPath)+1);
+
+				foreach($params['files'] as $p) {
+					$tmpPath = Path::join(
+						$rootPath,
+						$p
+					);
+					if(Path::validate($BASE_PATH, $tmpPath) != true) {
+						throw new SmartWFM_Exception('Wrong directory name.', -3);
 					}
-					$cmd .= ' '.escapeshellarg($f);
+
+					if(!@file_exists($tmpPath)) {
+						throw new SmartWFM_Exception('A file with the given name doesn\'t exists.', -4);
+					}
+
+					if(!$params['fullPath']){
+						$tmpPath = $p;
+					}
+					$cmd .= ' '.escapeshellarg($tmpPath);
 				}
+
 				exec( $cmd, $output, $ret );
 				if( !$ret ) {
 					$response = new SmartWFM_Response();
@@ -227,7 +208,7 @@ class BaseArchiveActions_List extends SmartWFM_Command {
 					throw new SmartWFM_Exception('Couldn\'t open archive.', -3);
 				}
 				$response = new SmartWFM_Response();
-				$response->data = Archives::fileNamesToTreeStruct($files);
+				$response->data = ArchiveHelpers::fileNamesToTreeStruct($files);
 				return $response;
 				break;
 			case 'application/x-gzip':
@@ -240,7 +221,7 @@ class BaseArchiveActions_List extends SmartWFM_Command {
 				exec( $cmd, $output, $ret );
 				if(!$ret){
 					$response = new SmartWFM_Response();
-					$response->data = Archives::fileNamesToTreeStruct($output);
+					$response->data = ArchiveHelpers::fileNamesToTreeStruct($output);
 					return $response;
 				}else{
 					throw new SmartWFM_Exception('Couldn\'t open archive.', -3);

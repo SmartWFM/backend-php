@@ -2,7 +2,7 @@
 ###############################################################################
 # This file is a part of the SmartWFM PHP-Backend                             #
 # Copyright (C) 2009-2010 Philipp Seidel <phibo@oss.dinotools.de>             #
-#                    2010 Morris Jobke <kabum@users.sourceforge.net           #
+#               2010-2013 Morris Jobke <kabum@users.sourceforge.net>          #
 #                                                                             #
 # SmartWFM PHP-Backend is free software; you can redestribute it and/or modify#
 # it under terms of GNU General Public License by Free Software Foundation.   #
@@ -15,26 +15,39 @@ if(SmartWFM_Registry::get('filesystem_type') == 'afs') {
 	require_once('lib/AFS/libafs.php');
 }
 
-require_once('lib/archives/archives.php');
+require_once('lib/archives/archive.php');
 
 class BaseDirectCommand_Download extends SmartWFM_Command {
 	function process($params) {
 		$fs_type = SmartWFM_Registry::get('filesystem_type');
 
 		$BASE_PATH = SmartWFM_Registry::get('basepath','/');
+
 		$path = Path::join(
 			$BASE_PATH,
 			$params['path']
 		);
 
-		$file = Path::join(
-			$path,
-			$params['name']
-		);
-
-		if(Path::validate($BASE_PATH, $path) != true || Path::validate($BASE_PATH, $file) != true) {
+		if(Path::validate($BASE_PATH, $path) != true ) {
 			print "error";
 			return;
+		}
+
+		$files = array();
+
+		foreach ($params['files'] as $file) {
+			$filePath = Path::join($path, $file);
+			if(Path::validate($BASE_PATH, $filePath) != true){
+				print "error";
+				return;
+			}
+			if($fs_type == 'local') {
+				if(!is_readable($filePath)) {
+					print 'Permission denied.';
+					return;
+				}
+			}
+			$files[] = $filePath;
 		}
 
 		if($fs_type == 'afs') {
@@ -44,84 +57,68 @@ class BaseDirectCommand_Download extends SmartWFM_Command {
 				print 'Permission denied.';
 				return;
 			}
-		} else if($fs_type == 'local') {
-			if(!is_readable($file)) {
-				print 'Permission denied.';
-				return;
-			}
 		}
 
-		if (file_exists($file)) {
-			$mime = @MimeType::get($file);
-			$filename = basename($file);
+		if(sizeof($files) == 0) {
+			print 'Error - no files specified.';
+			return;
+		}
+
+		$mime = NULL;
+
+		if(sizeof($files) == 1) {
+			$mime = @MimeType::get($files[0]);
+			$filename = basename($files[0]);
+			$file = $files[0];
 			$deleteFileAfterSend = false;
-
-			if($mime == 'directory') {
-				$archiveName = SmartWFM_Registry::get('temp_folder').'/SmartWFM.'.basename($file).'.'.sha1($file).'.zip';
-
-				// getting items inside folder
-				$filesAndFolders = Archives::getFilesAndFolders($file);
-
-				$a = new ZipArchive;
-				if( $a->open($archiveName, ZipArchive::OVERWRITE) ) {
-					foreach($filesAndFolders[1] as $f) {
-						if( !$a->addEmptyDir(str_replace($path.'/','',$f)) ) {
-							print('Error adding empty dir to archive file [-1]');
-							return;
-						}
-					}
-					foreach($filesAndFolders[0] as $f) {
-						if( !$a->addFile($f, str_replace($path.'/','',$f)) ) {
-							print('Error adding file to archive file [-2]');
-							return;
-						}
-					}
-					if(!$a->close()) {
-						print('Error creating archive file [-3]');
-						return;
-					}
-				} else {
-					print('Error creating archive file [-4]');
-					return;
-				}
-				// file restrictions
-				chmod($archiveName, 0600);
-				$mime = @MimeType::get($archiveName);
-				$filename = basename($file).'.zip';
-				$file = $archiveName;
-				$deleteFileAfterSend = true;
-			}
-
-			$fp = fopen($file, 'r');
-			if($fp === False) {
-				print('Error reading the file');
-				return;
-			}
-
-			header('Content-Type: ' . $mime);
-			header('Content-Disposition: attachment; filename='.$filename);
-			header('Content-Transfer-Encoding: binary');
-			header('Expires: 0');
-			header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
-			header('Pragma: public');
-			if(SmartWFM_Registry::get('use_x_sendfile') === True && !$deleteFileAfterSend) {
-				header('X-Sendfile: ' . $file);
-			} else {
-				header('Content-Length: ' . filesize($file));
-				ob_clean();
-				flush();
-
-				while(($content = fread($fp, 4096)) != '') {
-					print($content);
-				}
-				fclose($fp);
-				if($deleteFileAfterSend) {
-					unlink($file);
-				}
-			}
-			exit();
 		}
 
+		if(sizeof($files) > 1 || $mime == 'directory') {
+			$archiveName = SmartWFM_Registry::get('temp_folder').'/SmartWFM.'.basename($path).'.'.sha1($path).'.zip';
+
+			$a = new Archive($archiveName, $path);
+			foreach($files as $file) {
+				$a->addFolderOrFile($file);
+			}
+			$a->close();
+
+			// file restrictions
+			chmod($archiveName, 0600);
+
+			$mime = @MimeType::get($archiveName);
+			$filename = basename($path).'.zip';
+			$file = $archiveName;
+			$deleteFileAfterSend = true;
+		}
+
+		$fp = fopen($file, 'r');
+		if($fp === False) {
+			print('Error reading the file');
+			return;
+		}
+
+		header('Content-Type: ' . $mime);
+		header('Content-Disposition: attachment; filename='.$filename);
+		header('Content-Transfer-Encoding: binary');
+		header('Expires: 0');
+		header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
+		header('Pragma: public');
+		if(SmartWFM_Registry::get('use_x_sendfile') === True && !$deleteFileAfterSend) {
+			header('X-Sendfile: ' . $file);
+		} else {
+			header('Content-Length: ' . filesize($file));
+			ob_clean();
+			flush();
+
+			while(($content = fread($fp, 4096)) != '') {
+				print($content);
+			}
+			fclose($fp);
+			if($deleteFileAfterSend) {
+				unlink($file);
+			}
+		}
+		exit();
 	}
 }
 
