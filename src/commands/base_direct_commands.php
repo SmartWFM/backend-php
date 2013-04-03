@@ -60,30 +60,28 @@ class BaseDirectCommand_Download extends SmartWFM_Command {
 				$archiveName = SmartWFM_Registry::get('temp_folder').'/SmartWFM.'.basename($file).'.'.sha1($file).'.zip';
 
 				// getting items inside folder
-				$files = array();
-				foreach(Archives::getFiles($file) as $e) {
-					$files[] = $e;
-				}
-
-				if(count($files) === 0) {
-					print('No files inside the folder(s) [-4]');
-					return;
-				}
+				$filesAndFolders = Archives::getFilesAndFolders($file);
 
 				$a = new ZipArchive;
 				if( $a->open($archiveName, ZipArchive::OVERWRITE) ) {
-					foreach($files as $f) {
+					foreach($filesAndFolders[1] as $f) {
+						if( !$a->addEmptyDir(str_replace($path.'/','',$f)) ) {
+							print('Error adding empty dir to archive file [-1]');
+							return;
+						}
+					}
+					foreach($filesAndFolders[0] as $f) {
 						if( !$a->addFile($f, str_replace($path.'/','',$f)) ) {
-							print('Error creating archive file [-1]');
+							print('Error adding file to archive file [-2]');
 							return;
 						}
 					}
 					if(!$a->close()) {
-						print('Error creating archive file [-2]');
+						print('Error creating archive file [-3]');
 						return;
 					}
 				} else {
-					print('Error creating archive file [-3]');
+					print('Error creating archive file [-4]');
 					return;
 				}
 				// file restrictions

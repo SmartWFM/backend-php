@@ -11,22 +11,29 @@
 ###############################################################################
 
 class Archives{
-	static public function getFiles($path){
+	static public function getFilesAndFolders($path){
 		$files = array();
+		$folders = array();
 		$d = dir($path);
+		$folders[] = $path;
 		while (false !== ($name = $d->read())) {
 			if($name != '.' && $name != '..') {
 				$p = Path::join($path, $name);
 				if(@is_dir($p)){
-					foreach(Archives::getFiles($p) as $e) {
+					$tmp = Archives::getFilesAndFolders($p);
+					foreach($tmp[0] as $e) {
 						$files[] = $e;
+					}
+					foreach($tmp[1] as $e) {
+						$folders[] = $e;
 					}
 				} else {
 					$files[] = $p;
 				}
 			}
 		}
-		return $files;
+		$d->close();
+		return array($files, $folders);
 	}
 
 	static public function fileNamesToTreeStruct($files){
