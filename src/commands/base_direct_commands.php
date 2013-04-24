@@ -132,7 +132,7 @@ class BaseDirectCommand_Upload extends SmartWFM_Command {
 
 		$response = array(
 			'success' => true,
-			'msg' => ''
+			'message' => ''
 		);
 
 		$path = Path::join(
@@ -147,7 +147,7 @@ class BaseDirectCommand_Upload extends SmartWFM_Command {
 
 		if(Path::validate($BASE_PATH, $path) != true || Path::validate($BASE_PATH, $file) != true) {
 			$response['success'] = false;
-			$response['msg'] = 'error'; //TODO
+			$response['message'] = 'error'; //TODO
 		}
 
 		if($response['success'] && $fs_type == 'afs') {
@@ -155,12 +155,12 @@ class BaseDirectCommand_Upload extends SmartWFM_Command {
 
 			if(!$afs->allowed(AFS_INSERT)) {
 				$response['success'] = false;
-				$response['msg'] = 'Permission denied.';
+				$response['message'] = 'Write permission denied.';
 			}
 		} else if($response['success'] && $fs_type == 'local') {
 			if(!is_writable($path)) {
 				$response['success'] = false;
-				$response['msg'] = 'Permission denied.';
+				$response['message'] = 'Write permission denied.';
 			}
 		}
 
