@@ -495,7 +495,7 @@ class BaseActions_List extends SmartWFM_Command {
 								$data,
 								$item
 							);
-						} else {
+						} elseif(is_dir($filename)) {
 							$item = array(
 								'type' => 'file',
 								'name' => $name,
