@@ -457,6 +457,9 @@ class BaseActions_List extends SmartWFM_Command {
 			while (false !== ($name = $d->read())) {
 				if($name != '.' && $name != '..') {
 					if( substr( $name, 0, 1 ) != '.' || $showHidden ) {
+						// filter out wrongly encoded files/folders
+						$isValidEncoding = mb_check_encoding($name, 'UTF-8');
+						// TODO log this
 						$filename = Path::join($path, $name);
 						if(is_file($filename)){
 							$size = @filesize($filename);
@@ -468,8 +471,7 @@ class BaseActions_List extends SmartWFM_Command {
 								$mime_type = 'unknown';
 							}
 							$item = array(
-								'type' => 'file',
-								'name' => $name,
+								'name' => $isValidEncoding ? $name : 'invalid encoded file',
 								'path' => $req_path,
 								'size' => $size,
 								'mime-type' => $mime_type,
@@ -497,8 +499,7 @@ class BaseActions_List extends SmartWFM_Command {
 							);
 						} elseif(is_dir($filename)) {
 							$item = array(
-								'type' => 'file',
-								'name' => $name,
+								'name' => $isValidEncoding ? $name : '!invalid encoded folder!',
 								'path' => $req_path,
 								'size' => 0,
 								'mime-type' => '',
