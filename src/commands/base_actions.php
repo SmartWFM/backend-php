@@ -499,7 +499,7 @@ class BaseActions_List extends SmartWFM_Command {
 							);
 						} elseif(is_dir($filename)) {
 							$item = array(
-								'name' => $isValidEncoding ? $name : '!invalid encoded folder!',
+								'name' => $isValidEncoding ? $name : 'invalid encoded folder',
 								'path' => $req_path,
 								'size' => 0,
 								'mime-type' => '',
