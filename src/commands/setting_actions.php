@@ -69,6 +69,8 @@ class SettingActions_Store extends SmartWFM_Command {
 				}
 				fwrite($fp, $key . '=' . $value . "\r\n");
 			}
+			fclose($fp);
+			@syslog(LOG_INFO, '[' . $_SERVER['REMOTE_USER'] . '] Save settings - file: ' . $filename);
 
 			$response->data = true;
 		}

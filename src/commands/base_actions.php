@@ -133,6 +133,7 @@ class BaseActions_DirDelete extends SmartWFM_Command {
 		$response = new SmartWFM_Response();
 
 		if(@rmdir($path)) {
+			@syslog(LOG_INFO, '[' . $_SERVER['REMOTE_USER'] . '] Delete - directory: ' . $path);
 			$response->data = true;
 		} else {
 			throw new SmartWFM_Exception('Can\'t remove the folder', -3);
@@ -329,6 +330,7 @@ class BaseActions_Copy extends SmartWFM_Command {
 			throw new SmartWFM_Exception('Destination file exists.', -2);
 		} else {
 			if(copy($source, $destination) === true) {
+				@syslog(LOG_INFO, '[' . $_SERVER['REMOTE_USER'] . '] Copy - src: ' . $source . ' dest: ' . $destination);
 				$response->data = true;
 			} else {
 				throw new SmartWFM_Exception('An error occurs.', -3);
@@ -394,6 +396,7 @@ class BaseActions_Delete extends SmartWFM_Command {
 		$response = new SmartWFM_Response();
 
 		if(@unlink($filename) === true) {
+			@syslog(LOG_INFO, '[' . $_SERVER['REMOTE_USER'] . '] Delete - file: ' . $filename);
 			$response->data = true;
 		} else {
 			throw new SmartWFM_Exception('Can\'t delete the file', -2);
@@ -459,6 +462,9 @@ class BaseActions_List extends SmartWFM_Command {
 					if( substr( $name, 0, 1 ) != '.' || $showHidden ) {
 						// filter out wrongly encoded files/folders
 						$isValidEncoding = mb_check_encoding($name, 'UTF-8');
+						if(!$isValidEncoding) {
+							@syslog(LOG_ERR, '[' . $_SERVER['REMOTE_USER'] . '] invalid encoding - folder: ' . $path . ' file: ' . $name);
+						}
 						// TODO log this
 						$filename = Path::join($path, $name);
 						if(is_file($filename)){
@@ -636,6 +642,7 @@ class BaseActions_Move extends SmartWFM_Command {
 			throw new SmartWFM_Exception('A file with the destination name exists and the overwrite flag is not set.', -2);
 		} else {
 			if(@rename($source, $destination)) {
+				@syslog(LOG_INFO, '[' . $_SERVER['REMOTE_USER'] . '] Move - src: ' . $source . ' dest: ' . $destination);
 				$response->data = true;
 			} else {
 				throw new SmartWFM_Exception('An error occurs.', -3);
@@ -714,6 +721,7 @@ class BaseActions_Rename extends SmartWFM_Command {
 		$response = new SmartWFM_Response();
 
 		if(@rename($filename, $filename_new)) {
+			@syslog(LOG_INFO, '[' . $_SERVER['REMOTE_USER'] . '] Rename - src: ' . $filename . ' dest: ' . $filename_new);
 			$response->data = true;
 		} else {
 			throw new SmartWFM_Exception('Error while renaming the file.', -4);
