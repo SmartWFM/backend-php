@@ -43,6 +43,7 @@ class search {
 	public function getResult() {
 		$cmd = $this->getCmd();
 		exec($cmd, $output, $ret);
+		@syslog($ret ? LOG_ERR : LOG_INFO, '[' . $_SERVER['REMOTE_USER'] . '] Search - cmd: ' . $cmd);
 		if(!$ret) {
 			$results = array();
 			foreach($output as $f) {
