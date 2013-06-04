@@ -324,22 +324,13 @@ class BaseArchiveActions_Extract extends SmartWFM_Command {
 									$files[] = $tmp;
 									unset($params['files'][$k]);
 								}
-
 							}
 						}
-						if( $a->extractTo($extractPath, $files) ) {
-							$response = new SmartWFM_Response();
-							$response->data = True;
-							return $response;
-						} else {
+						if( !$a->extractTo($extractPath, $files) ) {
 							throw new SmartWFM_Exception('Couldn\'t extract archive.', -5);
 						}
 					} else {
-						if( $a->extractTo($extractPath) ) {
-							$response = new SmartWFM_Response();
-							$response->data = True;
-							return $response;
-						} else {
+						if( !$a->extractTo($extractPath) ) {
 							throw new SmartWFM_Exception('Couldn\'t extract archive.', -6);
 						}
 					}
