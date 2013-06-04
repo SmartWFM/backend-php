@@ -25,6 +25,9 @@
  */
 setlocale(LC_CTYPE, 'UTF8', 'de_DE.UTF-8');
 
+# initialize loggin
+openlog('SWFM', LOG_PID, LOG_LOCAL0);
+
 define('SMARTWFM_DEBUG', false);
 
 require_once("lib/FirePHPCore/fb.php");
