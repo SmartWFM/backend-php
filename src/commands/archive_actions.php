@@ -106,6 +106,7 @@ class BaseArchiveActions_Create extends SmartWFM_Command {
 				$a->close();
 				$response = new SmartWFM_Response();
 				$response->data = true;
+				@syslog(LOG_INFO, '[' . $_SERVER['REMOTE_USER'] . '] Archive - create ZIP - file: ' . $path);
 				return $response;
 				break;
 			case 'tarbz2':
@@ -140,6 +141,7 @@ class BaseArchiveActions_Create extends SmartWFM_Command {
 				}
 
 				exec( $cmd, $output, $ret );
+				@syslog($ret ? LOG_ERR : LOG_INFO, '[' . $_SERVER['REMOTE_USER'] . '] Archive - create - cmd: ' . $cmd);
 				if( !$ret ) {
 					$response = new SmartWFM_Response();
 					$response->data = true;
@@ -344,6 +346,7 @@ class BaseArchiveActions_Extract extends SmartWFM_Command {
 				} else {
 					throw new SmartWFM_Exception('Couldn\'t open archive.', -7);
 				}
+				@syslog(LOG_INFO, '[' . $_SERVER['REMOTE_USER'] . '] Archive - extract ZIP - file: ' . $archivePath);
 				$response = new SmartWFM_Response();
 				$response->data = True;
 				return $response;
@@ -360,6 +363,7 @@ class BaseArchiveActions_Extract extends SmartWFM_Command {
 					$cmd .= ' '.escapeshellarg($f);
 				}
 				exec( $cmd, $output, $ret );
+				@syslog($ret ? LOG_ERR : LOG_INFO, '[' . $_SERVER['REMOTE_USER'] . '] Archive - extract - cmd: ' . $cmd);
 				if(!$ret){
 					$response = new SmartWFM_Response();
 					$response->data = true;
