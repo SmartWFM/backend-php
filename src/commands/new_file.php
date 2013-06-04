@@ -119,6 +119,7 @@ class NewFile_Create extends SmartWFM_Command {
 		if(@copy($tpl_filename, $filename) === False) {
 			throw new SmartWFM_Exception('Error');
 		}
+		@syslog(LOG_INFO, '[' . $_SERVER['REMOTE_USER'] . '] Create file - file: ' . $filename);
 
 		$response = new SmartWFM_Response();
 		$response->data = array(
@@ -188,6 +189,7 @@ class NewFile_Save extends SmartWFM_Command {
 		}
 
 		fclose($handle);
+		@syslog(LOG_INFO, '[' . $_SERVER['REMOTE_USER'] . '] Save file - file: ' . $filename);
 
 		$response = new SmartWFM_Response();
 		$response->data = True;

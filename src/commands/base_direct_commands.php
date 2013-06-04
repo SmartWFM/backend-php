@@ -96,6 +96,7 @@ class BaseDirectCommand_Download extends SmartWFM_Command {
 			print('Error reading the file');
 			return;
 		}
+		@syslog(LOG_INFO, '[' . $_SERVER['REMOTE_USER'] . '] Download - file: ' . $file . 'content: ' . join(';', $files));
 
 		header('Content-Type: ' . $mime);
 		header('Content-Disposition: attachment; filename='.$filename);
@@ -169,6 +170,7 @@ class BaseDirectCommand_Upload extends SmartWFM_Command {
 		if($response['success']) {
 			move_uploaded_file($_FILES['file']['tmp_name'], $file);
 		}
+		@syslog(LOG_INFO, '[' . $_SERVER['REMOTE_USER'] . '] Upload - file: ' . $file);
 
 		echo json_encode($response);
 		exit();
