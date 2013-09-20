@@ -22,7 +22,10 @@ if( !defined( 'AFS_ADMINISTER' ) )
 	define( 'AFS_ADMINISTER', 5 );
 if( !defined( 'AFS_INSERT' ) )
 	define( 'AFS_INSERT', 6 );
-
+/*
+ * afs class
+ * @class
+ */
 class afs {
 	protected $cmd = array(
 		'fs' => 'fs',			//'/usr/bin/fs',
