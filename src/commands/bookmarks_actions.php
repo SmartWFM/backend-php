@@ -10,6 +10,11 @@
 # WITHOUT ANY WARRANTY. See GPLv3 for more details.                           #
 ###############################################################################
 
+/**
+ * provides:
+ *  - read and write for bookmarks
+ */
+
 class BookmarksActions_Load extends SmartWFM_Command {
 	function process($params) {
 		$filename = SmartWFM_Registry::get('bookmarks_filename', NULL);

@@ -10,6 +10,12 @@
 # WITHOUT ANY WARRANTY. See GPLv3 for more details.                           #
 ###############################################################################
 
+
+/**
+ * provides:
+ *  - send feedback
+ */
+
 class FeedbackActions_Send extends SmartWFM_Command {
 	function process($params) {
 		// check params

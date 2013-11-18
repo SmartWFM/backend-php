@@ -16,6 +16,11 @@ if(SmartWFM_Registry::get('filesystem_type') == 'afs') {
 require_once('lib/FileInfo/libfileinfo.php');
 
 /**
+ * provides:
+ *  - read further file info
+ */
+
+/**
  * Get file info
  */
 

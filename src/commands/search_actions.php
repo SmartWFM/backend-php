@@ -12,6 +12,11 @@
 
 require_once('lib/search/libsearch.php');
 
+/**
+ * provides:
+ *  - search
+ */
+
 class SearchActions_Search extends SmartWFM_Command {
 	function process($params) {
 		$fs_type = SmartWFM_Registry::get('filesystem_type');

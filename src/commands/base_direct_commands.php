@@ -17,6 +17,11 @@ if(SmartWFM_Registry::get('filesystem_type') == 'afs') {
 
 require_once('lib/archives/archive.php');
 
+/**
+ * provides:
+ *  - up and download of files
+ */
+
 class BaseDirectCommand_Download extends SmartWFM_Command {
 	function process($params) {
 		$fs_type = SmartWFM_Registry::get('filesystem_type');

@@ -11,6 +11,11 @@
 # WITHOUT ANY WARRANTY. See GPLv3 for more details.                           #
 ###############################################################################
 
+/**
+ * provides:
+ *  - read and write for settings
+ */
+
 class SettingActions_Load extends SmartWFM_Command {
 	function process($params) {
 		$filename = SmartWFM_Registry::get('setting_filename', NULL);

@@ -13,6 +13,14 @@
 require_once('lib/AFS/libafs.php');
 
 /**
+ * provides:
+ *  - read quota
+ *  - read/write AFS ACLs
+ *  - CRUD for AFS groups
+ *  - CRUD for AFS group memberships
+ */
+
+/**
  * Get quota
  */
 

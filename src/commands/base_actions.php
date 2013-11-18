@@ -15,6 +15,11 @@ if(SmartWFM_Registry::get('filesystem_type') == 'afs') {
 	require_once('lib/AFS/libafs.php');
 }
 
+/**
+ * provides:
+ *  - CRUD for files and folders
+ */
+
 class BaseActions_DirCreate extends SmartWFM_Command {
 	function process($params) {
 		$fs_type = SmartWFM_Registry::get('filesystem_type');

@@ -17,6 +17,11 @@ if(SmartWFM_Registry::get('filesystem_type') == 'afs') {
 require_once('lib/archives/archive.php');
 require_once('lib/archives/archiveHelpers.php');
 
+/**
+ * provides:
+ *  - create, list, extract archives
+ */
+
 /*
 	create an archive
  */

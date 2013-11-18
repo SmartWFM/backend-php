@@ -15,6 +15,13 @@ if(SmartWFM_Registry::get('filesystem_type') == 'afs') {
 	require_once('lib/AFS/libafs.php');
 }
 
+/**
+ * provides:
+ *  - list available templates
+ *  - create file from template
+ *  - save file
+ */
+
 class NewFile_List extends SmartWFM_Command {
 	function process($params) {
 		// check params
